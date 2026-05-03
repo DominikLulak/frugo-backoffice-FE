@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Link} from "react-router-dom";
+import SidebarLink from "./SidebarLink.tsx";
 
 export default function Sidebar(){
     const role = localStorage.getItem("role")
@@ -17,12 +17,14 @@ export default function Sidebar(){
         <div className="bg-dark text-white sidebar">
 
             <div className="p-3 border-bottom">
-                <h3 className="m-0">Frugo</h3>
+                <h3 className="m-0">
+                    Fru<span className="text-success">go</span>
+                </h3>
             </div>
 
             <div className="p-2">
 
-                <Link to="/dashboard" className="btn btn-success w-100 text-start mb-2">Dashboard</Link>
+                {/*<SidebarLink to="/dashboard" className="btn btn-success w-100 text-start mb-2">Dashboard</SidebarLink>*/}
 
                 <button className={menuButton(stockOpen)} onClick={() => setStockOpen(!stockOpen)}>
                     <span>Sklad</span>
@@ -31,9 +33,26 @@ export default function Sidebar(){
 
                 {stockOpen && (
                     <div className="ms-3 mb-2">
-                        <Link to="#" className="btn btn-dark w-100 text-start mb-2">Polozky na sklade</Link>
-                        <Link to="#" className="btn btn-dark w-100 text-start mb-2">Objednavky</Link>
-                        <Link to="#" className="btn btn-dark w-100 text-start mb-2">Zasilky</Link>
+                        <SidebarLink to="/dashboard/stock/items" label="Položky na skladě"/>
+                        {role === "ADMIN" && (
+                            <>
+                                <SidebarLink to="/dashboard" label="Vytvoření příjemky na položku"/>
+                                <SidebarLink to="/dashboard" label="Vymazání položky ze skladu" />
+                                <SidebarLink to="/dashboard" label="Založení nové položky" />
+                            </>
+                        )}
+                        <SidebarLink to="/dashboard" label="Objednávky" />
+                        {role === "ADMIN" && (
+                            <>
+                                <SidebarLink to="/dashboard" label="Objednávky - Editace" />
+                            </>
+                        )}
+                        <SidebarLink to="/dashboard" label="Zásilky" />
+                        {role === "ADMIN" && (
+                            <>
+                                <SidebarLink to="/dashboard" label="Zásilky - Editace" />
+                            </>
+                        )}
                     </div>
                 )}
 
@@ -44,9 +63,9 @@ export default function Sidebar(){
 
                 {transOpen && (
                     <div className="ms-3 mb-2">
-                        <Link to="#" className="btn btn-dark w-100 text-start mb-2">Prijem zbozi</Link>
-                        <Link to="#" className="btn btn-dark w-100 text-start mb-2">Vydej objednavky</Link>
-                        <Link to="#" className="btn btn-dark w-100 text-start mb-2">Vydej zasilky</Link>
+                        <SidebarLink to="/dashboard" label="Příjem položky" />
+                        <SidebarLink to="/dashboard" label="Výdej položky do objednávky" />
+                        <SidebarLink to="/dashboard" label="Výdej položky do zásilky" />
                     </div>
                 )}
 
@@ -59,8 +78,8 @@ export default function Sidebar(){
 
                         {adminOpen && (
                             <div className="ms-3 mb-2">
-                                <Link to="#" className="btn btn-dark w-100 text-start mb-2">Zamestnanci</Link>
-                                <Link to="#" className="btn btn-dark w-100 text-start mb-2">Zakaznici</Link>
+                                <SidebarLink to="/dashboard" label="Zaměstnanci" />
+                                <SidebarLink to="/dashboard" label="Zákazníci" />
                             </div>
                         )}
                     </>

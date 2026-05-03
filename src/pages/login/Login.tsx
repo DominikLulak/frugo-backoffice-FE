@@ -1,6 +1,6 @@
 import {useState} from "react";
 import "./Login.css"
-import {API_URL} from "../../services/api.ts";
+import {API_URL} from "../../api/config.ts";
 import * as React from "react";
 
 function Login(){

@@ -30,7 +30,7 @@ export default function Topbar({toggleSidebar}: Props){
 
                 <ul className="dropdown-menu dropdown-menu-end">
                     <li>
-                        <button className="dropdown-item text-danger" onClick={logout}>Odhlasit</button>
+                        <button className="dropdown-item text-danger" onClick={logout}>Odhlásit</button>
                     </li>
                 </ul>
             </div>

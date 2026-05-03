@@ -3,6 +3,7 @@ import './App.css'
 import Login from "./pages/login/Login.tsx";
 import DashboardHome from "./pages/dashboard/DashboardHome.tsx";
 import DashboardLayout from "./components/layout/DashboardLayout.tsx";
+import StockItemsPage from "./pages/dashboard/stock/StockItemsPage.tsx";
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
                 }
             >
                 <Route index element={<DashboardHome/>}/>
+                <Route path="stock/items" element={<StockItemsPage/>}/>
             </Route>
         </Routes>
     </BrowserRouter>
