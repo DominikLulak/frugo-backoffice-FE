@@ -8,8 +8,8 @@ type Props = {
 export default function OrderModal({items, onClose}: Props){
     return(
         <>
-            <div className="modal-backdrop-custom">
-                <div className="modal-custom">
+            <div className="modal-backdrop-custom" onClick={onClose}>
+                <div className="modal-custom" onClick={(e) => e.stopPropagation()}>
                     <div className="modal-content-custom">
 
                         <div className="modal-header">
