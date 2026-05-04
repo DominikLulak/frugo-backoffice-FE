@@ -41,7 +41,7 @@ export default function Sidebar(){
                                 <SidebarLink to="/dashboard" label="Založení nové položky" />
                             </>
                         )}
-                        <SidebarLink to="/dashboard" label="Objednávky" />
+                        <SidebarLink to="/dashboard/orders" label="Objednávky" />
                         {role === "ADMIN" && (
                             <>
                                 <SidebarLink to="/dashboard" label="Objednávky - Editace" />
