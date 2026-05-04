@@ -8,6 +8,10 @@ export default function OrdersPage(){
     const [selectedOrder, setSelectedOrer] = useState<any>(null)
     const [items, setItems] = useState<any[]>([])
 
+    const [orderNumber, setOrderNumber] = useState("")
+    const [status, setStatus] = useState("")
+    const [customerName, setCustomerName] = useState("")
+
     useEffect(() => {
         const fetchData = async () => {
             const data = await getOrders();
@@ -15,6 +19,15 @@ export default function OrdersPage(){
         };
         fetchData();
     }, []);
+
+    const handleFilter = async () => {
+        const data = await getOrders(
+            orderNumber,
+            status,
+            customerName
+        );
+        setOrders(data);
+    }
 
     const openOrder = async (order: any) => {
         const data = await getOrderDetail(order.orderNumber)
@@ -25,6 +38,46 @@ export default function OrdersPage(){
     return(
         <div className="container-fluid">
             <h1>Objednávky</h1>
+
+            <div className="row g-2 mb-4">
+                <div className="col-md-3">
+                    <input
+                        className="form-control"
+                        placeholder="Cislo objednavky"
+                        value={orderNumber}
+                        onChange={(e) => setOrderNumber(e.target.value)}
+                    />
+                </div>
+                <div className="col-md-4">
+                    <select
+                        className="form-control"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                    >
+                        <option value="">Vše</option>
+                        <option value="ZADÁNO">ZADÁNO</option>
+                        <option value="UVOLNĚNO">UVOLNĚNO</option>
+                        <option value="DOKONČENO">DOKONČENO</option>
+                    </select>
+                </div>
+                <div className="col-md-4">
+                    <input
+                        className="form-control"
+                        placeholder="Nazev zakaznika"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                    />
+                </div>
+
+                <div className="col-md-1 d-grid">
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleFilter}
+                    >
+                        Filtrovat
+                    </button>
+                </div>
+            </div>
 
             <table className="table">
                 <thead>
