@@ -55,6 +55,7 @@ export default function StockItemsPage(){
                         className="form-control"
                         placeholder="Název"
                         value={name}
+                        disabled
                         onChange={(e) => setName(e.target.value)}
                     />
                 </div>
