@@ -1,10 +1,11 @@
 import {useEffect, useState} from "react";
 import {getEmployees, getEmployeeDetail} from "../../../api/EmployeeApi.ts";
 import EmployeeModal from "../../../components/employees/EmployeeModal.tsx";
+import type {Employee, EmployeeDetail} from "../../../types/employee.ts";
 
 export default function EmployeePage(){
-    const [employees, setEmployees] = useState<any[]>([])
-    const [selectedEmployee, setSelectedEmployee] = useState<any>(null)
+    const [employees, setEmployees] = useState<Employee[]>([])
+    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetail | null>(null)
 
     const [personalNumber, setPersonalNumber] = useState("")
     const [fullName, setFullName] = useState("")
@@ -31,7 +32,7 @@ export default function EmployeePage(){
         setEmployees(data)
     }
 
-    const openEmployee = async (employee: any)=> {
+    const openEmployee = async (employee: Employee)=> {
         const data = await getEmployeeDetail(employee.personalNumber)
         setSelectedEmployee(data)
     }

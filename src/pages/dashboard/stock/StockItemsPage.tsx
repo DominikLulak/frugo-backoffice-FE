@@ -1,15 +1,10 @@
 import {useEffect, useState} from "react";
 import {getStockItems} from "../../../api/StockApi.ts";
-
-type Item = {
-    category: string;
-    name: string;
-    variant: string;
-}
+import type {StockItem} from "../../../types/stock.ts";
 
 export default function StockItemsPage(){
 
-    const [items, setItems] = useState<Item[]>([])
+    const [items, setItems] = useState<StockItem[]>([])
 
     const [category, setCategory] = useState("")
     const [name, setName] = useState("")

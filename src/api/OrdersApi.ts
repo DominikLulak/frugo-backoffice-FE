@@ -1,10 +1,11 @@
 import {API_URL} from "./config.ts";
+import type {Order, OrderItem} from "../types/order.ts";
 
 export const getOrders = async (
-    orderNumber = "",
-    status = "",
-    customerName = ""
-) => {
+    orderNumber: string = "",
+    status: string = "",
+    customerName: string = ""
+):Promise<Order[]> => {
     const token = localStorage.getItem("token")
 
     const params = new URLSearchParams();
@@ -18,10 +19,13 @@ export const getOrders = async (
             Authorization: `Bearer ${token}`
         }
     })
-    return await res.json()
+    if(!res.ok){
+        throw new Error("Failed to fetch orders")
+    }
+    return await res.json() as Promise<Order[]>
 }
 
-export const getOrderDetail = async (orderNumber: string) => {
+export const getOrderDetail = async (orderNumber: string):Promise<OrderItem[]> => {
     const token = localStorage.getItem("token")
 
     const res = await fetch(`${API_URL}/api/admin/orders/${orderNumber}`, {
@@ -29,5 +33,8 @@ export const getOrderDetail = async (orderNumber: string) => {
             Authorization: `Bearer ${token}`
         }
     })
-    return res.json()
+    if(!res.ok){
+        throw new Error("Failed to fetch detail")
+    }
+    return await res.json() as Promise<OrderItem[]>
 }

@@ -1,10 +1,11 @@
 import {API_URL} from "./config.ts";
+import type {StockItem} from "../types/stock.ts";
 
 export const getStockItems = async (
-    category = "",
-    name = "",
-    variant = ""
-) =>{
+    category: string = "",
+    name: string = "",
+    variant: string = ""
+):Promise<StockItem[]> =>{
 
     const token = localStorage.getItem("token");
 
@@ -21,6 +22,8 @@ export const getStockItems = async (
             }
         }
     )
-
+    if(!response.ok){
+        throw new Error("Failed to fetch stock items")
+    }
     return await response.json()
 }

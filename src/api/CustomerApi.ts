@@ -1,11 +1,12 @@
 import {API_URL} from "./config.ts";
+import type {Customer, CustomerDetail} from "../types/customer.ts";
 
 export const getCustomers = async (
-    customerNumber = "",
-    name = "",
-    email = "",
-    phoneNumber = ""
-) => {
+    customerNumber: string = "",
+    name: string = "",
+    email: string = "",
+    phoneNumber: string = ""
+):Promise<Customer[]> => {
     const token = localStorage.getItem("token")
 
     const params = new URLSearchParams();
@@ -20,7 +21,10 @@ export const getCustomers = async (
             Authorization: `Bearer ${token}`
         }
     })
-    return await res.json()
+    if(!res.ok){
+        throw new Error("Failed to fetch customers")
+    }
+    return await res.json() as Promise<Customer[]>
 }
 
 export const getCustomerDetail = async (customerNumber: string) => {
@@ -31,5 +35,8 @@ export const getCustomerDetail = async (customerNumber: string) => {
             Authorization: `Bearer ${token}`
         }
     })
-    return res.json()
+    if(!res.ok){
+        throw new Error("Failed to fetch detail")
+    }
+    return await res.json() as Promise<CustomerDetail>
 }

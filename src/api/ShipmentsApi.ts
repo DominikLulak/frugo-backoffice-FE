@@ -1,11 +1,12 @@
 import {API_URL} from "./config.ts";
+import type {Shipment} from "../types/shipment.ts";
 
 export const getShipments = async (
-    shipmentNumber = "",
-    orderNumber = "",
-    status = "",
-    customerName = ""
-) => {
+    shipmentNumber: string = "",
+    orderNumber: string = "",
+    status: string = "",
+    customerName: string = ""
+):Promise<Shipment[]> => {
     const token = localStorage.getItem("token")
 
     const params = new URLSearchParams()
@@ -20,5 +21,8 @@ export const getShipments = async (
             Authorization: `Bearer ${token}`
         }
     })
-    return await res.json()
+    if(!res.ok){
+        throw new Error("Failed to fetch shipments")
+    }
+    return await res.json() as Promise<Shipment[]>
 }

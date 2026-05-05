@@ -1,12 +1,13 @@
 import {useEffect, useState} from "react";
 import {getOrders, getOrderDetail} from "../../../api/OrdersApi.ts";
+import type {Order, OrderItem} from "../../../types/order.ts";
 import OrderModal from "../../../components/orders/OrderModal.tsx";
 
 export default function OrdersPage(){
 
-    const [orders, setOrders] = useState<any[]>([])
-    const [selectedOrder, setSelectedOrer] = useState<any>(null)
-    const [items, setItems] = useState<any[]>([])
+    const [orders, setOrders] = useState<Order[]>([])
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+    const [items, setItems] = useState<OrderItem[]>([])
 
     const [orderNumber, setOrderNumber] = useState("")
     const [status, setStatus] = useState("")
@@ -29,10 +30,10 @@ export default function OrdersPage(){
         setOrders(data);
     }
 
-    const openOrder = async (order: any) => {
+    const openOrder = async (order: Order) => {
         const data = await getOrderDetail(order.orderNumber)
         setItems(data)
-        setSelectedOrer(order)
+        setSelectedOrder(order)
     }
 
     return(
@@ -106,7 +107,7 @@ export default function OrdersPage(){
 
             {selectedOrder && (
                 <OrderModal
-                    items={items} onClose={() => setSelectedOrer(null)}
+                    items={items} onClose={() => setSelectedOrder(null)}
                 />
             )}
         </div>

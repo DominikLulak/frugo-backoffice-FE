@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
 import {getShipments} from "../../../api/ShipmentsApi.ts";
+import type {Shipment} from "../../../types/shipment.ts";
 
 export default function ShipmentsPage(){
 
-    const [shipments, setShipments] = useState<any[]>([])
+    const [shipments, setShipments] = useState<Shipment[]>([])
 
     const [shipmentNumber, setShipmentNumber] = useState("")
     const [orderNumber, setOrderNumber] = useState("")

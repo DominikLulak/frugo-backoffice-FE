@@ -1,10 +1,11 @@
 import {useEffect, useState} from "react";
 import {getCustomers, getCustomerDetail} from "../../../api/CustomerApi.ts";
 import CustomerModal from "../../../components/customers/CustomerModal.tsx";
+import type {Customer, CustomerDetail} from "../../../types/customer.ts";
 
 export default function CustomerPage(){
-    const [customers, setCustomers] = useState<any[]>([])
-    const [selectedCustomer, setSelectedCustomer] = useState<any>(null)
+    const [customers, setCustomers] = useState<Customer[]>([])
+    const [selectedCustomer, setSelectedCustomer] = useState<CustomerDetail | null>(null)
 
     const [customerNumber, setCustomerNumber] = useState("")
     const [name, setName] = useState("")
@@ -29,7 +30,7 @@ export default function CustomerPage(){
         setCustomers(data)
     }
 
-    const openCustomer = async (customer: any) => {
+    const openCustomer = async (customer: Customer) => {
         const data = await getCustomerDetail(customer.customerNumber)
         setSelectedCustomer(data)
     }

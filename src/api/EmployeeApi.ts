@@ -1,11 +1,12 @@
 import {API_URL} from "./config.ts";
+import type {Employee, EmployeeDetail} from "../types/employee.ts";
 
 export const getEmployees = async (
-    personalNumber = "",
-    fullName = "",
-    position = "",
-    phoneNumber = "",
-    shift = ""
+    personalNumber: string = "",
+    fullName: string = "",
+    position: string = "",
+    phoneNumber: string = "",
+    shift: string = ""
 ) => {
     const token = localStorage.getItem("token")
 
@@ -22,10 +23,13 @@ export const getEmployees = async (
             Authorization: `Bearer ${token}`
         }
     })
-    return await res.json()
+    if(!res.ok){
+        throw new Error("Failed to fetch Employees")
+    }
+    return await res.json() as Promise<Employee[]>
 }
 
-export const getEmployeeDetail = async (personalNumber: string)=>{
+export const getEmployeeDetail = async (personalNumber: string):Promise<EmployeeDetail> =>{
     const token = localStorage.getItem("token")
 
     const res = await fetch(`${API_URL}/api/admin/employees/${personalNumber}`, {
@@ -33,5 +37,8 @@ export const getEmployeeDetail = async (personalNumber: string)=>{
             Authorization: `Bearer ${token}`
         }
     })
-    return res.json()
+    if(!res.ok){
+        throw new Error("Failed to fetch employee details")
+    }
+    return await res.json() as Promise<EmployeeDetail>
 }
