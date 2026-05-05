@@ -44,7 +44,7 @@ export default function StockItemsPage(){
 
     return(
         <div className="container-fluid">
-            <h2 className="mb-4">Polozky na sklade</h2>
+            <h1>Položky na skladě</h1>
 
             <div className="row g-2 mb-4">
                 <div className="col-md-3">
@@ -58,7 +58,7 @@ export default function StockItemsPage(){
                 <div className="col-md-4">
                     <input
                         className="form-control"
-                        placeholder="Nazev"
+                        placeholder="Název"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
@@ -86,7 +86,7 @@ export default function StockItemsPage(){
                 <thead>
                     <tr>
                         <th>Kategorie</th>
-                        <th>Nazev</th>
+                        <th>Název</th>
                         <th>Varianta</th>
                     </tr>
                 </thead>

@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {getCustomers, getCustomerDetail} from "../../../api/CustomerApi.ts";
-import CustomerModal from "../../../components/employees/CustomerModal.tsx";
+import CustomerModal from "../../../components/customers/CustomerModal.tsx";
 
 export default function CustomerPage(){
     const [customers, setCustomers] = useState<any[]>([])
@@ -36,13 +36,13 @@ export default function CustomerPage(){
 
     return(
         <div className="container-fluid">
-            <h1>Zakaznici</h1>
+            <h1>Zákazníci</h1>
 
             <div className="row g-2 mb-4">
                 <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Cislo zakaznika"
+                        placeholder="Číslo zákazníka"
                         value={customerNumber}
                         onChange={(e) => setCustomerNumber(e.target.value)}
                     />
@@ -50,7 +50,7 @@ export default function CustomerPage(){
                 <div className="col-md-3">
                     <input
                         className="form-control"
-                        placeholder="Nazev / Jmeno"
+                        placeholder="Název / Jméno"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
@@ -85,8 +85,8 @@ export default function CustomerPage(){
             <table className="table">
                 <thead>
                 <tr>
-                    <th>Cislo zakaznika</th>
-                    <th>Nazev / Jmeno</th>
+                    <th>Číslo zákazníka</th>
+                    <th>Název / Jméno</th>
                     <th>E-mail</th>
                     <th>Telefon</th>
                 </tr>

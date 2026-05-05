@@ -25,7 +25,7 @@ export default function CustomerModal({customer, onClose}: Props){
                     <div className="modal-content-custom">
 
                         <div className="modal-header">
-                            <h5>Zakaznik</h5>
+                            <h5>Zákazník</h5>
                             <button className="btn-close" onClick={onClose}></button>
                         </div>
 
@@ -33,9 +33,9 @@ export default function CustomerModal({customer, onClose}: Props){
                             <table className="table">
                                 <thead>
                                 <tr>
-                                    <th>Cislo zakaznika</th>
-                                    <th>Nazev / Jmeno</th>
-                                    <th>Zeme</th>
+                                    <th>Číslo zákazníka</th>
+                                    <th>Název / Jméno</th>
+                                    <th>Země</th>
                                     <th>Adresa</th>
                                     <th>Jednatel</th>
                                     <th>E-mail</th>

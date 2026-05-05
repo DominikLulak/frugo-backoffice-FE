@@ -28,7 +28,7 @@ export default function EmployeeModal({employee, onClose}: Props){
                     <div className="modal-content-custom">
 
                         <div className="modal-header">
-                            <h5>Zamestnanec</h5>
+                            <h5>Zaměstnanec</h5>
                             <button className="btn-close" onClick={onClose}></button>
                         </div>
 
@@ -36,15 +36,15 @@ export default function EmployeeModal({employee, onClose}: Props){
                             <table className="table">
                                 <thead>
                                 <tr>
-                                    <th>Osobni cislo</th>
-                                    <th>Jmeno</th>
-                                    <th>Pracovni pozice</th>
+                                    <th>Osobní číslo</th>
+                                    <th>Jméno</th>
+                                    <th>Pracovní pozice</th>
                                     <th>Telefon</th>
                                     <th>Email</th>
-                                    <th>Bydliste</th>
-                                    <th>Smena</th>
-                                    <th>Datum nastupu</th>
-                                    <th>Datum narozeni</th>
+                                    <th>Bdliště</th>
+                                    <th>Směna</th>
+                                    <th>Datum nástupu</th>
+                                    <th>Datum narození</th>
                                 </tr>
                                 </thead>
 

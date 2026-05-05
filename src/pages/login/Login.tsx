@@ -46,7 +46,7 @@ function Login(){
 
                 <form onSubmit={handleLogin}>
                     <div className="mb-3">
-                        <label className="form-label">Jmeno</label>
+                        <label className="form-label">Jméno</label>
                         <input
                             type="text"
                             className="form-control"
@@ -67,7 +67,7 @@ function Login(){
 
                     <div className="mt-4">
                         <button className="btn btn-success w-100 py-2 fw-bold">
-                            Prihlasit se
+                            Přihlásit se
                         </button>
                     </div>
                 </form>

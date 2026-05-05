@@ -30,13 +30,13 @@ export default function ShipmentsPage(){
 
     return(
         <div className="container-fluid">
-            <h1>Zasilky</h1>
+            <h1>Zásilky</h1>
 
             <div className="row g-2 mb-4">
                 <div className="col-md-3">
                     <input
                         className="form-control"
-                        placeholder="Cislo zasilky"
+                        placeholder="Číslo zásilky"
                         value={shipmentNumber}
                         onChange={(e) => setShipmentNumber(e.target.value)}
                     />
@@ -44,7 +44,7 @@ export default function ShipmentsPage(){
                 <div className="col-md-3">
                     <input
                         className="form-control"
-                        placeholder="Cislo objednavky"
+                        placeholder="Číslo objednávky"
                         value={orderNumber}
                         onChange={(e) => setOrderNumber(e.target.value)}
                     />
@@ -64,7 +64,7 @@ export default function ShipmentsPage(){
                 <div className="col-md-3">
                     <input
                         className="form-control"
-                        placeholder="Nazev zakaznika"
+                        placeholder="Název zákazníka"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                     />
@@ -83,10 +83,10 @@ export default function ShipmentsPage(){
             <table className="table">
                 <thead>
                 <tr>
-                    <th>Cislo zasilky</th>
-                    <th>Cislo objednavky</th>
+                    <th>Číslo zásilky</th>
+                    <th>Číslo objednávky</th>
                     <th>Stav</th>
-                    <th>Zakaznik</th>
+                    <th>Zákazník</th>
                 </tr>
                 </thead>
 

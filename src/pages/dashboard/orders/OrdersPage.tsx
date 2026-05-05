@@ -43,7 +43,7 @@ export default function OrdersPage(){
                 <div className="col-md-3">
                     <input
                         className="form-control"
-                        placeholder="Cislo objednavky"
+                        placeholder="Číslo objednávky"
                         value={orderNumber}
                         onChange={(e) => setOrderNumber(e.target.value)}
                     />
@@ -63,7 +63,7 @@ export default function OrdersPage(){
                 <div className="col-md-4">
                     <input
                         className="form-control"
-                        placeholder="Nazev zakaznika"
+                        placeholder="Název zákazníka"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                     />

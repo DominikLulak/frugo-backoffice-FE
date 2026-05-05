@@ -38,13 +38,13 @@ export default function EmployeePage(){
 
     return(
         <div className="container-fluid">
-            <h1>Zamestnanci</h1>
+            <h1>Zaměstnanci</h1>
 
             <div className="row g-2 mb-4">
                 <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Osobni cislo"
+                        placeholder="Osobní číslo"
                         value={personalNumber}
                         onChange={(e)=> setPersonalNumber(e.target.value)}
                     />
@@ -52,7 +52,7 @@ export default function EmployeePage(){
                 <div className="col-md-3">
                     <input
                         className="form-control"
-                        placeholder="Jmeno"
+                        placeholder="Jméno"
                         value={fullName}
                         onChange={(e)=> setFullName(e.target.value)}
                     />
@@ -60,7 +60,7 @@ export default function EmployeePage(){
                 <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Pracovni pozice"
+                        placeholder="Pracovní pozice"
                         value={position}
                         onChange={(e)=> setPosition(e.target.value)}
                     />
@@ -76,7 +76,7 @@ export default function EmployeePage(){
                 <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Smena"
+                        placeholder="Směna"
                         value={shift}
                         onChange={(e)=> setShift(e.target.value)}
                     />
@@ -95,11 +95,11 @@ export default function EmployeePage(){
             <table className="table">
                 <thead>
                 <tr>
-                    <th>Osobni cislo</th>
-                    <th>Jmeno</th>
-                    <th>Pracovni pozice</th>
+                    <th>Osobní číslo</th>
+                    <th>Jméno</th>
+                    <th>Pracovní pozice</th>
                     <th>Telefon</th>
-                    <th>Smena</th>
+                    <th>Směna</th>
                 </tr>
                 </thead>
 
