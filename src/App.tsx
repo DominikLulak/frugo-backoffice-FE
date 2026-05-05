@@ -5,6 +5,7 @@ import DashboardHome from "./pages/dashboard/DashboardHome.tsx";
 import DashboardLayout from "./components/layout/DashboardLayout.tsx";
 import StockItemsPage from "./pages/dashboard/stock/StockItemsPage.tsx";
 import OrdersPage from "./pages/dashboard/orders/OrdersPage.tsx";
+import ShipmentsPage from "./pages/dashboard/shipments/ShipmentsPage.tsx";
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
                 <Route index element={<DashboardHome/>}/>
                 <Route path="stock/items" element={<StockItemsPage/>}/>
                 <Route path="orders" element={<OrdersPage/>}/>
+                <Route path="shipments" element={<ShipmentsPage/>}/>
             </Route>
         </Routes>
     </BrowserRouter>

@@ -36,21 +36,21 @@ export default function Sidebar(){
                         <SidebarLink to="/dashboard/stock/items" label="Položky na skladě"/>
                         {role === "ADMIN" && (
                             <>
-                                <SidebarLink to="/dashboard" label="Vytvoření příjemky na položku"/>
-                                <SidebarLink to="/dashboard" label="Vymazání položky ze skladu" />
-                                <SidebarLink to="/dashboard" label="Založení nové položky" />
+                                <SidebarLink to="/dashboard" label="Vytvoření příjemky na položku" disabled/>
+                                <SidebarLink to="/dashboard" label="Vymazání položky ze skladu" disabled/>
+                                <SidebarLink to="/dashboard" label="Založení nové položky" disabled/>
                             </>
                         )}
                         <SidebarLink to="/dashboard/orders" label="Objednávky" />
                         {role === "ADMIN" && (
                             <>
-                                <SidebarLink to="/dashboard" label="Objednávky - Editace" />
+                                <SidebarLink to="/dashboard" label="Objednávky - Editace" disabled/>
                             </>
                         )}
-                        <SidebarLink to="/dashboard" label="Zásilky" />
+                        <SidebarLink to="/dashboard/shipments" label="Zásilky" />
                         {role === "ADMIN" && (
                             <>
-                                <SidebarLink to="/dashboard" label="Zásilky - Editace" />
+                                <SidebarLink to="/dashboard" label="Zásilky - Editace" disabled/>
                             </>
                         )}
                     </div>
@@ -63,9 +63,9 @@ export default function Sidebar(){
 
                 {transOpen && (
                     <div className="ms-3 mb-2">
-                        <SidebarLink to="/dashboard" label="Příjem položky" />
-                        <SidebarLink to="/dashboard" label="Výdej položky do objednávky" />
-                        <SidebarLink to="/dashboard" label="Výdej položky do zásilky" />
+                        <SidebarLink to="/dashboard" label="Příjem položky" disabled/>
+                        <SidebarLink to="/dashboard" label="Výdej položky do objednávky" disabled/>
+                        <SidebarLink to="/dashboard" label="Výdej položky do zásilky" disabled/>
                     </div>
                 )}
 
@@ -78,8 +78,8 @@ export default function Sidebar(){
 
                         {adminOpen && (
                             <div className="ms-3 mb-2">
-                                <SidebarLink to="/dashboard" label="Zaměstnanci" />
-                                <SidebarLink to="/dashboard" label="Zákazníci" />
+                                <SidebarLink to="/dashboard" label="Zaměstnanci" disabled/>
+                                <SidebarLink to="/dashboard" label="Zákazníci" disabled/>
                             </div>
                         )}
                     </>
