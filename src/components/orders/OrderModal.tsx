@@ -1,4 +1,4 @@
-import "./orders.css"
+import "../modal.css"
 
 type Props = {
     items: any[];

@@ -78,7 +78,7 @@ export default function Sidebar(){
 
                         {adminOpen && (
                             <div className="ms-3 mb-2">
-                                <SidebarLink to="/dashboard" label="Zaměstnanci" disabled/>
+                                <SidebarLink to="/dashboard/employees" label="Zaměstnanci"/>
                                 <SidebarLink to="/dashboard" label="Zákazníci" disabled/>
                             </div>
                         )}

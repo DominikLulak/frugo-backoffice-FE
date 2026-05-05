@@ -6,6 +6,7 @@ import DashboardLayout from "./components/layout/DashboardLayout.tsx";
 import StockItemsPage from "./pages/dashboard/stock/StockItemsPage.tsx";
 import OrdersPage from "./pages/dashboard/orders/OrdersPage.tsx";
 import ShipmentsPage from "./pages/dashboard/shipments/ShipmentsPage.tsx";
+import EmployeePage from "./pages/dashboard/employees/EmployeePage.tsx";
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path="stock/items" element={<StockItemsPage/>}/>
                 <Route path="orders" element={<OrdersPage/>}/>
                 <Route path="shipments" element={<ShipmentsPage/>}/>
+                <Route path="employees" element={<EmployeePage/>}/>
             </Route>
         </Routes>
     </BrowserRouter>
