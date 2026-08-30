@@ -1,14 +1,19 @@
 import {useEffect, useState} from "react";
 import {getStockItems} from "../../../api/StockApi.ts";
 import type {StockItem} from "../../../types/stock.ts";
+import WarehouseItemModal from "../../../components/stock/WarehouseItemModal.tsx";
 
 export default function StockItemsPage(){
 
     const [items, setItems] = useState<StockItem[]>([])
+    const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
-    const [category, setCategory] = useState("")
-    const [name, setName] = useState("")
-    const [variant, setVariant] = useState("")
+    const [productCode, setProductCode] = useState("");
+    const [name, setName] = useState("");
+    const [category, setCategory] = useState("");
+    const [productType, setProductType] = useState("");
+    const [etiNumber, setEtiNumber] = useState("");
+    const [warehouseCode, setWarehouseCode] = useState("");
 
     useEffect(() => {
         const fetchData = async () =>{
@@ -20,21 +25,14 @@ export default function StockItemsPage(){
 
     const handleFilter = async () => {
         const data = await getStockItems(
-            category,
+            productCode,
             name,
-            variant
+            category,
+            productType,
+            etiNumber,
+            warehouseCode
         );
         setItems(data)
-    }
-
-    const translateName = (key:string)=>{
-        const map: Record<string, string>= {
-            "offering-products.apples": "Jablka",
-            "offering-products.bananas": "Banány",
-            "offering-products.carrots": "Mrkev",
-            "offering-products.parsley": "Petržel"
-        }
-        return map[key] || key
     }
 
     return(
@@ -42,7 +40,15 @@ export default function StockItemsPage(){
             <h1>Položky na skladě</h1>
 
             <div className="row g-2 mb-4">
-                <div className="col-md-3">
+                <div className="col-md-2">
+                    <input
+                        className="form-control"
+                        placeholder="Kod produktu"
+                        value={productCode}
+                        onChange={(e) => setProductCode(e.target.value)}
+                    />
+                </div>
+                <div className="col-md-2">
                     <input
                         className="form-control"
                         placeholder="Kategorie"
@@ -50,25 +56,40 @@ export default function StockItemsPage(){
                         onChange={(e) => setCategory(e.target.value)}
                     />
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Název"
+                        placeholder="Nazev"
                         value={name}
-                        disabled
                         onChange={(e) => setName(e.target.value)}
                     />
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Varianta"
-                        value={variant}
-                        onChange={(e) => setVariant(e.target.value)}
+                        placeholder="Typ produktu"
+                        value={productType}
+                        onChange={(e) => setProductType(e.target.value)}
+                    />
+                </div>
+                <div className="col-md-2">
+                    <input
+                        className="form-control"
+                        placeholder="ETI cislo"
+                        value={etiNumber}
+                        onChange={(e) => setEtiNumber(e.target.value)}
+                    />
+                </div>
+                <div className="col-md-2">
+                    <input
+                        className="form-control"
+                        placeholder="Kod skladu"
+                        value={warehouseCode}
+                        onChange={(e) => setWarehouseCode(e.target.value)}
                     />
                 </div>
 
-                <div className="col-md-1 d-grid">
+                <div className="col-md-2 d-grid">
                     <button
                         className="btn btn-primary"
                         onClick={handleFilter}
@@ -82,21 +103,51 @@ export default function StockItemsPage(){
                 <thead>
                     <tr>
                         <th>Kategorie</th>
-                        <th>Název</th>
-                        <th>Varianta</th>
+                        <th>Typ</th>
+                        <th>Nazev</th>
+                        <th>Kod produktu</th>
+                        <th>ETI cislo</th>
+                        <th>Mnozstvi</th>
+                        <th>Rezervovano</th>
+                        <th>Volne</th>
+                        <th>Expirace</th>
+                        <th>Sklad</th>
+                        <th>Lokace</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                {items.map((item, i) => (
-                    <tr key={i}>
-                        <td>{item.category}</td>
-                        <td>{translateName(item.name)}</td>
-                        <td>{item.variant}</td>
+                {items.map((item) => (
+                    <tr key={item.id}>
+                        <td>{item.categoryCode}</td>
+                        <td>{item.productType}</td>
+                        <td>{item.productName}</td>
+                        <td>{item.productCode}</td>
+                        <td>
+                            <button
+                                className="btn btn-link p-0"
+                                onClick={() => setSelectedItemId(item.id)}
+                            >
+                                {item.etiNumber}
+                            </button>
+                        </td>
+                        <td>{item.quantity + " kg"}</td>
+                        <td>{item.allocatedQuantity + " kg"}</td>
+                        <td>{item.availableQuantity + " kg"}</td>
+                        <td>{item.expirationDate}</td>
+                        <td>{item.warehouseCode}</td>
+                        <td>{item.locationCode}</td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+
+            {selectedItemId !== null && (
+                <WarehouseItemModal
+                    id={selectedItemId}
+                    onClose={() => setSelectedItemId(null)}
+                />
+            )}
         </div>
     )
 }
