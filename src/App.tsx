@@ -8,6 +8,8 @@ import OrdersPage from "./pages/dashboard/orders/OrdersPage.tsx";
 import ShipmentsPage from "./pages/dashboard/shipments/ShipmentsPage.tsx";
 import EmployeePage from "./pages/dashboard/employees/EmployeePage.tsx";
 import CustomerPage from "./pages/dashboard/customers/CustomerPage.tsx";
+import ProductsPage from "./pages/dashboard/products/ProductsPage.tsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 
 function App() {
 
@@ -27,12 +29,63 @@ function App() {
                 }
             >
                 <Route index element={<DashboardHome/>}/>
-                <Route path="stock/items" element={<StockItemsPage/>}/>
-                <Route path="orders" element={<OrdersPage/>}/>
-                <Route path="shipments" element={<ShipmentsPage/>}/>
-                <Route path="employees" element={<EmployeePage/>}/>
-                <Route path="customers" element={<CustomerPage/>}/>
+
+                <Route
+                    path="stock/items"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <StockItemsPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="products"
+                    element={
+                        <ProtectedRoute permission="PRODUCT_READ">
+                            <ProductsPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="orders"
+                    element={
+                        <ProtectedRoute permission="ORDER_READ">
+                            <OrdersPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="shipments"
+                    element={
+                        <ProtectedRoute permission="SHIPMENT_READ">
+                            <ShipmentsPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="employees"
+                    element={
+                        <ProtectedRoute permission="EMPLOYEE_READ">
+                            <EmployeePage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="customers"
+                    element={
+                        <ProtectedRoute permission="CUSTOMER_READ">
+                            <CustomerPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
             </Route>
+
         </Routes>
     </BrowserRouter>
   )

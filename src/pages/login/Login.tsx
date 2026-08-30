@@ -21,10 +21,16 @@ function Login(){
 
         const data = await response.json()
 
+        console.log(data)
+
         if(data.success){
             localStorage.setItem("token", data.token)
             localStorage.setItem("role", data.role)
             localStorage.setItem("username", data.username)
+            localStorage.setItem(
+                "permissions",
+                JSON.stringify(data.permissions)
+            )
             window.location.href = "/dashboard"
         }else{
             alert(data.message)
