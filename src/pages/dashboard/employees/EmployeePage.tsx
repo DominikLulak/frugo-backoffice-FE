@@ -1,17 +1,18 @@
 import {useEffect, useState} from "react";
-import {getEmployees, getEmployeeDetail} from "../../../api/EmployeeApi.ts";
-import EmployeeModal from "../../../components/employees/EmployeeModal.tsx";
+import {getEmployeeDetail, getEmployees} from "../../../api/EmployeeApi.ts";
 import type {Employee, EmployeeDetail} from "../../../types/employee.ts";
+import EmployeeModal from "../../../components/employees/EmployeeModal.tsx";
 
 export default function EmployeePage(){
     const [employees, setEmployees] = useState<Employee[]>([])
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetail | null>(null)
 
-    const [personalNumber, setPersonalNumber] = useState("")
-    const [fullName, setFullName] = useState("")
-    const [position, setPosition] = useState("")
-    const [phoneNumber, setPhoneNumber] = useState("")
-    const [shift, setShift] = useState("")
+    const [employeeNumber, setEmployeeNumber] = useState("")
+    const [name, setName] = useState("")
+    const [shiftCode, setShiftCode] = useState("")
+    const [departmentName, setDepartmentName] = useState("")
+    const [jobPositionCode, setJobPositionCode] = useState("")
+    const [active, setActive] = useState<boolean | null>(null)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,17 +24,18 @@ export default function EmployeePage(){
 
     const handleFilter = async () =>{
         const data = await getEmployees(
-            personalNumber,
-            fullName,
-            position,
-            phoneNumber,
-            shift
+            employeeNumber,
+            name,
+            shiftCode,
+            departmentName,
+            jobPositionCode,
+            active
         )
         setEmployees(data)
     }
 
-    const openEmployee = async (employee: Employee)=> {
-        const data = await getEmployeeDetail(employee.personalNumber)
+    const openEmployee = async (employee: Employee) => {
+        const data = await getEmployeeDetail(employee.id)
         setSelectedEmployee(data)
     }
 
@@ -46,41 +48,58 @@ export default function EmployeePage(){
                     <input
                         className="form-control"
                         placeholder="Osobní číslo"
-                        value={personalNumber}
-                        onChange={(e)=> setPersonalNumber(e.target.value)}
+                        value={employeeNumber}
+                        onChange={(e)=> setEmployeeNumber(e.target.value)}
                     />
                 </div>
                 <div className="col-md-3">
                     <input
                         className="form-control"
                         placeholder="Jméno"
-                        value={fullName}
-                        onChange={(e)=> setFullName(e.target.value)}
+                        value={name}
+                        onChange={(e)=> setName(e.target.value)}
                     />
                 </div>
                 <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Pracovní pozice"
-                        value={position}
-                        onChange={(e)=> setPosition(e.target.value)}
+                        placeholder="Smena"
+                        value={shiftCode}
+                        onChange={(e)=> setShiftCode(e.target.value)}
                     />
                 </div>
                 <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Telefon"
-                        value={phoneNumber}
-                        onChange={(e)=> setPhoneNumber(e.target.value)}
+                        placeholder="Oddeleni"
+                        value={departmentName}
+                        onChange={(e)=> setDepartmentName(e.target.value)}
                     />
                 </div>
                 <div className="col-md-2">
                     <input
                         className="form-control"
-                        placeholder="Směna"
-                        value={shift}
-                        onChange={(e)=> setShift(e.target.value)}
+                        placeholder="Pracovni pozice"
+                        value={jobPositionCode}
+                        onChange={(e)=> setJobPositionCode(e.target.value)}
                     />
+                </div>
+                <div className="col-md-3">
+                    <select
+                        className="form-control"
+                        value={active === null ?"" : String(active)}
+                        onChange={(e) => {
+                            if(e.target.value === ""){
+                                setActive(null)
+                            }else{
+                                setActive(e.target.value === "true")
+                            }
+                        }}
+                    >
+                        <option value="">Vse</option>
+                        <option value="true">Ano</option>
+                        <option value="false">Ne</option>
+                    </select>
                 </div>
 
                 <div className="col-md-1 d-grid">
@@ -98,32 +117,39 @@ export default function EmployeePage(){
                 <tr>
                     <th>Osobní číslo</th>
                     <th>Jméno</th>
-                    <th>Pracovní pozice</th>
-                    <th>Telefon</th>
-                    <th>Směna</th>
+                    <th>Smena</th>
+                    <th>Oddeleni</th>
+                    <th>Praovni pozice</th>
+                    <th>Aktivni</th>
                 </tr>
                 </thead>
 
                 <tbody>
-                {employees.map(e => (
-                    <tr key={e.personalNumber}>
-                        <td
-                            style={{cursor: "pointer", color: "blue"}}
-                            onClick={() => openEmployee(e)}
-                        >
-                            {e.personalNumber}
+                {employees.map(employee => (
+                    <tr key={employee.id}>
+                        <td>
+                            <button
+                                className="btn btn-link p-0"
+                                onClick={() => openEmployee(employee)}
+                            >
+                                {employee.employeeNumber}
+                            </button>
                         </td>
-                        <td>{e.firstName} {e.lastName}</td>
-                        <td>{e.position}</td>
-                        <td>{e.phoneNumber}</td>
-                        <td>{e.shift}</td>
+                        <td>{employee.name}</td>
+                        <td>{employee.shiftCode}</td>
+                        <td>{employee.departmentName}</td>
+                        <td>{employee.jobPositionName}</td>
+                        <td>{employee.active ? "Ano" : "Ne"}</td>
                     </tr>
                 ))}
                 </tbody>
             </table>
 
             {selectedEmployee && (
-                <EmployeeModal employee={selectedEmployee} onClose={() => setSelectedEmployee(null)}/>
+                <EmployeeModal
+                    employee={selectedEmployee}
+                    onClose={() => setSelectedEmployee(null)}
+                />
             )}
         </div>
     )
