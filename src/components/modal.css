@@ -9,6 +9,10 @@
     z-index: 999;
 }
 
+.modal-backdrop-custom-second{
+    z-index: 1100;
+}
+
 /* CENTER MODAL */
 .modal-custom {
     position: fixed;
@@ -16,6 +20,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1000;
+}
+
+.modal-custom-second{
+    z-index: 1101;
 }
 
 /* BOX */
