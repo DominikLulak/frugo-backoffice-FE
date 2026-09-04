@@ -6,6 +6,7 @@ export default function Sidebar(){
 
     const [stockOpen, setStockOpen] = useState(false);
     const [adminOpen, setAdminOpen] = useState(false);
+    const [puruchaseOrderOpen, setPurchaseOrderOpen] = useState(false);
 
     const menuButton = (active: boolean) =>
         `btn w-100 text-start d-flex justify-content-between align-items-center mb-2 ${
@@ -108,6 +109,33 @@ export default function Sidebar(){
                         to="/dashboard/shipments"
                         label="Zásilky"
                     />
+                )}
+
+                {/* Nakupni objednavky */}
+
+                {hasPermission("PRODUCT_READ") && (
+                    <>
+                        <button
+                            className={menuButton(puruchaseOrderOpen)}
+                            onClick={() => setPurchaseOrderOpen(!puruchaseOrderOpen)}
+                        >
+                            <span>Nakupni objednavky</span>
+                            <span>{puruchaseOrderOpen ? "▲" : "▼"}</span>
+                        </button>
+
+                        {puruchaseOrderOpen && (
+                            <div className="ms-3 mb-2">
+                                <SidebarLink
+                                    to="/dashboard/suppliers"
+                                    label="Dodavatele"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/purchaseOrders"
+                                    label="Nakupni objednavky"
+                                />
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {/* Administrace */}

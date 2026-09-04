@@ -11,6 +11,8 @@ import CustomerPage from "./pages/dashboard/customers/CustomerPage.tsx";
 import ProductsPage from "./pages/dashboard/products/ProductsPage.tsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 import PalletPage from "./pages/dashboard/pallets/PalletPage.tsx";
+import SupplierPage from "./pages/dashboard/suppliers/SupplierPage.tsx";
+import PurchaseOrderPage from "./pages/dashboard/purchaseOrders/PurchaseOrderPage.tsx";
 
 function App() {
 
@@ -90,6 +92,23 @@ function App() {
                     element={
                         <ProtectedRoute permission="CUSTOMER_READ">
                             <CustomerPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="suppliers"
+                    element={
+                        <ProtectedRoute permission="PRODUCT_READ">
+                            <SupplierPage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="purchaseOrders"
+                    element={
+                        <ProtectedRoute permission="PRODUCT_READ">
+                            <PurchaseOrderPage/>
                         </ProtectedRoute>
                     }
                 />
