@@ -1,5 +1,6 @@
 import {API_URL} from "./config.ts";
-import type {PalletWarehouseItem, Shipment, ShipmentDetail} from "../types/shipment.ts";
+import type {Shipment, ShipmentDetail} from "../types/shipment.ts";
+import type {PalletWarehouseItem} from "../types/pallet.ts";
 
 export const getShipments = async (
     shipmentNumber: string = "",

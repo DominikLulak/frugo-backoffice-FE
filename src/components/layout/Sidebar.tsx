@@ -44,6 +44,11 @@ export default function Sidebar(){
                                 />
 
                                 <SidebarLink
+                                    to="/dashboard/pallets"
+                                    label="Pallety na skladě"
+                                />
+
+                                <SidebarLink
                                     to="/dashboard"
                                     label="Příjem položky"
                                     disabled

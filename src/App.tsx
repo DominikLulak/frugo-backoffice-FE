@@ -10,6 +10,7 @@ import EmployeePage from "./pages/dashboard/employees/EmployeePage.tsx";
 import CustomerPage from "./pages/dashboard/customers/CustomerPage.tsx";
 import ProductsPage from "./pages/dashboard/products/ProductsPage.tsx";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
+import PalletPage from "./pages/dashboard/pallets/PalletPage.tsx";
 
 function App() {
 
@@ -35,6 +36,15 @@ function App() {
                     element={
                         <ProtectedRoute permission="WAREHOUSE_READ">
                             <StockItemsPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="pallets"
+                    element={
+                        <ProtectedRoute permission="PRODUCT_READ">
+                            <PalletPage/>
                         </ProtectedRoute>
                     }
                 />

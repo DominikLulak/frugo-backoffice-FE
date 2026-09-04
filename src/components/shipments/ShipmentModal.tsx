@@ -1,8 +1,9 @@
 import "../modal.css"
-import type {PalletWarehouseItem, ShipmentDetail} from "../../types/shipment.ts";
+import type {ShipmentDetail} from "../../types/shipment.ts";
 import {useState} from "react";
 import {getPalletItems} from "../../api/ShipmentsApi.ts";
 import PalletModal from "./PalletModal.tsx";
+import type {PalletWarehouseItem} from "../../types/pallet.ts";
 
 type Props = {
     shipment: ShipmentDetail;

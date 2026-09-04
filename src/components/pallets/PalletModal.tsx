@@ -1,31 +1,29 @@
-import "../modal.css"
-import type {PalletWarehouseItem} from "../../types/pallet.ts";
+import type {Pallet, PalletWarehouseItem} from "../../types/pallet.ts";
 
 type Props = {
-    palletNumber: string;
+    pallet: Pallet;
     items: PalletWarehouseItem[];
     onClose: () => void;
-};
+}
 
 export default function PalletModal({
-    palletNumber,
+    pallet,
     items,
     onClose
 }:Props){
-
     return(
         <div
-            className="modal-backdrop-custom modal-backdrop-custom-second"
+            className="modal-backdrop-custom"
             onClick={onClose}
         >
             <div
-                className="modal-custom modal-custom-second"
+                className="modal-custom"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="modal-content-custom">
 
                     <div className="modal-header">
-                        <h5>Paleta {palletNumber}</h5>
+                        <h5>Paleta {pallet.palletNumber}</h5>
 
                         <button
                             className="btn-close"
@@ -34,24 +32,39 @@ export default function PalletModal({
                     </div>
 
                     <div className="modal-body">
+                        <h6>Udaje palety</h6>
+                        <table className="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>ETI cislo</th>
+                                    <td>{pallet.palletNumber}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lokace</th>
+                                    <td>{pallet.locationCode}</td>
+                                </tr>
+                                <tr>
+                                    <th>Uzavrena</th>
+                                    <td>{pallet.closed ? "Ano" : "Ne"}</td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                        <table className="table">
-
+                        <h6 className="mt-4">Obsah palety</h6>
+                        <table className="table table-sm">
                             <thead>
                                 <tr>
-                                    <th>Kod produktu</th>
+                                    <th>Produkt</th>
                                     <th>Kategorie</th>
-                                    <th>Typ</th>
+                                    <th>Typ produktu</th>
                                     <th>Nazev</th>
-                                    <th>ETI</th>
+                                    <th>ETI Cislo</th>
                                     <th>Mnozstvi</th>
                                 </tr>
                             </thead>
 
-                            <tbody>
-                            {items.map((item) => (
-
-                                <tr key={item.etiNumber}>
+                            {items.map((item, index) => (
+                                <tr key={index}>
                                     <td>{item.productCode}</td>
                                     <td>{item.categoryCode}</td>
                                     <td>{item.productType}</td>
@@ -60,7 +73,6 @@ export default function PalletModal({
                                     <td>{item.quantity}</td>
                                 </tr>
                             ))}
-                            </tbody>
                         </table>
                     </div>
                 </div>

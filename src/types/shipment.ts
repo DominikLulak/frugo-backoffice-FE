@@ -18,12 +18,3 @@ export type ShipmentDetail = {
     statusCode: string;
     pallets: ShipmentPallet[];
 }
-
-export type PalletWarehouseItem = {
-    productCode: string;
-    categoryCode: string;
-    productType: string;
-    productName: string;
-    etiNumber: string;
-    quantity: number;
-}
