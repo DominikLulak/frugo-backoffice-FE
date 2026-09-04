@@ -1,16 +1,30 @@
 export type Customer = {
-    customerNumber: string;
+    id: number;
     name: string;
-    email: string;
+    companyId: string | null;
+    countryCode: string;
+    city: string;
+    postalCode: string;
+    registered: boolean;
+}
+
+export type CustomerContact = {
+    id: number;
+    name: string;
     phoneNumber: string;
+    email: string;
+    primary: boolean;
 }
 
 export type CustomerDetail = {
-    customerNumber: string;
+    id: number;
     name: string;
-    country: string;
-    address: string;
-    executive: string;
-    email: string;
-    phoneNumber: string;
+    companyId: string | null;
+    countryCode: string;
+    city: string;
+    postalCode: string;
+    street: string;
+    houseNumber: string;
+    registered: boolean;
+    contacts: CustomerContact[];
 }
