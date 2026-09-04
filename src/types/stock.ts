@@ -4,6 +4,7 @@ export type StockItem = {
     productType: string;
     productName: string;
     productCode: string;
+    palletNumber: string;
     etiNumber: string;
     quantity: number;
     allocatedQuantity: number;
@@ -21,6 +22,7 @@ export type StockItemDetail = {
     productName: string;
     productCode: string;
 
+    palletNumber: string;
     etiNumber: string;
 
     packagingType: string;

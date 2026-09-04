@@ -106,6 +106,7 @@ export default function StockItemsPage(){
                         <th>Typ</th>
                         <th>Nazev</th>
                         <th>Kod produktu</th>
+                        <th>Cislo nadrazene palety</th>
                         <th>ETI cislo</th>
                         <th>Mnozstvi</th>
                         <th>Rezervovano</th>
@@ -123,6 +124,7 @@ export default function StockItemsPage(){
                         <td>{item.productType}</td>
                         <td>{item.productName}</td>
                         <td>{item.productCode}</td>
+                        <td>{item.palletNumber ?? "-"}</td>
                         <td>
                             <button
                                 className="btn btn-link p-0"

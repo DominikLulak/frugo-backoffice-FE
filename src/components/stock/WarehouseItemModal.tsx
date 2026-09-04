@@ -89,6 +89,11 @@ export default function WarehouseItemModal({id, onClose}: Props){
                                         </tr>
 
                                         <tr>
+                                            <th>Cislo nadrazene paletz</th>
+                                            <td>{item.palletNumber ?? "-"}</td>
+                                        </tr>
+
+                                        <tr>
                                             <th>ETI cislo</th>
                                             <td>{item.etiNumber}</td>
                                         </tr>
