@@ -16,6 +16,7 @@ import PurchaseOrderPage from "./pages/dashboard/purchaseOrders/PurchaseOrderPag
 import WarehousePage from "./pages/dashboard/warehouses/WarehousePage.tsx";
 import SectorTypePage from "./pages/dashboard/warehouses/SectorTypePage.tsx";
 import PackagingPage from "./pages/dashboard/warehouses/PackagingPage.tsx";
+import DepartmentPage from "./pages/dashboard/employees/DepartmentPage.tsx";
 
 function App() {
 
@@ -86,6 +87,15 @@ function App() {
                     element={
                         <ProtectedRoute permission="EMPLOYEE_READ">
                             <EmployeePage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="departments"
+                    element={
+                        <ProtectedRoute permission="EMPLOYEE_READ">
+                            <DepartmentPage/>
                         </ProtectedRoute>
                     }
                 />

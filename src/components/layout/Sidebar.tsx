@@ -163,6 +163,13 @@ export default function Sidebar(){
                                     />
                                 )}
 
+                                {hasPermission("EMPLOYEE_READ") && (
+                                    <SidebarLink
+                                        to="/dashboard/departments"
+                                        label="Departments"
+                                    />
+                                )}
+
                                 {hasPermission("CUSTOMER_READ") && (
                                     <SidebarLink
                                         to="/dashboard/customers"
