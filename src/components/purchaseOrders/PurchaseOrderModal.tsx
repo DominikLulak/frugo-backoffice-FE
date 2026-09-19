@@ -1,4 +1,5 @@
 import type {PurchaseOrderDetail} from "../../types/purchaseOrder.ts";
+import "../modal.css"
 
 type Props = {
     purchaseOrder: PurchaseOrderDetail;

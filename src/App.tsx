@@ -13,6 +13,9 @@ import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 import PalletPage from "./pages/dashboard/pallets/PalletPage.tsx";
 import SupplierPage from "./pages/dashboard/suppliers/SupplierPage.tsx";
 import PurchaseOrderPage from "./pages/dashboard/purchaseOrders/PurchaseOrderPage.tsx";
+import WarehousePage from "./pages/dashboard/warehouses/WarehousePage.tsx";
+import SectorTypePage from "./pages/dashboard/warehouses/SectorTypePage.tsx";
+import PackagingPage from "./pages/dashboard/warehouses/PackagingPage.tsx";
 
 function App() {
 
@@ -109,6 +112,31 @@ function App() {
                     element={
                         <ProtectedRoute permission="PRODUCT_READ">
                             <PurchaseOrderPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="warehouses/WarehousePage"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <WarehousePage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="warehouses/SectorTypePage"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <SectorTypePage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="warehouses/Packaging"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <PackagingPage/>
                         </ProtectedRoute>
                     }
                 />

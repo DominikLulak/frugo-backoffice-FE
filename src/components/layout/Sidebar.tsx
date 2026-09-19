@@ -6,7 +6,8 @@ export default function Sidebar(){
 
     const [stockOpen, setStockOpen] = useState(false);
     const [adminOpen, setAdminOpen] = useState(false);
-    const [puruchaseOrderOpen, setPurchaseOrderOpen] = useState(false);
+    const [purchaseOrderOpen, setPurchaseOrderOpen] = useState(false);
+    const [warehouseOpen, setWarehouseOpen] = useState(false);
 
     const menuButton = (active: boolean) =>
         `btn w-100 text-start d-flex justify-content-between align-items-center mb-2 ${
@@ -116,14 +117,14 @@ export default function Sidebar(){
                 {hasPermission("PRODUCT_READ") && (
                     <>
                         <button
-                            className={menuButton(puruchaseOrderOpen)}
-                            onClick={() => setPurchaseOrderOpen(!puruchaseOrderOpen)}
+                            className={menuButton(purchaseOrderOpen)}
+                            onClick={() => setPurchaseOrderOpen(!purchaseOrderOpen)}
                         >
                             <span>Nakupni objednavky</span>
-                            <span>{puruchaseOrderOpen ? "▲" : "▼"}</span>
+                            <span>{purchaseOrderOpen ? "▲" : "▼"}</span>
                         </button>
 
-                        {puruchaseOrderOpen && (
+                        {purchaseOrderOpen && (
                             <div className="ms-3 mb-2">
                                 <SidebarLink
                                     to="/dashboard/suppliers"
@@ -169,6 +170,37 @@ export default function Sidebar(){
                                     />
                                 )}
 
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Warehouse administrace */}
+
+                {hasPermission("WAREHOUSE_READ") && (
+                    <>
+                        <button
+                            className={menuButton(warehouseOpen)}
+                            onClick={() => setWarehouseOpen(!warehouseOpen)}
+                        >
+                            <span>Warehouse administrace</span>
+                            <span>{warehouseOpen ? "▲" : "▼"}</span>
+                        </button>
+
+                        {warehouseOpen && (
+                            <div className="ms-3 mb-2">
+                                <SidebarLink
+                                    to="/dashboard/warehouses/WarehousePage"
+                                    label="Warehouse"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/warehouses/SectorTypePage"
+                                    label="Sector Types"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/warehouses/Packaging"
+                                    label="Packaging"
+                                />
                             </div>
                         )}
                     </>

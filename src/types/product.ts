@@ -11,3 +11,10 @@ export type Product = {
     reorderPoint: number;
     minimumStock: number;
 }
+
+export type Packaging = {
+    id: number;
+    code: string;
+    name: string;
+    description: string;
+}
