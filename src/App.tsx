@@ -17,6 +17,9 @@ import WarehousePage from "./pages/dashboard/warehouses/WarehousePage.tsx";
 import SectorTypePage from "./pages/dashboard/warehouses/SectorTypePage.tsx";
 import PackagingPage from "./pages/dashboard/warehouses/PackagingPage.tsx";
 import DepartmentPage from "./pages/dashboard/employees/DepartmentPage.tsx";
+import ShiftPage from "./pages/dashboard/referenceData/ShiftPage.tsx";
+import StatusPage from "./pages/dashboard/referenceData/StatusPage.tsx";
+import CountryPage from "./pages/dashboard/referenceData/CountryPage.tsx";
 
 function App() {
 
@@ -147,6 +150,31 @@ function App() {
                     element={
                         <ProtectedRoute permission="WAREHOUSE_READ">
                             <PackagingPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="shifts"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <ShiftPage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="statuses"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <StatusPage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="countries"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <CountryPage/>
                         </ProtectedRoute>
                     }
                 />

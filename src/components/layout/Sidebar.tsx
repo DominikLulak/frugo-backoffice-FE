@@ -8,6 +8,7 @@ export default function Sidebar(){
     const [adminOpen, setAdminOpen] = useState(false);
     const [purchaseOrderOpen, setPurchaseOrderOpen] = useState(false);
     const [warehouseOpen, setWarehouseOpen] = useState(false);
+    const [referenceDataOpen, setReferenceDataOpen] = useState(false)
 
     const menuButton = (active: boolean) =>
         `btn w-100 text-start d-flex justify-content-between align-items-center mb-2 ${
@@ -207,6 +208,37 @@ export default function Sidebar(){
                                 <SidebarLink
                                     to="/dashboard/warehouses/Packaging"
                                     label="Packaging"
+                                />
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Reference data */}
+
+                {hasPermission("WAREHOUSE_READ") && (
+                    <>
+                        <button
+                            className={menuButton(referenceDataOpen)}
+                            onClick={() => setReferenceDataOpen(!referenceDataOpen)}
+                        >
+                            <span>Reference data</span>
+                            <span>{referenceDataOpen ? "▲" : "▼"}</span>
+                        </button>
+
+                        {referenceDataOpen && (
+                            <div className="ms-3 mb-2">
+                                <SidebarLink
+                                    to="/dashboard/shifts"
+                                    label="Shifts"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/statuses"
+                                    label="Statuses"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/countries"
+                                    label="Countries"
                                 />
                             </div>
                         )}
