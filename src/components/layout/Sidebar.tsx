@@ -9,6 +9,7 @@ export default function Sidebar(){
     const [purchaseOrderOpen, setPurchaseOrderOpen] = useState(false);
     const [warehouseOpen, setWarehouseOpen] = useState(false);
     const [referenceDataOpen, setReferenceDataOpen] = useState(false)
+    const [rbacOpen, setRbacOpen] = useState(false)
 
     const menuButton = (active: boolean) =>
         `btn w-100 text-start d-flex justify-content-between align-items-center mb-2 ${
@@ -208,6 +209,37 @@ export default function Sidebar(){
                                 <SidebarLink
                                     to="/dashboard/warehouses/Packaging"
                                     label="Packaging"
+                                />
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* RBAC */}
+
+                {hasPermission("WAREHOUSE_READ") && (
+                    <>
+                        <button
+                            className={menuButton(rbacOpen)}
+                            onClick={() => setRbacOpen(!rbacOpen)}
+                        >
+                            <span>RBAC</span>
+                            <span>{rbacOpen ? "▲" : "▼"}</span>
+                        </button>
+
+                        {rbacOpen && (
+                            <div className="ms-3 mb-2">
+                                <SidebarLink
+                                    to="/dashboard/roles"
+                                    label="Roles"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/users"
+                                    label="Users"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/modules"
+                                    label="Modules"
                                 />
                             </div>
                         )}

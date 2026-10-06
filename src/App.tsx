@@ -20,6 +20,9 @@ import DepartmentPage from "./pages/dashboard/employees/DepartmentPage.tsx";
 import ShiftPage from "./pages/dashboard/referenceData/ShiftPage.tsx";
 import StatusPage from "./pages/dashboard/referenceData/StatusPage.tsx";
 import CountryPage from "./pages/dashboard/referenceData/CountryPage.tsx";
+import RolePage from "./pages/dashboard/rbac/RolePage.tsx";
+import UserPage from "./pages/dashboard/rbac/UserPage.tsx";
+import ModulePage from "./pages/dashboard/rbac/ModulePage.tsx";
 
 function App() {
 
@@ -175,6 +178,31 @@ function App() {
                     element={
                         <ProtectedRoute permission="WAREHOUSE_READ">
                             <CountryPage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="roles"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <RolePage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="users"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <UserPage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="modules"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <ModulePage/>
                         </ProtectedRoute>
                     }
                 />
