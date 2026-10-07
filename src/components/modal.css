@@ -20,6 +20,9 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1000;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-custom-second{
@@ -33,4 +36,9 @@
     border-radius: 10px;
     min-width: 500px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    overflow-y: auto;
+}
+
+.modal-header{
+    flex-shrink: 0;
 }
