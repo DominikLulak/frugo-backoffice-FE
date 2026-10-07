@@ -10,6 +10,7 @@ export default function Sidebar(){
     const [warehouseOpen, setWarehouseOpen] = useState(false);
     const [referenceDataOpen, setReferenceDataOpen] = useState(false)
     const [rbacOpen, setRbacOpen] = useState(false)
+    const [eventsOpen, setEventsOpen] = useState(false)
 
     const menuButton = (active: boolean) =>
         `btn w-100 text-start d-flex justify-content-between align-items-center mb-2 ${
@@ -209,6 +210,33 @@ export default function Sidebar(){
                                 <SidebarLink
                                     to="/dashboard/warehouses/Packaging"
                                     label="Packaging"
+                                />
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Movements and events */}
+
+                {hasPermission("WAREHOUSE_READ") && (
+                    <>
+                        <button
+                            className={menuButton(eventsOpen)}
+                            onClick={() => setEventsOpen(!eventsOpen)}
+                        >
+                            <span>Events</span>
+                            <span>{eventsOpen ? "▲" : "▼"}</span>
+                        </button>
+
+                        {eventsOpen && (
+                            <div className="ms-3 mb-2">
+                                <SidebarLink
+                                    to="/dashboard/stockMovements"
+                                    label="Skladove pohyby"
+                                />
+                                <SidebarLink
+                                    to="/dashboard/eventLogs"
+                                    label="Event Log"
                                 />
                             </div>
                         )}

@@ -23,6 +23,8 @@ import CountryPage from "./pages/dashboard/referenceData/CountryPage.tsx";
 import RolePage from "./pages/dashboard/rbac/RolePage.tsx";
 import UserPage from "./pages/dashboard/rbac/UserPage.tsx";
 import ModulePage from "./pages/dashboard/rbac/ModulePage.tsx";
+import StockMovementPage from "./pages/dashboard/event/StockMovementPage.tsx";
+import EventLogPage from "./pages/dashboard/event/EventLogPage.tsx";
 
 function App() {
 
@@ -203,6 +205,23 @@ function App() {
                     element={
                         <ProtectedRoute permission="WAREHOUSE_READ">
                             <ModulePage/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="stockMovements"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <StockMovementPage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="eventLogs"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <EventLogPage/>
                         </ProtectedRoute>
                     }
                 />
