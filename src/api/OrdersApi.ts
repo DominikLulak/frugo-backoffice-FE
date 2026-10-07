@@ -3,16 +3,16 @@ import type {Order, OrderItem} from "../types/order.ts";
 
 export const getOrders = async (
     orderNumber: string = "",
-    status: string = "",
-    customerName: string = ""
+    customerName: string = "",
+    statusCode: string = ""
 ):Promise<Order[]> => {
     const token = localStorage.getItem("token")
 
     const params = new URLSearchParams();
 
     if(orderNumber) params.append("orderNumber", orderNumber)
-    if(status) params.append("status", status)
     if(customerName) params.append("customerName", customerName)
+    if(statusCode) params.append("statusCode", statusCode)
 
     const res = await fetch(`${API_URL}/api/admin/orders?${params.toString()}`, {
         headers:{
@@ -25,10 +25,10 @@ export const getOrders = async (
     return await res.json() as Promise<Order[]>
 }
 
-export const getOrderDetail = async (orderNumber: string):Promise<OrderItem[]> => {
+export const getOrderDetail = async (orderId: number):Promise<OrderItem[]> => {
     const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/orders/${orderNumber}`, {
+    const res = await fetch(`${API_URL}/api/admin/orders/${orderId}/items`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -36,5 +36,5 @@ export const getOrderDetail = async (orderNumber: string):Promise<OrderItem[]> =
     if(!res.ok){
         throw new Error("Failed to fetch detail")
     }
-    return await res.json() as Promise<OrderItem[]>
+    return await res.json();
 }

@@ -1,20 +1,24 @@
-import {API_URL} from "./config.ts";
 import type {Customer, CustomerDetail} from "../types/customer.ts";
+import {API_URL} from "./config.ts";
 
 export const getCustomers = async (
-    customerNumber: string = "",
     name: string = "",
-    email: string = "",
-    phoneNumber: string = ""
-):Promise<Customer[]> => {
+    companyId: string = "",
+    countryCode: string = "",
+    city: string = "",
+    postalCode: string = "",
+    registered: boolean | null = null
+): Promise <Customer[]> => {
+
     const token = localStorage.getItem("token")
+    const params = new URLSearchParams()
 
-    const params = new URLSearchParams();
-
-    if(customerNumber) params.append("customerNumber", customerNumber)
     if(name) params.append("name", name)
-    if(email) params.append("email", email)
-    if(phoneNumber) params.append("phoneNumber", phoneNumber)
+    if(companyId) params.append("companyId", companyId)
+    if(countryCode) params.append("countryCode", countryCode)
+    if(city) params.append("city", city)
+    if(postalCode) params.append("postalCode", postalCode)
+    if(registered !== null) params.append("registered", String(registered))
 
     const res = await fetch(`${API_URL}/api/admin/customers?${params.toString()}`, {
         headers:{
@@ -22,21 +26,25 @@ export const getCustomers = async (
         }
     })
     if(!res.ok){
-        throw new Error("Failed to fetch customers")
+        throw new Error("Failed to fetch customers!")
     }
     return await res.json() as Promise<Customer[]>
 }
 
-export const getCustomerDetail = async (customerNumber: string) => {
-    const token = localStorage.getItem("token")
+export const getCustomerDetail = async (
+    customerId: number
+):Promise<CustomerDetail> => {
 
-    const res = await fetch(`${API_URL}/api/admin/customers/${customerNumber}`, {
+    const token = localStorage.getItem("token")
+    const res = await fetch(`${API_URL}/api/admin/customers/${customerId}`, {
         headers:{
             Authorization: `Bearer ${token}`
         }
     })
+
     if(!res.ok){
-        throw new Error("Failed to fetch detail")
+        throw new Error("Failed to fetch customer detail!")
     }
-    return await res.json() as Promise<CustomerDetail>
+
+    return await res.json()
 }

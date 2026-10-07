@@ -1,21 +1,28 @@
 export type Employee = {
-    personalNumber: string;
-    firstName: string;
-    lastName: string;
-    position: string;
-    phoneNumber: string;
-    shift: string;
+    id: number;
+    employeeNumber: string;
+    name: string;
+    shiftCode: string;
+    departmentName: string;
+    jobPositionName: string;
+    active: boolean;
 }
 
 export type EmployeeDetail = {
-    personalNumber: string;
-    firstName: string;
-    lastName: string;
-    position: string;
-    phoneNumber: string;
-    email: string;
+    employeeNumber: string;
+    name: string;
     address: string;
-    shift: string;
-    hireDate: string;
+    city: string;
+    postalCode: string;
     birthDate: string;
+    hireDate: string;
+    phone: string;
+    email: string;
+    systemUsername: string;
+    shiftCode: string;
+    departmentName: string;
+    jobPositionName: string;
+    active: boolean;
+    terminationDate: string | null;
+    loginUsername: string | null;
 }

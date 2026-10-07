@@ -1,12 +1,18 @@
 export type Order = {
+    id: number;
     orderNumber: string;
-    status: string;
     customerName: string;
+    createdAt: string;
+    statusCode: string;
 }
 
 export type OrderItem = {
-    category: string;
-    name: string;
-    variant: string;
+    orderNumber: string;
+    warehouseItemCategoryCode: string;
+    warehouseItemType: string;
+    warehouseItemName: string;
+    etiNumber: string;
     quantity: number;
+    pickedQuantity: number;
+    statusCode: string;
 }

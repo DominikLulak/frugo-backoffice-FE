@@ -1,6 +1,10 @@
 .sidebar{
     width: 280px;
     min-height: 100vh;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-shrink: 0;
 }
 
 .topbar{

@@ -6,12 +6,13 @@ import OrderModal from "../../../components/orders/OrderModal.tsx";
 export default function OrdersPage(){
 
     const [orders, setOrders] = useState<Order[]>([])
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+    const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null)
+    const [selectedOrderNumber, setSelectedOrderNumber] = useState<string | null>(null)
     const [items, setItems] = useState<OrderItem[]>([])
 
     const [orderNumber, setOrderNumber] = useState("")
-    const [status, setStatus] = useState("")
     const [customerName, setCustomerName] = useState("")
+    const [statusCode, setStatusCode] = useState("")
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,16 +25,17 @@ export default function OrdersPage(){
     const handleFilter = async () => {
         const data = await getOrders(
             orderNumber,
-            status,
-            customerName
+            customerName,
+            statusCode
         );
         setOrders(data);
     }
 
     const openOrder = async (order: Order) => {
-        const data = await getOrderDetail(order.orderNumber)
+        const data = await getOrderDetail(order.id)
         setItems(data)
-        setSelectedOrder(order)
+        setSelectedOrderId(order.id)
+        setSelectedOrderNumber(order.orderNumber)
     }
 
     return(
@@ -49,28 +51,31 @@ export default function OrdersPage(){
                         onChange={(e) => setOrderNumber(e.target.value)}
                     />
                 </div>
-                <div className="col-md-4">
-                    <select
-                        className="form-control"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                    >
-                        <option value="">Vše</option>
-                        <option value="ZADÁNO">ZADÁNO</option>
-                        <option value="UVOLNĚNO">UVOLNĚNO</option>
-                        <option value="DOKONČENO">DOKONČENO</option>
-                    </select>
-                </div>
-                <div className="col-md-4">
+                <div className="col-md-3">
                     <input
                         className="form-control"
-                        placeholder="Název zákazníka"
+                        placeholder="Nazev zakaznika"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                     />
                 </div>
+                <div className="col-md-3">
+                    <select
+                        className="form-control"
+                        value={statusCode}
+                        onChange={(e) => setStatusCode(e.target.value)}
+                    >
+                        <option value="">Vse</option>
+                        <option value="ENTERED">ENTERED</option>
+                        <option value="RELEASED">RELEASED</option>
+                        <option value="BLOCKED">BLOCKED</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                        <option value="FINISHED">FINISHED</option>
+                    </select>
+                </div>
 
-                <div className="col-md-1 d-grid">
+                <div className="col-md-3 d-grid">
                     <button
                         className="btn btn-primary"
                         onClick={handleFilter}
@@ -80,34 +85,43 @@ export default function OrdersPage(){
                 </div>
             </div>
 
-            <table className="table">
+            <table className="table table-striped table-hover">
                 <thead>
                 <tr>
                     <th>Číslo objednávky</th>
+                    <th>Zakaznik</th>
+                    <th>Vytvoreno</th>
                     <th>Stav</th>
-                    <th>Zákazník</th>
                 </tr>
                 </thead>
 
                 <tbody>
-                {orders.map(o => (
-                    <tr key={o.orderNumber}>
-                        <td
-                            style={{cursor: "pointer", color: "blue"}}
-                            onClick={() => openOrder(o)}
-                        >
-                            {o.orderNumber}
+                {orders.map(order => (
+                    <tr key={order.id}>
+                        <td>
+                            <button
+                                className="btn btn-link p-0"
+                                onClick={() => openOrder(order)}
+                            >
+                                {order.orderNumber}
+                            </button>
                         </td>
-                        <td>{o.status}</td>
-                        <td>{o.customerName}</td>
+                        <td>{order.customerName}</td>
+                        <td>{order.createdAt}</td>
+                        <td>{order.statusCode}</td>
                     </tr>
                 ))}
                 </tbody>
             </table>
 
-            {selectedOrder && (
+            {selectedOrderId !== null && selectedOrderNumber && (
                 <OrderModal
-                    items={items} onClose={() => setSelectedOrder(null)}
+                    orderNumber={selectedOrderNumber}
+                    items={items}
+                    onClose={() => {
+                        setSelectedOrderId(null);
+                        setSelectedOrderNumber(null);
+                    }}
                 />
             )}
         </div>

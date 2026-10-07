@@ -9,6 +9,10 @@
     z-index: 999;
 }
 
+.modal-backdrop-custom-second{
+    z-index: 1100;
+}
+
 /* CENTER MODAL */
 .modal-custom {
     position: fixed;
@@ -16,6 +20,13 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1000;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-custom-second{
+    z-index: 1101;
 }
 
 /* BOX */
@@ -25,4 +36,9 @@
     border-radius: 10px;
     min-width: 500px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    overflow-y: auto;
+}
+
+.modal-header{
+    flex-shrink: 0;
 }

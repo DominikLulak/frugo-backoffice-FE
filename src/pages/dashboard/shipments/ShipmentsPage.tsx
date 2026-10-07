@@ -1,15 +1,16 @@
 import {useEffect, useState} from "react";
-import {getShipments} from "../../../api/ShipmentsApi.ts";
-import type {Shipment} from "../../../types/shipment.ts";
+import {getShipmentDetail, getShipments} from "../../../api/ShipmentsApi.ts";
+import type {Shipment, ShipmentDetail} from "../../../types/shipment.ts";
+import ShipmentModal from "../../../components/shipments/ShipmentModal.tsx";
 
 export default function ShipmentsPage(){
 
     const [shipments, setShipments] = useState<Shipment[]>([])
+    const [selectedShipment, setSelectedShipment] = useState<ShipmentDetail | null>(null)
 
     const [shipmentNumber, setShipmentNumber] = useState("")
     const [orderNumber, setOrderNumber] = useState("")
-    const [status, setStatus] = useState("")
-    const [customerName, setCustomerName] = useState("")
+    const [statusCode, setStatusCode] = useState("")
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,10 +24,15 @@ export default function ShipmentsPage(){
         const data = await getShipments(
             shipmentNumber,
             orderNumber,
-            status,
-            customerName
+            statusCode
         );
         setShipments(data);
+    }
+
+    const openShipment = async (shipment: Shipment) => {
+        const data = await getShipmentDetail(shipment.id)
+
+        setSelectedShipment(data)
     }
 
     return(
@@ -50,28 +56,23 @@ export default function ShipmentsPage(){
                         onChange={(e) => setOrderNumber(e.target.value)}
                     />
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-3">
                     <select
                         className="form-control"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        value={statusCode}
+                        onChange={(e) => setStatusCode(e.target.value)}
                     >
-                        <option value="">Vše</option>
-                        <option value="ZADÁNO">ZADÁNO</option>
-                        <option value="UVOLNĚNO">UVOLNĚNO</option>
-                        <option value="DOKONČENO">DOKONČENO</option>
+                        <option value="">Vse</option>
+                        <option value="ENTERED">ENTERED</option>
+                        <option value="RELEASED">RELEASED</option>
+                        <option value="BLOCKED">BLOCKED</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                        <option value="FINISHED">FINISHED</option>
                     </select>
                 </div>
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Název zákazníka"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                    />
-                </div>
 
-                <div className="col-md-1 d-grid">
+                <div className="col-md-3 d-grid">
                     <button
                         className="btn btn-primary"
                         onClick={handleFilter}
@@ -87,21 +88,33 @@ export default function ShipmentsPage(){
                     <th>Číslo zásilky</th>
                     <th>Číslo objednávky</th>
                     <th>Stav</th>
-                    <th>Zákazník</th>
                 </tr>
                 </thead>
 
                 <tbody>
-                {shipments.map((shipment, i) => (
-                    <tr key={i}>
-                        <td>{shipment.shipmentNumber}</td>
+                {shipments.map(shipment => (
+                    <tr key={shipment.id}>
+                        <td>
+                            <button
+                                className="btn btn-link p-0"
+                                onClick={() => openShipment(shipment)}
+                            >
+                                {shipment.shipmentNumber}
+                            </button>
+                        </td>
                         <td>{shipment.orderNumber}</td>
-                        <td>{shipment.status}</td>
-                        <td>{shipment.customerName}</td>
+                        <td>{shipment.statusCode}</td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+
+            {selectedShipment && (
+                <ShipmentModal
+                    shipment={selectedShipment}
+                    onClose={() => setSelectedShipment(null)}
+                />
+            )}
         </div>
     )
 }
