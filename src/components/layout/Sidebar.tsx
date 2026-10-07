@@ -300,6 +300,10 @@ export default function Sidebar(){
                                     to="/dashboard/countries"
                                     label="Countries"
                                 />
+                                <SidebarLink
+                                    to="/dashboard/etiSeq"
+                                    label="Eti Sequence"
+                                />
                             </div>
                         )}
                     </>

@@ -25,6 +25,7 @@ import UserPage from "./pages/dashboard/rbac/UserPage.tsx";
 import ModulePage from "./pages/dashboard/rbac/ModulePage.tsx";
 import StockMovementPage from "./pages/dashboard/event/StockMovementPage.tsx";
 import EventLogPage from "./pages/dashboard/event/EventLogPage.tsx";
+import EtiSequencePage from "./pages/dashboard/referenceData/EtiSequencePage.tsx";
 
 function App() {
 
@@ -180,6 +181,14 @@ function App() {
                     element={
                         <ProtectedRoute permission="WAREHOUSE_READ">
                             <CountryPage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="etiSeq"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <EtiSequencePage/>
                         </ProtectedRoute>
                     }
                 />
