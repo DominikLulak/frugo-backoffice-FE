@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import type {PurchaseOrder, PurchaseOrderDetail} from "../../../types/purchaseOrder.ts";
-import {getPurchaseOrderDetail, getPurchaseOrders} from "../../../api/PurchaseOrderApi.ts";
+import {deletePurchaseOrder, getPurchaseOrderDetail, getPurchaseOrders} from "../../../api/PurchaseOrderApi.ts";
 import PurchaseOrderModal from "../../../components/purchaseOrders/PurchaseOrderModal.tsx";
 import PurchaseOrderCreateModal from "../../../components/purchaseOrders/PurchaseOrderCreateModal.tsx";
+import ConfirmDeleteModal from "../../../components/layout/ConfirmDeleteModal.tsx";
 
 export default function PurchaseOrderPage(){
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([])
@@ -14,6 +15,10 @@ export default function PurchaseOrderPage(){
     const [supplierName, setSupplierName] = useState("")
     const [employeeName, setEmployeeName] = useState("")
     const [statusCode, setStatusCode] = useState("")
+
+    const [purchaseOrderToDelete, setPurchaseOrderToDelete] = useState<PurchaseOrder | null>(null)
+    const [deleting, setDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState("")
 
     const fetchPurchaseOrders = async () => {
         const data = await getPurchaseOrders(
@@ -42,6 +47,31 @@ export default function PurchaseOrderPage(){
         const data = await getPurchaseOrderDetail(purchaseOrder.id)
         setSelectedPurchaseOrder(data)
         setSelectedPurchaseOrderId(purchaseOrder.id)
+    }
+
+    const openDeleteModal = (purchaseOrder: PurchaseOrder) => {
+        setDeleteError("")
+        setPurchaseOrderToDelete(purchaseOrder)
+    }
+
+    const handleDelete = async() => {
+        if(!purchaseOrderToDelete){
+            return
+        }
+
+        try {
+            setDeleting(true)
+            setDeleteError("")
+
+            await deletePurchaseOrder(purchaseOrderToDelete.id)
+            setPurchaseOrderToDelete(null)
+
+            await fetchPurchaseOrders()
+        }catch {
+            setDeleteError("Nakupni objednavku se nepodarilo smazat")
+        }finally {
+            setDeleting(false)
+        }
     }
 
     return(
@@ -129,6 +159,16 @@ export default function PurchaseOrderPage(){
                             >
                                 {purchaseOrder.purchaseOrderNumber}
                             </button>
+
+                            {(purchaseOrder.statusCode === "ENTERED" || purchaseOrder.statusCode === "BLOCKED") && (
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => openDeleteModal(purchaseOrder)}
+                                >
+                                    🗑 Smazat
+                                </button>
+                            )}
                         </td>
                         <td>{purchaseOrder.supplierName}</td>
                         <td>{purchaseOrder.createdAt.replace("T", " ").substring(0,19)}</td>
@@ -164,6 +204,19 @@ export default function PurchaseOrderPage(){
                     show={showCreateModal}
                     onClose={() => setShowCreateModal(false)}
                     onSaved={fetchPurchaseOrders}
+                />
+            )}
+
+            {purchaseOrderToDelete && (
+                <ConfirmDeleteModal
+                    show={purchaseOrderToDelete !== null}
+                    title="Odstranit nakupni objednavku"
+                    description="Opravdu chcete odstranit nakupni objednavku vcetne vsech jejich polozek?"
+                    itemName={purchaseOrderToDelete?.purchaseOrderNumber ?? ""}
+                    loading={deleting}
+                    error={deleteError}
+                    onClose={() => setPurchaseOrderToDelete(null)}
+                    onConfirm={handleDelete}
                 />
             )}
         </div>
