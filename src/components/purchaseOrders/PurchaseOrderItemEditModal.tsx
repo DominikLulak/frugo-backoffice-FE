@@ -1,6 +1,8 @@
 import type {PurchaseOrderItem} from "../../types/purchaseOrder.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {updatePurchaseOrderItem} from "../../api/PurchaseOrderApi.ts";
+import type {Country} from "../../types/referenceData.ts";
+import {getCountries} from "../../api/CountryApi.ts";
 
 type Props = {
     show: boolean;
@@ -17,9 +19,28 @@ export default function PurchaseOrderItemEditModal({
     onClose,
     onSaved
 }:Props){
+    const [countries, setCountries] = useState<Country[]>([])
+
     const [quantity, setQuantity] = useState(item.quantity)
+    const [countryId, setCountryId] = useState<number>(item.countryId)
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState("")
+
+    useEffect(() => {
+        if(!show){
+            return
+        }
+
+        const loadCountries = async () => {
+            try {
+                const data = await getCountries()
+                setCountries(data)
+            }catch {
+                setError("Nepodarilo se nacist zeme")
+            }
+        }
+        loadCountries()
+    }, [show]);
 
     if(!show){
         return null
@@ -38,12 +59,18 @@ export default function PurchaseOrderItemEditModal({
             return
         }
 
+        if(!countryId){
+            setError("Vyberte zemi!")
+            return
+        }
+
         try{
             setSaving(true)
 
             await updatePurchaseOrderItem(
                 purchasedOrderId,
                 item.id,
+                countryId,
                 quantity
             )
 
@@ -106,17 +133,28 @@ export default function PurchaseOrderItemEditModal({
                                 disabled
                             />
                         </div>
+
                         <div className="mb-3">
                             <label className="form-label">
                                 Zeme puvodu
                             </label>
-                            <input
-                                type="text"
+                            <select
                                 className="form-control"
-                                value={item.countryCode}
-                                disabled
-                            />
+                                value={countryId}
+                                onChange={(e) => setCountryId(Number(e.target.value))}
+                                disabled={saving}
+                            >
+                                {countries.map(country => (
+                                    <option
+                                        key={country.id}
+                                        value={country.id}
+                                    >
+                                        {country.name} ({country.code})
+                                    </option>
+                                ))}
+                            </select>
                         </div>
+
                         <div className="mb-3">
                             <label className="form-label">
                                 Jiz prijato

@@ -78,6 +78,7 @@ export const createPurchaseOrder = async (
 export const updatePurchaseOrderItem = async (
     purchaseOrderId: number,
     itemId: number,
+    countryId: number,
     quantity: number
 ):Promise<void> => {
     const token = localStorage.getItem("token")
@@ -89,11 +90,32 @@ export const updatePurchaseOrderItem = async (
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
+            countryId,
             quantity
         })
     })
 
     if(!res.ok){
         throw new Error("Failed to update purchase order item!")
+    }
+}
+
+export const addPurchaseOrderItem = async (
+    purchaseOrderId: number,
+    item: PurchaseOrderItemCreateDto
+):Promise<void> => {
+    const token = localStorage.getItem("token")
+
+    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/items`, {
+        method: "POST",
+        headers:{
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(item)
+    })
+
+    if(!res.ok){
+        throw new Error("Failed to add purchase order item!")
     }
 }

@@ -12,7 +12,9 @@ export type PurchaseOrderItem = {
     categoryCode: string;
     productType: string;
     productName: string;
+    countryId: number;
     countryCode: string;
+    countryName: string;
     quantity: number;
     receivedQuantity: number;
     statusCode: string;

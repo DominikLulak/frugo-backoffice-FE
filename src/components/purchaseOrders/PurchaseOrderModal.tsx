@@ -2,6 +2,7 @@ import type {PurchaseOrderDetail, PurchaseOrderItem} from "../../types/purchaseO
 import "../modal.css"
 import {useState} from "react";
 import PurchaseOrderItemEditModal from "./PurchaseOrderItemEditModal.tsx";
+import PurchaseOrderItemAddModal from "./PurchaseOrderItemAddModal.tsx";
 
 type Props = {
     purchasedOrderId: number;
@@ -17,6 +18,7 @@ export default function PurchaseOrderModal({
     onSaved
 }:Props){
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItem | null>(null)
+    const [showAddItemModal, setShowAddItemModal] = useState(false)
 
     return(
         <div
@@ -67,6 +69,17 @@ export default function PurchaseOrderModal({
                         </table>
 
                         <h6 className="mt-4">Polozky nakupni objednavky</h6>
+                        <button
+                            type="button"
+                            className="btn btn-success btn-sm mb-3"
+                            onClick={() => setShowAddItemModal(true)}
+                            disabled={
+                            purchaseOrder.statusCode === "COMPLETED" ||
+                            purchaseOrder.statusCode === "CANCELED"
+                            }
+                        >
+                            Pridat polozku
+                        </button>
 
                         {purchaseOrder.items.length === 0 ? (
                             <p>Zadne polozky</p>
@@ -124,6 +137,18 @@ export default function PurchaseOrderModal({
                     item={selectedItem}
                     onClose={() => setSelectedItem(null)}
                     onSaved={() => {setSelectedItem(null); onSaved();}}
+                />
+            )}
+
+            {showAddItemModal && (
+                <PurchaseOrderItemAddModal
+                    show={true}
+                    purchaseOrderId={purchasedOrderId}
+                    onClose={() => setShowAddItemModal(false)}
+                    onSaved={() => {
+                        setShowAddItemModal(false)
+                        onSaved()
+                    }}
                 />
             )}
         </div>
