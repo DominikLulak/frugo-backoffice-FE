@@ -8,6 +8,7 @@ export type PurchaseOrder = {
 }
 
 export type PurchaseOrderItem = {
+    id: number;
     categoryCode: string;
     productType: string;
     productName: string;
@@ -25,4 +26,15 @@ export type PurchaseOrderDetail = {
     employeeName: string;
     statusCode: string;
     items: PurchaseOrderItem[];
+}
+
+export type PurchaseOrderItemCreateDto = {
+    productId: number;
+    quantity: number;
+    countryId: number;
+}
+
+export type PurchaseOrderCreateDto = {
+    supplierId: number;
+    items: PurchaseOrderItemCreateDto[];
 }

@@ -1,6 +1,17 @@
 import type {PurchaseOrder, PurchaseOrderDetail} from "../types/purchaseOrder.ts";
 import {API_URL} from "./config.ts";
 
+export interface PurchaseOrderItemCreateDto{
+    productId: number;
+    quantity: number;
+    countryId: number;
+}
+
+export interface PurchaseOrderCreateDto{
+    supplierId: number;
+    items: PurchaseOrderItemCreateDto[];
+}
+
 export const getPurchaseOrders = async (
     purchaseOrderNumber: string = "",
     supplierName: string = "",
@@ -41,4 +52,48 @@ export const getPurchaseOrderDetail = async (
         throw new Error("Failed to fetch detail")
     }
     return await res.json()
+}
+
+export const createPurchaseOrder = async (
+    data: PurchaseOrderCreateDto
+):Promise<void> => {
+    const token = localStorage.getItem("token")
+
+    const res = await fetch(
+        `${API_URL}/api/admin/purchaseOrders`,
+        {
+            method: "POST",
+            headers:{
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+
+    if(!res.ok){
+        throw new Error("Failed to create purchase order!")
+    }
+}
+
+export const updatePurchaseOrderItem = async (
+    purchaseOrderId: number,
+    itemId: number,
+    quantity: number
+):Promise<void> => {
+    const token = localStorage.getItem("token")
+
+    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,{
+        method: "PUT",
+        headers:{
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            quantity
+        })
+    })
+
+    if(!res.ok){
+        throw new Error("Failed to update purchase order item!")
+    }
 }

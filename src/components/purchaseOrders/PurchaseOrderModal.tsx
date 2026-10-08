@@ -1,15 +1,23 @@
-import type {PurchaseOrderDetail} from "../../types/purchaseOrder.ts";
+import type {PurchaseOrderDetail, PurchaseOrderItem} from "../../types/purchaseOrder.ts";
 import "../modal.css"
+import {useState} from "react";
+import PurchaseOrderItemEditModal from "./PurchaseOrderItemEditModal.tsx";
 
 type Props = {
+    purchasedOrderId: number;
     purchaseOrder: PurchaseOrderDetail;
     onClose: () => void;
+    onSaved: () => void;
 }
 
 export default function PurchaseOrderModal({
+    purchasedOrderId,
     purchaseOrder,
-    onClose
+    onClose,
+    onSaved
 }:Props){
+    const [selectedItem, setSelectedItem] = useState<PurchaseOrderItem | null>(null)
+
     return(
         <div
             className="modal-backdrop-custom"
@@ -45,7 +53,7 @@ export default function PurchaseOrderModal({
                                 </tr>
                                 <tr>
                                     <th>Vytvoreno</th>
-                                    <td>{purchaseOrder.createdAt}</td>
+                                    <td>{purchaseOrder.createdAt.replace("T", " ").substring(0,19)}</td>
                                 </tr>
                                 <tr>
                                     <th>Jmeno zamestnance</th>
@@ -73,12 +81,13 @@ export default function PurchaseOrderModal({
                                     <th>Mnozstvi</th>
                                     <th>Prijate mnozstvi</th>
                                     <th>Stav</th>
+                                    <th>Akce</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
                                 {purchaseOrder.items.map((item) => (
-                                    <tr>
+                                    <tr key={item.id}>
                                         <td>{item.categoryCode}</td>
                                         <td>{item.productType}</td>
                                         <td>{item.productName}</td>
@@ -86,6 +95,19 @@ export default function PurchaseOrderModal({
                                         <td>{item.quantity}</td>
                                         <td>{item.receivedQuantity}</td>
                                         <td>{item.statusCode}</td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-outline-primary"
+                                                onClick={() => setSelectedItem(item)}
+                                                disabled={
+                                                    purchaseOrder.statusCode === "COMPLETED" ||
+                                                    purchaseOrder.statusCode === "CANCELED"
+                                                }
+                                            >
+                                                Upravit
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -94,6 +116,16 @@ export default function PurchaseOrderModal({
                     </div>
                 </div>
             </div>
+
+            {selectedItem && (
+                <PurchaseOrderItemEditModal
+                    show={true}
+                    purchasedOrderId={purchasedOrderId}
+                    item={selectedItem}
+                    onClose={() => setSelectedItem(null)}
+                    onSaved={() => {setSelectedItem(null); onSaved();}}
+                />
+            )}
         </div>
     )
 }
