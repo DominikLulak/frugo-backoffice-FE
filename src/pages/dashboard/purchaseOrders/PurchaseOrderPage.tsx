@@ -20,6 +20,7 @@ export default function PurchaseOrderPage(){
     const [deleting, setDeleting] = useState(false)
     const [deleteError, setDeleteError] = useState("")
 
+
     const fetchPurchaseOrders = async () => {
         const data = await getPurchaseOrders(
             purchaseOrderNumber,
@@ -195,6 +196,8 @@ export default function PurchaseOrderPage(){
                             selectedPurchaseOrderId
                         )
                         setSelectedPurchaseOrder(data)
+
+                        await fetchPurchaseOrders()
                     }}
                 />
             )}

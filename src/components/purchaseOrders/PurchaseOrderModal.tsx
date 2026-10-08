@@ -5,6 +5,7 @@ import PurchaseOrderItemEditModal from "./PurchaseOrderItemEditModal.tsx";
 import PurchaseOrderItemAddModal from "./PurchaseOrderItemAddModal.tsx";
 import ConfirmDeleteModal from "../layout/ConfirmDeleteModal.tsx";
 import {deletePurchaseOrderItem} from "../../api/PurchaseOrderApi.ts";
+import PurchaseOrderEditModal from "./PurchaseOrderEditModal.tsx";
 
 type Props = {
     purchasedOrderId: number;
@@ -25,6 +26,8 @@ export default function PurchaseOrderModal({
     const [itemToDelete, setItemToDelete] = useState<PurchaseOrderItem | null>(null)
     const [deleting, setDeleting] = useState(false)
     const [deleteError, setDeleteError] = useState("")
+
+    const [showEditModal, setShowEditModal] = useState(false)
 
     const handleDelete = async () => {
         if(!itemToDelete){
@@ -77,6 +80,17 @@ export default function PurchaseOrderModal({
                                 <tr>
                                     <th>Nazev dodavatele</th>
                                     <td>{purchaseOrder.supplierName}</td>
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-primary"
+                                        onClick={() => setShowEditModal(true)}
+                                        disabled={
+                                            purchaseOrder.statusCode !== "ENTERED" &&
+                                            purchaseOrder.statusCode !== "BLOCKED"
+                                        }
+                                    >
+                                        Upravit
+                                    </button>
                                 </tr>
                                 <tr>
                                     <th>Interni kod dodavatele</th>
@@ -207,6 +221,19 @@ export default function PurchaseOrderModal({
                     error={deleteError}
                     onClose={() => setItemToDelete(null)}
                     onConfirm={handleDelete}
+                />
+            )}
+
+            {showEditModal && (
+                <PurchaseOrderEditModal
+                    show={true}
+                    purchaseOrderId={purchasedOrderId}
+                    purchaseOrder={purchaseOrder}
+                    onClose={() => setShowEditModal(false)}
+                    onSaved={() => {
+                        setShowEditModal(false);
+                        onSaved();
+                    }}
                 />
             )}
         </div>

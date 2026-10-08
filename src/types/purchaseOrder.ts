@@ -22,6 +22,7 @@ export type PurchaseOrderItem = {
 
 export type PurchaseOrderDetail = {
     purchaseOrderNumber: string;
+    supplierId: number;
     supplierName: string;
     supplierInternalCode: string;
     createdAt: string;
