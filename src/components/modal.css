@@ -13,6 +13,10 @@
     z-index: 1100;
 }
 
+.modal-backdrop-custom-delete{
+    z-index: 99999;
+}
+
 /* CENTER MODAL */
 .modal-custom {
     position: fixed;
@@ -27,6 +31,10 @@
 
 .modal-custom-second{
     z-index: 1101;
+}
+
+.modal-custom-delete{
+    z-index: 99999;
 }
 
 /* BOX */

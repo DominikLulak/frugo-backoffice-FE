@@ -3,6 +3,8 @@ import "../modal.css"
 import {useState} from "react";
 import PurchaseOrderItemEditModal from "./PurchaseOrderItemEditModal.tsx";
 import PurchaseOrderItemAddModal from "./PurchaseOrderItemAddModal.tsx";
+import ConfirmDeleteModal from "../layout/ConfirmDeleteModal.tsx";
+import {deletePurchaseOrderItem} from "../../api/PurchaseOrderApi.ts";
 
 type Props = {
     purchasedOrderId: number;
@@ -19,6 +21,33 @@ export default function PurchaseOrderModal({
 }:Props){
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItem | null>(null)
     const [showAddItemModal, setShowAddItemModal] = useState(false)
+
+    const [itemToDelete, setItemToDelete] = useState<PurchaseOrderItem | null>(null)
+    const [deleting, setDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState("")
+
+    const handleDelete = async () => {
+        if(!itemToDelete){
+            return
+        }
+
+        try{
+            setDeleting(true)
+            setDeleteError("")
+
+            await deletePurchaseOrderItem(
+                purchasedOrderId,
+                itemToDelete.id
+            )
+
+            setItemToDelete(null)
+            onSaved()
+        }catch {
+            setDeleteError("Nepodarilo se odstranit polozku")
+        } finally {
+            setDeleting(false)
+        }
+    }
 
     return(
         <div
@@ -120,6 +149,22 @@ export default function PurchaseOrderModal({
                                             >
                                                 Upravit
                                             </button>
+
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-outline-danger ms-2"
+                                                onClick={() => {
+                                                    setDeleteError("")
+                                                    setItemToDelete(item)
+                                                }}
+                                                disabled={
+                                                    purchaseOrder.statusCode === "COMPLETED" ||
+                                                    purchaseOrder.statusCode === "CANCELED" ||
+                                                    item.receivedQuantity > 0
+                                                }
+                                            >
+                                                Odstranit
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -149,6 +194,19 @@ export default function PurchaseOrderModal({
                         setShowAddItemModal(false)
                         onSaved()
                     }}
+                />
+            )}
+
+            {itemToDelete && (
+                <ConfirmDeleteModal
+                    show={itemToDelete !== null}
+                    title="Odstranit polozku"
+                    description="Opravdu chcete odstranit polozku?"
+                    itemName={itemToDelete?.productName ?? ""}
+                    loading={deleting}
+                    error={deleteError}
+                    onClose={() => setItemToDelete(null)}
+                    onConfirm={handleDelete}
                 />
             )}
         </div>

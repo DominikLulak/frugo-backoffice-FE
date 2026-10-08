@@ -119,3 +119,21 @@ export const addPurchaseOrderItem = async (
         throw new Error("Failed to add purchase order item!")
     }
 }
+
+export const deletePurchaseOrderItem = async (
+    purchaseOrderId: number,
+    itemId: number
+):Promise<void> => {
+    const token = localStorage.getItem("token")
+
+    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,{
+        method: "DELETE",
+        headers:{
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    if(!res.ok){
+        throw new Error("Failed to delete purchase order item!")
+    }
+}
