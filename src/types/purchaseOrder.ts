@@ -41,3 +41,8 @@ export type PurchaseOrderCreateDto = {
     supplierId: number;
     items: PurchaseOrderItemCreateDto[];
 }
+
+export type PurchaseOrderStatusChange = {
+    statusCode: string;
+    note: string;
+}

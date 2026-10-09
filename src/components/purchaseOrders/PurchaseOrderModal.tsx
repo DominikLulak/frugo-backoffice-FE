@@ -6,6 +6,7 @@ import PurchaseOrderItemAddModal from "./PurchaseOrderItemAddModal.tsx";
 import ConfirmDeleteModal from "../layout/ConfirmDeleteModal.tsx";
 import {deletePurchaseOrderItem} from "../../api/PurchaseOrderApi.ts";
 import PurchaseOrderEditModal from "./PurchaseOrderEditModal.tsx";
+import PurchaseOrderStatusModal from "./PurchaseOrderStatusModal.tsx";
 
 type Props = {
     purchasedOrderId: number;
@@ -28,6 +29,7 @@ export default function PurchaseOrderModal({
     const [deleteError, setDeleteError] = useState("")
 
     const [showEditModal, setShowEditModal] = useState(false)
+    const [showStatusModal, setShowStatusModal] = useState(false)
 
     const handleDelete = async () => {
         if(!itemToDelete){
@@ -80,33 +82,49 @@ export default function PurchaseOrderModal({
                                 <tr>
                                     <th>Nazev dodavatele</th>
                                     <td>{purchaseOrder.supplierName}</td>
-                                    <button
-                                        type="button"
-                                        className="btn btn-sm btn-primary"
-                                        onClick={() => setShowEditModal(true)}
-                                        disabled={
-                                            purchaseOrder.statusCode !== "ENTERED" &&
-                                            purchaseOrder.statusCode !== "BLOCKED"
-                                        }
-                                    >
-                                        Upravit
-                                    </button>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-warning"
+                                            onClick={() => setShowEditModal(true)}
+                                            disabled={
+                                                purchaseOrder.statusCode !== "ENTERED" &&
+                                                purchaseOrder.statusCode !== "BLOCKED"
+                                            }
+                                        >
+                                            Upravit
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Interni kod dodavatele</th>
                                     <td>{purchaseOrder.supplierInternalCode}</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <th>Vytvoreno</th>
                                     <td>{purchaseOrder.createdAt.replace("T", " ").substring(0,19)}</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <th>Jmeno zamestnance</th>
                                     <td>{purchaseOrder.employeeName}</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <th>Stav</th>
                                     <td>{purchaseOrder.statusCode}</td>
+                                    <td>
+                                        {(purchaseOrder.statusCode === "ENTERED" || purchaseOrder.statusCode === "BLOCKED") && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-warning"
+                                                onClick={() => setShowStatusModal(true)}
+                                            >
+                                                Zmenit stav
+                                            </button>
+                                        )}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -234,6 +252,15 @@ export default function PurchaseOrderModal({
                         setShowEditModal(false);
                         onSaved();
                     }}
+                />
+            )}
+
+            {showStatusModal && (
+                <PurchaseOrderStatusModal
+                    purchaseOrderId={purchasedOrderId}
+                    purchaseOrder={purchaseOrder}
+                    onClose={() => setShowStatusModal(false)}
+                    onSaved={onSaved}
                 />
             )}
         </div>

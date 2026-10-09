@@ -1,4 +1,4 @@
-import type {PurchaseOrder, PurchaseOrderDetail} from "../types/purchaseOrder.ts";
+import type {PurchaseOrder, PurchaseOrderDetail, PurchaseOrderStatusChange} from "../types/purchaseOrder.ts";
 import {API_URL} from "./config.ts";
 
 export interface PurchaseOrderItemCreateDto{
@@ -172,5 +172,25 @@ export const updatePurchaseOrder = async (
 
     if(!res.ok){
         throw new Error("Failed to update purchase order!")
+    }
+}
+
+export const changePurchaseOrderStatus = async (
+    purchaseOrderId: number,
+    data: PurchaseOrderStatusChange
+):Promise<void> => {
+    const token = localStorage.getItem("token")
+
+    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/status`,{
+        method: "PATCH",
+        headers:{
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+
+    if(!res.ok){
+        throw new Error("Failed to change order status!")
     }
 }
