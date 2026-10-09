@@ -238,6 +238,10 @@ export default function Sidebar(){
                                     to="/dashboard/eventLogs"
                                     label="Event Log"
                                 />
+                                <SidebarLink
+                                    to="/dashboard/purchaseOrderStatusHistories"
+                                    label="PO Status Histories"
+                                />
                             </div>
                         )}
                     </>
