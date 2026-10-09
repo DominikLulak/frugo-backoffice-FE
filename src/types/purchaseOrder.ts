@@ -8,10 +8,13 @@ export type PurchaseOrder = {
 }
 
 export type PurchaseOrderItem = {
+    id: number;
     categoryCode: string;
     productType: string;
     productName: string;
+    countryId: number;
     countryCode: string;
+    countryName: string;
     quantity: number;
     receivedQuantity: number;
     statusCode: string;
@@ -19,10 +22,27 @@ export type PurchaseOrderItem = {
 
 export type PurchaseOrderDetail = {
     purchaseOrderNumber: string;
+    supplierId: number;
     supplierName: string;
     supplierInternalCode: string;
     createdAt: string;
     employeeName: string;
     statusCode: string;
     items: PurchaseOrderItem[];
+}
+
+export type PurchaseOrderItemCreateDto = {
+    productId: number;
+    quantity: number;
+    countryId: number;
+}
+
+export type PurchaseOrderCreateDto = {
+    supplierId: number;
+    items: PurchaseOrderItemCreateDto[];
+}
+
+export type PurchaseOrderStatusChange = {
+    statusCode: string;
+    note: string;
 }

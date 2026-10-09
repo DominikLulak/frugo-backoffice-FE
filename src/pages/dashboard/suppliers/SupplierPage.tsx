@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import type {Supplier} from "../../../types/supplier.ts";
 import {deleteSupplier, getSuppliers, setSupplierActive} from "../../../api/SupplierApi.ts";
 import SupplierModal from "../../../components/purchaseOrders/SupplierModal.tsx";
+import ConfirmDeleteModal from "../../../components/layout/ConfirmDeleteModal.tsx";
 
 export default function SupplierPage(){
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
@@ -12,6 +13,10 @@ export default function SupplierPage(){
 
     const [showModal, setShowModal] = useState(false);
     const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null)
+
+    const [supplierToDelete, setSupplierToDelte] = useState<Supplier | null>(null)
+    const [deleting, setDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState("")
 
     const [error, setError] = useState("")
 
@@ -66,27 +71,29 @@ export default function SupplierPage(){
         }
     }
 
-    const handleDelete = async (supplier: Supplier) => {
-        const confirmed = window.confirm(
-            `Opravdu chcete smazat dodavatele "${supplier.name}"?`
-        )
-        if(!confirmed){
+    const openDeleteModal = (supplier: Supplier) => {
+        setDeleteError("")
+        setSupplierToDelte(supplier)
+    }
+
+    const handleDelete = async () => {
+        if(!supplierToDelete){
             return
         }
 
         try{
-            setError("")
+            setDeleting(true)
+            setDeleteError("")
 
-            await deleteSupplier(supplier.id)
-
+            await deleteSupplier(supplierToDelete.id)
+            setSupplierToDelte(null)
             await fetchSuppliers()
-        } catch (error){
-            console.error(error)
-
-            setError(
+        }catch{
+            setDeleteError(
                 "Dodavatele se nepodarilo smazat. " +
-                "Mozna je pouzity v nakupni objednavce."
-            )
+                "Mozna je pouzit v nakupni objednavce.")
+        }finally {
+            setDeleting(false)
         }
     }
 
@@ -189,7 +196,7 @@ export default function SupplierPage(){
                                 </button>
                                 <button
                                     className="btn btn-sm btn-outline-danger"
-                                    onClick={() => handleDelete(supplier)}
+                                    onClick={() => openDeleteModal(supplier)}
                                 >
                                     🗑 Smazat
                                 </button>
@@ -207,6 +214,19 @@ export default function SupplierPage(){
                 onClose={closeModal}
                 onSaved={fetchSuppliers}
             />
+
+            {supplierToDelete && (
+                <ConfirmDeleteModal
+                    show={supplierToDelete !== null}
+                    title="Odstranit dodavatele"
+                    description="Opravdu chcete odstranit dodavatele"
+                    itemName={supplierToDelete?.name ?? ""}
+                    loading={deleting}
+                    error={deleteError}
+                    onClose={() => setSupplierToDelte(null)}
+                    onConfirm={handleDelete}
+                />
+            )}
         </div>
     )
 }

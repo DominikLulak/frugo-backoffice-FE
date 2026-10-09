@@ -26,6 +26,7 @@ import ModulePage from "./pages/dashboard/rbac/ModulePage.tsx";
 import StockMovementPage from "./pages/dashboard/event/StockMovementPage.tsx";
 import EventLogPage from "./pages/dashboard/event/EventLogPage.tsx";
 import EtiSequencePage from "./pages/dashboard/referenceData/EtiSequencePage.tsx";
+import PurchaseOrderStatusHistoryPage from "./pages/dashboard/event/PurchaseOrderStatusHistoryPage.tsx";
 
 function App() {
 
@@ -231,6 +232,14 @@ function App() {
                     element={
                         <ProtectedRoute permission="WAREHOUSE_READ">
                             <EventLogPage/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="purchaseOrderStatusHistories"
+                    element={
+                        <ProtectedRoute permission="WAREHOUSE_READ">
+                            <PurchaseOrderStatusHistoryPage/>
                         </ProtectedRoute>
                     }
                 />
