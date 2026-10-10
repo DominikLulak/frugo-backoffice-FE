@@ -1,9 +1,8 @@
 import type {CustomerContact} from "../../../types/customer.ts";
-import {useState} from "react";
-import {addCustomerContact, updateCustomerContact} from "../../../api/CustomerApi.ts";
 import BaseModal from "../../common/modal/BaseModal.tsx";
 import ModalActions from "../../common/modal/ModalActions.tsx";
 import FormField from "../../common/form/FormField.tsx";
+import useCustomerContactForm from "../../../hooks/customers/useCustomerContactForm.ts";
 
 type Props = {
     show: boolean;
@@ -21,71 +20,11 @@ export default function CustomerContactModal({
     onSaved
 }:Props){
 
-    const [name, setName] = useState(customerContact?.name ?? "");
-    const [phoneNumber, setPhoneNumber] = useState(
-        customerContact?.phoneNumber ?? ""
-    );
-    const [email, setEmail] = useState(customerContact?.email ?? "");
-    const [primary, setPrimary] = useState(
-        customerContact?.primary ?? false
-    );
+    const {
+        name, setName, phoneNumber, setPhoneNumber, email, setEmail, primary, setPrimary, saving, error, isEditing, handleSave
+    } = useCustomerContactForm({ customerId, customerContact, onClose, onSaved })
 
-    const [saving, setSaving] = useState(false)
-    const [error, setError] = useState("")
-
-    const isEditing = customerContact !== null
-
-    if(!show){
-        return null
-    }
-
-    const handleSave = async () => {
-        setError("")
-
-        if(!name.trim()){
-            setError("Jmeno musi byt vyplneno")
-            return
-        }
-        if(!phoneNumber.trim()){
-            setError("Telefon musi byt vyplnen")
-            return
-        }
-        if(!email.trim()){
-            setError("Email musi byt vyplnen")
-            return
-        }
-
-        try{
-            setSaving(true)
-
-            const data = {
-                name: name.trim(),
-                phoneNumber: phoneNumber.trim(),
-                email: email.trim(),
-                primary
-            }
-
-            if(isEditing && customerContact){
-                await updateCustomerContact(
-                    customerId,
-                    customerContact.id,
-                    data
-                )
-            }else{
-                await addCustomerContact(customerId, data)
-            }
-            onClose()
-            onSaved()
-        }catch {
-            setError(
-                isEditing
-                    ? "Nepodarilo se upravit kontakt"
-                    : "Nepodarilo se vytvorit kontakt"
-            )
-        }finally {
-            setSaving(false)
-        }
-    }
+    if(!show) return null
 
     return (
         <>
