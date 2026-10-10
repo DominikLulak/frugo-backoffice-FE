@@ -1,6 +1,9 @@
 import type {CustomerContact} from "../../types/customer.ts";
 import {useState} from "react";
 import {addCustomerContact, updateCustomerContact} from "../../api/CustomerApi.ts";
+import BaseModal from "../common/modal/BaseModal.tsx";
+import ModalActions from "../common/modal/ModalActions.tsx";
+import FormField from "../common/form/FormField.tsx";
 
 type Props = {
     show: boolean;
@@ -85,114 +88,71 @@ export default function CustomerContactModal({
     }
 
     return (
-        <div
-            className="modal-backdrop-custom modal-backdrop-custom-second"
-            onClick={onClose}
-        >
-            <div
-                className="modal-custom modal-custom-second"
-                onClick={(e) => e.stopPropagation()}
+        <>
+            <BaseModal
+                title={isEditing ? "Upravit kontakt" : "Pridat kontakt"}
+                onClose={onClose}
+                secondLevel
+                footer={
+                    <ModalActions
+                        onCancel={onClose}
+                        onSubmit={handleSave}
+                        cancelText="Zrusit"
+                        submitText={isEditing ? "Ulozit zmeny" : "Pridat kontakt"}
+                        loadingText="Ukladam..."
+                        isLoading={saving}
+                    />
+                }
             >
-                <div className="modal-content-custom">
-                    <div className="modal-header">
-                        <h5 className="modal-title">
-                            {isEditing ? "Upravit kontakt" : "Pridat kontakt"}
-                        </h5>
-
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={onClose}
-                            disabled={saving}
-                        />
+                {error && (
+                    <div className="alert alert-danger">
+                        {error}
                     </div>
+                )}
 
-                    <div className="modal-body">
-
-                        {error && (
-                            <div className="alert alert-danger">
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="mb-3">
-                            <label className="form-label">
-                                Jmeno
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                disabled={saving}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">
-                                Telefon
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                disabled={saving}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">
-                                Email
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={saving}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">
-                                Primarni
-                            </label>
-
-                            <select
-                                className="form-select"
-                                value={primary ? "true" : "false"}
-                                onChange={(e) => setPrimary(e.target.value === "true")}
-                                disabled={saving}
-                            >
-                                <option value="true">
-                                    Ano
-                                </option>
-                                <option value="false">
-                                    Ne
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="modal-footer">
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={onClose}
-                            disabled={saving}
-                        >
-                            Zrusit
-                        </button>
-
-                        <button
-                            type="button"
-                            className="btn btn-success m-lg-1"
-                            onClick={handleSave}
-                            disabled={saving}
-                        >
-                            {saving ? "Ukladam..." : "Ulozit"}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <FormField label="Jmeno">
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        disabled={saving}
+                    />
+                </FormField>
+                <FormField label="Telefon">
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        disabled={saving}
+                    />
+                </FormField>
+                <FormField label="Email">
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={saving}
+                    />
+                </FormField>
+                <FormField label="Primarni">
+                    <select
+                        className="form-select"
+                        value={primary ? "true" : "false"}
+                        onChange={(e) => setPrimary(e.target.value === "true")}
+                        disabled={saving}
+                    >
+                        <option value="true">
+                            Ano
+                        </option>
+                        <option value="false">
+                            Ne
+                        </option>
+                    </select>
+                </FormField>
+            </BaseModal>
+        </>
     )
 }

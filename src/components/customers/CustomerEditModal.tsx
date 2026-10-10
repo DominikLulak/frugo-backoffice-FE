@@ -177,7 +177,7 @@ export default function CustomerEditModal({
                             <input
                                 type="text"
                                 className="form-control"
-                                value={companyId ?? "-"}
+                                value={companyId ?? ""}
                                 onChange={(e) => setCompanyId(e.target.value)}
                                 disabled={saving}
                             />

@@ -1,50 +1,42 @@
-import {useEffect, useState} from "react";
-import {deleteCustomer, getCustomerDetail, getCustomers} from "../../../api/CustomerApi.ts";
+import {useState} from "react";
+import {getCustomerDetail} from "../../../api/CustomerApi.ts";
 import type {Customer, CustomerDetail} from "../../../types/customer.ts";
 import CustomerModal from "../../../components/customers/CustomerModal.tsx";
 import CustomerEditModal from "../../../components/customers/CustomerEditModal.tsx";
-import ConfirmDeleteModal from "../../../components/layout/ConfirmDeleteModal.tsx";
+import ConfirmDeleteModal from "../../../components/common/modal/ConfirmDeleteModal.tsx";
+import CustomerFilters from "../../../components/customers/CustomerFilters.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import CustomerTable from "../../../components/customers/CustomerTable.tsx";
+import useCustomers from "../../../hooks/customers/useCustomers.ts";
+import useDeleteCustomer from "../../../hooks/customers/useDeleteCustomer.ts";
 
 export default function CustomerPage(){
-    const [customers, setCustomers] = useState<Customer[]>([])
-    const [selectedCustomer, setSelectedCustomer] = useState<CustomerDetail | null>(null)
+    const {
+        customers,
+        filters,
+        updateFilters,
+        fetchCustomers,
+        loading,
+        loadError
+    } = useCustomers();
 
-    const [name, setName] = useState("")
-    const [companyId, setCompanyId] = useState("")
-    const [countryCode, setCountryCode] = useState("")
-    const [city, setCity] = useState("")
-    const [postalCode, setPostalCode] = useState("")
-    const [registered, setRegistered] = useState<boolean | null>(null)
+    const {
+        customerToDelete,
+        deleting,
+        deleteError,
+        openDeleteModal,
+        closeDeleteModal,
+        handleDelete
+    } = useDeleteCustomer(() => fetchCustomers(true, filters))
+
+    const [selectedCustomer, setSelectedCustomer] = useState<CustomerDetail | null>(null)
 
     const [showModal, setShowModal] = useState(false)
     const [editingCustomer, setEditingCustomer] = useState<CustomerDetail | null>(null)
 
-    const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null)
-    const [deleting, setDeleting] = useState(false)
-    const [deleteError, setDeleteError] = useState("")
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getCustomers();
-            setCustomers(data)
-        }
-        fetchData()
-    }, []);
-
-    const fetchCustomers = async () => {
-        const data = await getCustomers(
-            name,
-            companyId,
-            countryCode,
-            city,
-            postalCode,
-            registered
-        )
-        setCustomers(data)
-    }
 
     const handleFilter = async () => {
-        await fetchCustomers()
+        await fetchCustomers(true, filters)
     }
 
     const openCustomer = async (customer: Customer) => {
@@ -68,164 +60,41 @@ export default function CustomerPage(){
         setEditingCustomer(null)
     }
 
-    const openDeleteModal = (customer: Customer) => {
-        setDeleteError("")
-        setCustomerToDelete(customer)
-    }
-
-    const handleDelete = async () => {
-        if(!customerToDelete){
-            return
-        }
-
-        try{
-            setDeleting(true)
-            setDeleteError("")
-
-            await deleteCustomer(customerToDelete.id)
-            setCustomerToDelete(null)
-            await fetchCustomers()
-        }catch{
-            setDeleteError(
-                "Zakaznika se nepodarilo smazat. " +
-                "Mozna je pozit v objednavce."
-            )
-        }finally {
-            setDeleting(false)
-        }
-    }
-
     return(
         <div className="container-fluid">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h1>Zákazníci</h1>
+            <PageHeader
+                title="Zakaznici"
+                actionLabel="Pridat zakaznika"
+                onAction={openCreateModal}
+            />
 
-                <button
-                    className="btn btn-success"
-                    onClick={openCreateModal}
-                >
-                    + Pridat zakaznika
-                </button>
-            </div>
+            <CustomerFilters
+                name={filters.name}
+                companyId={filters.companyId}
+                countryCode={filters.countryCode}
+                city={filters.city}
+                postalCode={filters.postalCode}
+                registered={filters.registered}
+                onNameChange={(value) => updateFilters("name", value)}
+                onCompanyIdChange={(value) => updateFilters("companyId", value)}
+                onCountryCodeChange={(value) => updateFilters("countryCode", value)}
+                onCityChange={(value) => updateFilters("city", value)}
+                onPostalCodeChange={(value) => updateFilters("postalCode", value)}
+                onRegisteredChange={(value) => updateFilters("registered", value)}
+                onSubmit={handleFilter}
+            />
 
-            <div className="row g-2 mb-4">
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Nazev / Jmeno zakaznika"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="ICO"
-                        value={companyId}
-                        onChange={(e) => setCompanyId(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Zeme"
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Mesto"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="PSC"
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <select
-                        className="form-control"
-                        value={registered === null ?"" : String(registered)}
-                        onChange={(e) => {
-                            if(e.target.value === ""){
-                                setRegistered(null)
-                            }else{
-                                setRegistered(e.target.value === "true")
-                            }
-                        }}
-                    >
-                        <option value="">Vse</option>
-                        <option value="true">Ano</option>
-                        <option value="false">Ne</option>
-                    </select>
-                </div>
+            <CustomerTable
+                customers={customers}
+                onOpen={openCustomer}
+                onEdit={openEditingModal}
+                onDelete={openDeleteModal}
+                loading={loading}
+                error={loadError}
+            />
 
-                <div className="col-md-1 d-grid">
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleFilter}
-                    >
-                        Filtrovat
-                    </button>
-                </div>
-            </div>
 
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Nazev / Jmeno zakaznika</th>
-                    <th>ICO</th>
-                    <th>Zeme</th>
-                    <th>Mesto</th>
-                    <th>PSC</th>
-                    <th>Registrovany</th>
-                    <th>Akce</th>
-                </tr>
-                </thead>
 
-                <tbody>
-                {customers.map(customer => (
-                    <tr key={customer.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openCustomer(customer)}
-                            >
-                                {customer.name}
-                            </button>
-                        </td>
-                        <td>{customer.companyId ?? "-"}</td>
-                        <td>{customer.countryCode}</td>
-                        <td>{customer.city}</td>
-                        <td>{customer.postalCode}</td>
-                        <td>{customer.registered ? "Ano" : "Ne"}</td>
-                        <td>
-                            <div className="d-flex gap-2">
-                                <button
-                                    className="btn btn-sm btn-outline-primary"
-                                    onClick={() => openEditingModal(customer)}
-                                >
-                                    ✏ Upravit
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-outline-danger"
-                                    onClick={() => openDeleteModal(customer)}
-                                >
-                                    🗑 Smazat
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
             {selectedCustomer && (
                 <CustomerModal
                     customerId={selectedCustomer.id}
@@ -236,7 +105,7 @@ export default function CustomerPage(){
                             selectedCustomer.id
                         )
                         setSelectedCustomer(updateCustomer)
-                        await fetchCustomers()
+                        await fetchCustomers(true, filters)
                     }}
                 />
             )}
@@ -246,18 +115,18 @@ export default function CustomerPage(){
                 show={showModal}
                 customer={editingCustomer}
                 onClose={closeModal}
-                onSaved={fetchCustomers}
+                onSaved={() => fetchCustomers(true, filters)}
             />
 
             {customerToDelete && (
                 <ConfirmDeleteModal
-                    show={customerToDelete !== null}
+                    show={true}
                     title="Odstranit zakaznika"
                     description="Opravdu chcete odstranit zakaznika?"
-                    itemName={customerToDelete?.name ?? ""}
+                    itemName={customerToDelete?.name}
                     loading={deleting}
                     error={deleteError}
-                    onClose={() => setCustomerToDelete(null)}
+                    onClose={closeDeleteModal}
                     onConfirm={handleDelete}
                 />
             )}

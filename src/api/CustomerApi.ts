@@ -1,5 +1,5 @@
 import type {CreateCustomerDto, Customer, CustomerContactCrudDto, CustomerDetail} from "../types/customer.ts";
-import {API_URL} from "./config.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getCustomers = async (
     name: string = "",
@@ -9,8 +9,6 @@ export const getCustomers = async (
     postalCode: string = "",
     registered: boolean | null = null
 ): Promise <Customer[]> => {
-
-    const token = localStorage.getItem("token")
     const params = new URLSearchParams()
 
     if(name) params.append("name", name)
@@ -20,110 +18,65 @@ export const getCustomers = async (
     if(postalCode) params.append("postalCode", postalCode)
     if(registered !== null) params.append("registered", String(registered))
 
-    const res = await fetch(`${API_URL}/api/admin/customers?${params.toString()}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch customers!")
-    }
-    return await res.json() as Promise<Customer[]>
+    const query = params.toString()
+    const endpoint = `/api/admin/customers${query ? `?${query}` : ""}`
+
+    return apiRequest<Customer[]>(endpoint);
 }
 
 export const getCustomerDetail = async (
     customerId: number
 ):Promise<CustomerDetail> => {
-
-    const token = localStorage.getItem("token")
-    const res = await fetch(`${API_URL}/api/admin/customers/${customerId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch customer detail!")
-    }
-
-    return await res.json()
+    return apiRequest<CustomerDetail>(
+        `/api/admin/customers/${customerId}`
+    )
 }
 
 export const createCustomer = async (
     data: CreateCustomerDto
 ):Promise<Customer> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/customers`, {
-        method: "POST",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to create customer!")
-    }
-    return await res.json() as Promise<Customer>
+    return apiRequest<Customer>(
+        "/api/admin/customers",
+        {
+            method: "POST",
+            body: data
+        }
+    )
 }
 
 export const updateCustomer = async (
     id: number,
     data: CreateCustomerDto
 ):Promise<Customer> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/customers/${id}`,{
-        method: "PUT",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    if(!res.ok){
-        throw new Error("Failed to update customer!")
-    }
-    return await res.json() as Promise<Customer>
+    return apiRequest<Customer>(
+        `/api/admin/customers/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }
 
 export const deleteCustomer = async (
     id: number
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/customers/${id}`,{
-        method: "DELETE",
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to delete customer")
-    }
+    return apiRequest<void>(
+        `/api/admin/customers/${id}`,
+        { method: "DELETE" }
+    )
 }
 
 export const addCustomerContact = async (
     customerId: number,
-    item: CustomerContactCrudDto
+    data: CustomerContactCrudDto
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/customers/${customerId}/customerContacts`, {
-        method: "POST",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(item)
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to create customer!")
-    }
+    return apiRequest<void>(
+        `/api/admin/customers/${customerId}/customerContacts`,
+        {
+            method: "POST",
+            body: data
+        }
+    )
 }
 
 export const updateCustomerContact = async (
@@ -131,36 +84,21 @@ export const updateCustomerContact = async (
     customerContactId: number,
     data: CustomerContactCrudDto
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/customers/${customerId}/customerContacts/${customerContactId}`, {
-        method: "PUT",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to update customer contact!")
-    }
+    return apiRequest<void>(
+        `/api/admin/customers/${customerId}/customerContacts/${customerContactId}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }
 
 export const deleteCustomerContact = async (
     customerId: number,
     customerContactId: number
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/customers/${customerId}/customerContacts/${customerContactId}`, {
-        method: "DELETE",
-        headers:{
-            Authorization: `Bearer ${token}`,
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to delete customer contact!")
-    }
+    return apiRequest<void>(
+        `/api/admin/customers/${customerId}/customerContacts/${customerContactId}`,
+        { method: "DELETE" }
+    )
 }
