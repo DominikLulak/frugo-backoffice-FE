@@ -3,7 +3,7 @@ import type {PurchaseOrder, PurchaseOrderDetail} from "../../../types/purchaseOr
 import {deletePurchaseOrder, getPurchaseOrderDetail, getPurchaseOrders} from "../../../api/PurchaseOrderApi.ts";
 import PurchaseOrderModal from "../../../components/purchaseOrders/PurchaseOrderModal.tsx";
 import PurchaseOrderCreateModal from "../../../components/purchaseOrders/PurchaseOrderCreateModal.tsx";
-import ConfirmDeleteModal from "../../../components/layout/ConfirmDeleteModal.tsx";
+import ConfirmDeleteModal from "../../../components/common/modal/ConfirmDeleteModal.tsx";
 
 export default function PurchaseOrderPage(){
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([])

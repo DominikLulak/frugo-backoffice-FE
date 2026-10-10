@@ -3,7 +3,7 @@ import "../modal.css"
 import {useState} from "react";
 import PurchaseOrderItemEditModal from "./PurchaseOrderItemEditModal.tsx";
 import PurchaseOrderItemAddModal from "./PurchaseOrderItemAddModal.tsx";
-import ConfirmDeleteModal from "../layout/ConfirmDeleteModal.tsx";
+import ConfirmDeleteModal from "../common/modal/ConfirmDeleteModal.tsx";
 import {deletePurchaseOrderItem} from "../../api/PurchaseOrderApi.ts";
 import PurchaseOrderEditModal from "./PurchaseOrderEditModal.tsx";
 import PurchaseOrderStatusModal from "./PurchaseOrderStatusModal.tsx";

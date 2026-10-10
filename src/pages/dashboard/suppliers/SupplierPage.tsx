@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import type {Supplier} from "../../../types/supplier.ts";
 import {deleteSupplier, getSuppliers, setSupplierActive} from "../../../api/SupplierApi.ts";
 import SupplierModal from "../../../components/purchaseOrders/SupplierModal.tsx";
-import ConfirmDeleteModal from "../../../components/layout/ConfirmDeleteModal.tsx";
+import ConfirmDeleteModal from "../../../components/common/modal/ConfirmDeleteModal.tsx";
 
 export default function SupplierPage(){
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
