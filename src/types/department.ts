@@ -9,6 +9,7 @@ export type Department = {
 
 export type JobPosition = {
     id: number;
+    departmentId: number;
     departmentName: string;
     code: string;
     name: string;

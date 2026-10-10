@@ -1,5 +1,5 @@
-import "../modal.css";
-import type {EmployeeDetail} from "../../types/employee.ts";
+import "../../modal.css";
+import type {EmployeeDetail} from "../../../types/employee.ts";
 
 type Props = {
     employee: EmployeeDetail;

@@ -1,37 +1,30 @@
-import {useEffect, useState} from "react";
-import {getEmployeeDetail, getEmployees} from "../../../api/EmployeeApi.ts";
+import {useState} from "react";
+import {getEmployeeDetail} from "../../../api/EmployeeApi.ts";
 import type {Employee, EmployeeDetail} from "../../../types/employee.ts";
-import EmployeeModal from "../../../components/employees/EmployeeModal.tsx";
+import EmployeeModal from "../../../components/employees/modal/EmployeeModal.tsx";
+import useEmployee from "../../../hooks/employee/useEmployee.ts";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import EmployeeFilters from "../../../components/employees/EmployeeFilters.tsx";
+import EmployeeTable from "../../../components/employees/EmployeeTable.tsx";
+import EmployeeEditModal from "../../../components/employees/modal/EmployeeEditModal.tsx";
 
 export default function EmployeePage(){
-    const [employees, setEmployees] = useState<Employee[]>([])
+    const{
+        employees,
+        filters,
+        updateFilters,
+        fetchEmployees,
+        loading,
+        loadError
+    } = useEmployee()
+
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetail | null>(null)
 
-    const [employeeNumber, setEmployeeNumber] = useState("")
-    const [name, setName] = useState("")
-    const [shiftCode, setShiftCode] = useState("")
-    const [departmentName, setDepartmentName] = useState("")
-    const [jobPositionCode, setJobPositionCode] = useState("")
-    const [active, setActive] = useState<boolean | null>(null)
+    const [showModal, setShowModal] = useState(false)
+    const [editingEmployee, setEditingEmployee] = useState<EmployeeDetail | null>(null)
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getEmployees();
-            setEmployees(data)
-        }
-        fetchData()
-    }, []);
-
-    const handleFilter = async () =>{
-        const data = await getEmployees(
-            employeeNumber,
-            name,
-            shiftCode,
-            departmentName,
-            jobPositionCode,
-            active
-        )
-        setEmployees(data)
+    const handleFilter = async () => {
+        await fetchEmployees(true, filters)
     }
 
     const openEmployee = async (employee: Employee) => {
@@ -39,111 +32,53 @@ export default function EmployeePage(){
         setSelectedEmployee(data)
     }
 
+    const openCreateModal = () => {
+        setEditingEmployee(null)
+        setShowModal(true)
+    }
+
+    const openEditingModal = async (employee: Employee) => {
+        const data = await getEmployeeDetail(employee.id)
+        setEditingEmployee(data)
+        setShowModal(true)
+    }
+
+    const closeModal = () => {
+        setShowModal(false)
+        setEditingEmployee(null)
+    }
+
     return(
         <div className="container-fluid">
-            <h1>Zaměstnanci</h1>
+            <PageHeader
+                title="Zamestnanci"
+                actionLabel="Pridat zamestnance"
+                onAction={openCreateModal}
+            />
 
-            <div className="row g-2 mb-4">
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Osobní číslo"
-                        value={employeeNumber}
-                        onChange={(e)=> setEmployeeNumber(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Jméno"
-                        value={name}
-                        onChange={(e)=> setName(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Smena"
-                        value={shiftCode}
-                        onChange={(e)=> setShiftCode(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Oddeleni"
-                        value={departmentName}
-                        onChange={(e)=> setDepartmentName(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Pracovni pozice"
-                        value={jobPositionCode}
-                        onChange={(e)=> setJobPositionCode(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <select
-                        className="form-control"
-                        value={active === null ?"" : String(active)}
-                        onChange={(e) => {
-                            if(e.target.value === ""){
-                                setActive(null)
-                            }else{
-                                setActive(e.target.value === "true")
-                            }
-                        }}
-                    >
-                        <option value="">Vse</option>
-                        <option value="true">Ano</option>
-                        <option value="false">Ne</option>
-                    </select>
-                </div>
+            <EmployeeFilters
+                employeeNumber={filters.employeeNumber}
+                name={filters.name}
+                shiftCode={filters.shiftCode}
+                departmentName={filters.departmentName}
+                jobPositionCode={filters.jobPositionCode}
+                active={filters.active}
+                onEmployeeNumberChange={(value) => updateFilters("employeeNumber", value)}
+                onNameChange={(value) => updateFilters("name", value)}
+                onShiftCodeChange={(value) => updateFilters("shiftCode", value)}
+                onDepartmentNameChange={(value) => updateFilters("departmentName", value)}
+                onJobPositionCodeChange={(value) => updateFilters("jobPositionCode", value)}
+                onActiveChange={(value) => updateFilters("active", value)}
+                onSubmit={handleFilter}
+            />
 
-                <div className="col-md-1 d-grid">
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleFilter}
-                    >
-                        Filtrovat
-                    </button>
-                </div>
-            </div>
-
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Osobní číslo</th>
-                    <th>Jméno</th>
-                    <th>Smena</th>
-                    <th>Oddeleni</th>
-                    <th>Praovni pozice</th>
-                    <th>Aktivni</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {employees.map(employee => (
-                    <tr key={employee.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openEmployee(employee)}
-                            >
-                                {employee.employeeNumber}
-                            </button>
-                        </td>
-                        <td>{employee.name}</td>
-                        <td>{employee.shiftCode}</td>
-                        <td>{employee.departmentName}</td>
-                        <td>{employee.jobPositionName}</td>
-                        <td>{employee.active ? "Ano" : "Ne"}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <EmployeeTable
+                employees={employees}
+                onOpen={openEmployee}
+                onEdit={openEditingModal}
+                loading={loading}
+                error={loadError}
+            />
 
             {selectedEmployee && (
                 <EmployeeModal
@@ -151,6 +86,14 @@ export default function EmployeePage(){
                     onClose={() => setSelectedEmployee(null)}
                 />
             )}
+
+            <EmployeeEditModal
+                key={`${showModal}-${editingEmployee?.id ?? "new"}`}
+                show={showModal}
+                employee={editingEmployee}
+                onClose={closeModal}
+                onSaved={() => fetchEmployees(true, filters)}
+            />
         </div>
     )
 

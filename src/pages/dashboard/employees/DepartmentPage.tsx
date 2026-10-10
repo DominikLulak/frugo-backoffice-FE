@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import type {Department, DepartmentDetail} from "../../../types/department.ts";
 import {getDepartmentDetail, getDepartments} from "../../../api/DepartmentApi.ts";
-import DepartmentModal from "../../../components/employees/DepartmentModal.tsx";
+import DepartmentModal from "../../../components/employees/modal/DepartmentModal.tsx";
 
 export default function DepartmentPage(){
     const [departments, setDepartments] = useState<Department[]>([])
