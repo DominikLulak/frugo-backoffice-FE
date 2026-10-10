@@ -1,9 +1,9 @@
-import type {CustomerContact} from "../../types/customer.ts";
+import type {CustomerContact} from "../../../types/customer.ts";
 import {useState} from "react";
-import {addCustomerContact, updateCustomerContact} from "../../api/CustomerApi.ts";
-import BaseModal from "../common/modal/BaseModal.tsx";
-import ModalActions from "../common/modal/ModalActions.tsx";
-import FormField from "../common/form/FormField.tsx";
+import {addCustomerContact, updateCustomerContact} from "../../../api/CustomerApi.ts";
+import BaseModal from "../../common/modal/BaseModal.tsx";
+import ModalActions from "../../common/modal/ModalActions.tsx";
+import FormField from "../../common/form/FormField.tsx";
 
 type Props = {
     show: boolean;

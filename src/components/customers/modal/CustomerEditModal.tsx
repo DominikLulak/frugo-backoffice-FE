@@ -1,8 +1,8 @@
-import type {CustomerDetail} from "../../types/customer.ts";
+import type {CustomerDetail} from "../../../types/customer.ts";
 import {useEffect, useState} from "react";
-import {getCountries} from "../../api/CountryApi.ts";
-import type {Country} from "../../types/referenceData.ts";
-import {createCustomer, updateCustomer} from "../../api/CustomerApi.ts";
+import {getCountries} from "../../../api/CountryApi.ts";
+import type {Country} from "../../../types/referenceData.ts";
+import {createCustomer, updateCustomer} from "../../../api/CustomerApi.ts";
 
 type Props = {
     show: boolean;

@@ -1,8 +1,8 @@
 import {useState} from "react";
 import {getCustomerDetail} from "../../../api/CustomerApi.ts";
 import type {Customer, CustomerDetail} from "../../../types/customer.ts";
-import CustomerModal from "../../../components/customers/CustomerModal.tsx";
-import CustomerEditModal from "../../../components/customers/CustomerEditModal.tsx";
+import CustomerModal from "../../../components/customers/modal/CustomerModal.tsx";
+import CustomerEditModal from "../../../components/customers/modal/CustomerEditModal.tsx";
 import ConfirmDeleteModal from "../../../components/common/modal/ConfirmDeleteModal.tsx";
 import CustomerFilters from "../../../components/customers/CustomerFilters.tsx";
 import PageHeader from "../../../components/common/PageHeader.tsx";
