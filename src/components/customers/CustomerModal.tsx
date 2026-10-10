@@ -1,15 +1,68 @@
 import "../modal.css"
-import type {CustomerDetail} from "../../types/customer.ts";
+import type {CustomerContact, CustomerDetail} from "../../types/customer.ts";
+import {useState} from "react";
+import CustomerContactModal from "./CustomerContactModal.tsx";
+import {deleteCustomerContact} from "../../api/CustomerApi.ts";
+import ConfirmDeleteModal from "../layout/ConfirmDeleteModal.tsx";
 
 type Props = {
+    customerId: number;
     customer: CustomerDetail;
     onClose: () => void;
+    onSaved: () => void;
 }
 
 export default function CustomerModal({
+    customerId,
     customer,
-    onClose
+    onClose,
+    onSaved
 }: Props){
+
+    const [showAddCustomerContactModal, setShowAddCustomerContactModal] = useState(false)
+    const [editingCustomerContact, setEditingCustomerContact] = useState<CustomerContact | null>(null)
+
+    const [customerContactToDelete, setCustomerContactToDelete] = useState<CustomerContact | null>(null)
+    const [deleting, setDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState("")
+
+    const openCreateModal = () => {
+        setEditingCustomerContact(null)
+        setShowAddCustomerContactModal(true)
+    }
+
+    const openEditingModal = async (customerContact: CustomerContact) => {
+        setEditingCustomerContact(customerContact)
+        setShowAddCustomerContactModal(true)
+    }
+
+    const closeContactModal = () => {
+        setShowAddCustomerContactModal(false)
+        setEditingCustomerContact(null)
+    }
+
+    const handleDelete = async () => {
+        if(!customerContactToDelete){
+            return
+        }
+
+        try {
+            setDeleting(true)
+            setDeleteError("")
+
+            await deleteCustomerContact(
+                customerId,
+                customerContactToDelete.id
+            )
+
+            setCustomerContactToDelete(null)
+            onSaved()
+        }catch {
+            setDeleteError("Nepodarilo se odstranit kontakt")
+        }finally {
+            setDeleteError("")
+        }
+    }
 
     return(
         <div
@@ -73,6 +126,13 @@ export default function CustomerModal({
                         </table>
 
                         <h6 className="mt-4">Kontaktni udaje</h6>
+                        <button
+                            type="button"
+                            className="btn btn-success btn-sm mb-3"
+                            onClick={openCreateModal}
+                        >
+                            Pridat kontakt
+                        </button>
 
                         {customer.contacts.length === 0 ? (
                             <p>Zadny kontakt</p>
@@ -84,6 +144,7 @@ export default function CustomerModal({
                                         <th>Telefon</th>
                                         <th>Email</th>
                                         <th>Primarni</th>
+                                        <th>Akce</th>
                                     </tr>
                                 </thead>
 
@@ -94,6 +155,25 @@ export default function CustomerModal({
                                         <td>{contact.phoneNumber}</td>
                                         <td>{contact.email}</td>
                                         <td>{contact.primary ? "Ano" : "Ne"}</td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-outline-primary"
+                                                onClick={() => openEditingModal(contact)}
+                                            >
+                                                Upravit
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-outline-danger ms-2"
+                                                onClick={() => {
+                                                    setDeleteError("")
+                                                    setCustomerContactToDelete(contact)
+                                                }}
+                                            >
+                                                Odstranit
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -102,6 +182,34 @@ export default function CustomerModal({
                     </div>
                 </div>
             </div>
+
+            {showAddCustomerContactModal && (
+                <CustomerContactModal
+                    key={editingCustomerContact?.id ?? "new"}
+                    show={showAddCustomerContactModal}
+                    customerId={customerId}
+                    customerContact={editingCustomerContact}
+                    onClose={closeContactModal}
+                    onSaved={async () => {
+                        closeContactModal()
+                        await onSaved()
+                    }}
+                />
+            )}
+
+            {customerContactToDelete && (
+                <ConfirmDeleteModal
+                    show={customerContactToDelete !== null}
+                    title="Odstranit kontakt"
+                    description="Opravdu chcete odstranit kontakt"
+                    itemName={customerContactToDelete?.name ?? ""}
+                    loading={deleting}
+                    error={deleteError}
+                    onClose={() => setCustomerContactToDelete(null)}
+                    onConfirm={handleDelete}
+                />
+            )}
+
         </div>
     )
 }
