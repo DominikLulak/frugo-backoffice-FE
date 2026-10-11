@@ -5,8 +5,10 @@ import EmployeeModal from "../../../components/employees/modal/EmployeeModal.tsx
 import useEmployee from "../../../hooks/employee/useEmployee.ts";
 import PageHeader from "../../../components/common/PageHeader.tsx";
 import EmployeeFilters from "../../../components/employees/EmployeeFilters.tsx";
-import EmployeeTable from "../../../components/employees/EmployeeTable.tsx";
 import EmployeeEditModal from "../../../components/employees/modal/EmployeeEditModal.tsx";
+import Table, {type TableColumn} from "../../../components/common/Table.tsx";
+import DetailButton from "../../../components/common/buttons/DetailButton.tsx";
+import EditButton from "../../../components/common/buttons/EditButton.tsx";
 
 export default function EmployeePage(){
     const{
@@ -58,6 +60,57 @@ export default function EmployeePage(){
         setSelectedEmployee(data)
     }
 
+    const columns: TableColumn<Employee>[] = [
+        {
+            key: "employeeNumber",
+            header: "Osobni cislo",
+            render: (employee) => employee.employeeNumber
+        },
+        {
+            key: "name",
+            header: "Jmeno",
+            render: (employee) => employee.name
+        },
+        {
+            key: "shiftCode",
+            header: "Smena",
+            render: (employee) => employee.shiftCode
+        },
+        {
+            key: "departmentName",
+            header: "Oddeleni",
+            render: (employee) => employee.departmentName
+        },
+        {
+            key: "jobPositionName",
+            header: "Pracovni pozice",
+            render: (employee) => employee.jobPositionName
+        },
+        {
+            key: "actions",
+            header: "Akce",
+            render: (employee) => (
+                <div className="d-flex gap-2">
+                    <DetailButton
+                        onClick={() => openEmployee(employee)}
+                    />
+                    <EditButton
+                        onClick={() => openEditingModal(employee)}
+                    />
+                    <button
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => handleToggleActive(employee)}
+                    >
+                        {employee.active
+                            ? "✓ Deaktivovat"
+                            : "✓ Aktivovat"
+                        }
+                    </button>
+                </div>
+            )
+        },
+    ]
+
     return(
         <div className="container-fluid">
             <PageHeader
@@ -82,13 +135,14 @@ export default function EmployeePage(){
                 onSubmit={handleFilter}
             />
 
-            <EmployeeTable
-                employees={employees}
-                onOpen={openEmployee}
-                onEdit={openEditingModal}
+            <Table<Employee>
+                columns={columns}
+                data={employees}
+                getRowKey={(employee) => employee.id}
                 loading={loading}
                 error={loadError}
-                onToggle={handleToggleActive}
+                loadingText="Nacitam zamestnance..."
+                emptyMessage="Nebyli nalezeni zadni zamestnanci"
             />
 
             {toggleError && (
