@@ -32,3 +32,15 @@ export type JobPositionDetail = {
     description: string;
     employees: Employee[];
 }
+
+export type DepartmentCreateDto = {
+    name: string;
+    code: string;
+    description: string;
+}
+
+export type JobPositionCreateDto = {
+    name: string;
+    code: string;
+    description: string;
+}

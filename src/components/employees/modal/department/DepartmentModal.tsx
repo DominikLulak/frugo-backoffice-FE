@@ -1,25 +1,44 @@
-import "../../modal.css"
+import "../../../modal.css"
 import {useState} from "react";
-import type {DepartmentDetail, JobPositionDetail} from "../../../types/department.ts";
-import {getJobPositionDetail} from "../../../api/DepartmentApi.ts";
+import type {DepartmentDetail, JobPosition, JobPositionDetail} from "../../../../types/department.ts";
+import {getJobPositionDetail} from "../../../../api/DepartmentApi.ts";
 import JobPositionModal from "./JobPositionModal.tsx";
+import JobPositionTable from "./JobPositionTable.tsx";
+import JobPositionEditModal from "./JobPositionEditModal.tsx";
 
 type Props = {
     department: DepartmentDetail;
     onClose: () => void;
+    onSaved: () => void | Promise<void>;
 }
 
-export default function DepartmentModal({
-                                            department,
-                                            onClose
+export default function DepartmentModal({department, onClose, onSaved
 }:Props){
 
     const [jobPosition, setJobPosition] = useState<JobPositionDetail | null>(null)
+
+    const [showAddJobPositionModal, setShowAddJobPositionModal] = useState(false)
+    const [editingJobPosition, setEditingJobPosition] = useState<JobPosition | null>(null)
 
     const openJobPosition = async (jobPositionId: number) => {
         const data = await getJobPositionDetail(jobPositionId)
 
         setJobPosition(data)
+    }
+
+    const openCreateModal = () => {
+        setEditingJobPosition(null)
+        setShowAddJobPositionModal(true)
+    }
+
+    const openEditingModal = async (jobPosition: JobPosition) => {
+        setEditingJobPosition(jobPosition)
+        setShowAddJobPositionModal(true)
+    }
+
+    const closeContactModal = () => {
+        setShowAddJobPositionModal(false)
+        setEditingJobPosition(null)
     }
 
     return(
@@ -61,39 +80,21 @@ export default function DepartmentModal({
                             </tbody>
                         </table>
 
-                        <h6 className="mt-4">Pracovni pozice</h6>
-                        {department.positions.length === 0 ? (
-                            <p>Zadme pozice</p>
-                        ) : (
-                            <table className="table table-sm">
-                                <thead>
-                                <tr>
-                                    <th>Nazev oddeleni</th>
-                                    <th>Kod pozice</th>
-                                    <th>Nazec pozice</th>
-                                    <th>Popis pozice</th>
-                                </tr>
-                                </thead>
+                        <JobPositionTable
+                            jobPositions={department.positions}
+                            onEdit={openEditingModal}
+                            onCreate={openCreateModal}
+                            onOpen={(position) => openJobPosition(position.id)}
+                        />
 
-                                <tbody>
-                                {department.positions.map((position) => (
-                                    <tr key={position.id}>
-                                        <td>{position.departmentName}</td>
-                                        <td>
-                                            <button
-                                                className="btn btn-link p-0"
-                                                onClick={() => openJobPosition(position.id)}
-                                            >
-                                                {position.code}
-                                            </button>
-                                        </td>
-                                        <td>{position.name}</td>
-                                        <td>{position.description}</td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        )}
+                        <JobPositionEditModal
+                            key={`${showAddJobPositionModal}-${editingJobPosition?.id ?? "new"}`}
+                            show={showAddJobPositionModal}
+                            departmentId={department.id}
+                            position={editingJobPosition}
+                            onClose={closeContactModal}
+                            onSaved={onSaved}
+                        />
                     </div>
                 </div>
             </div>
