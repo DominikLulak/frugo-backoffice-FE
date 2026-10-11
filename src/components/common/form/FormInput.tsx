@@ -2,7 +2,7 @@ type Props = {
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
-    type?: "text" | "email" | "number" | "tel";
+    type?: "text" | "email" | "number" | "tel" | "date";
     disabled?: boolean;
     name?: string;
 }

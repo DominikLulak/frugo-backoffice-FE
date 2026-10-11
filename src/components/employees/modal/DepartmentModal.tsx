@@ -1,7 +1,7 @@
-import "../modal.css"
+import "../../modal.css"
 import {useState} from "react";
-import type {DepartmentDetail, JobPositionDetail} from "../../types/department.ts";
-import {getJobPositionDetail} from "../../api/DepartmentApi.ts";
+import type {DepartmentDetail, JobPositionDetail} from "../../../types/department.ts";
+import {getJobPositionDetail} from "../../../api/DepartmentApi.ts";
 import JobPositionModal from "./JobPositionModal.tsx";
 
 type Props = {
