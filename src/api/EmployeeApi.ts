@@ -1,4 +1,4 @@
-import type {Employee, EmployeeCreateDto, EmployeeDetail} from "../types/employee.ts";
+import type {Employee, EmployeeCreateDto, EmployeeDetail, EmployeeLogin} from "../types/employee.ts";
 import {apiRequest} from "./ApiClient.ts";
 
 export const getEmployees = async (
@@ -54,6 +54,17 @@ export const updateEmployee = async (
         {
             method: "PUT",
             body: data
+        }
+    )
+}
+
+export const createLogin = async (
+    employeeId: number
+):Promise<EmployeeLogin> => {
+    return apiRequest<EmployeeLogin>(
+        `/api/admin/employees/${employeeId}`,
+        {
+            method: "POST"
         }
     )
 }

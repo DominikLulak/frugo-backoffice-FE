@@ -48,6 +48,13 @@ export default function EmployeePage(){
         setEditingEmployee(null)
     }
 
+    const refreshSelectedEmployee = async () => {
+        if(!selectedEmployee) return;
+
+        const data = await getEmployeeDetail(selectedEmployee.id)
+        setSelectedEmployee(data)
+    }
+
     return(
         <div className="container-fluid">
             <PageHeader
@@ -84,6 +91,7 @@ export default function EmployeePage(){
                 <EmployeeModal
                     employee={selectedEmployee}
                     onClose={() => setSelectedEmployee(null)}
+                    onCreate={refreshSelectedEmployee}
                 />
             )}
 

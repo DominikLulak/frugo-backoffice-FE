@@ -1,15 +1,46 @@
 import "../../modal.css";
 import type {EmployeeDetail} from "../../../types/employee.ts";
+import {useState} from "react";
+import ConfirmationModal from "./ConfirmationModal.tsx";
+import {createLogin} from "../../../api/EmployeeApi.ts";
 
 type Props = {
     employee: EmployeeDetail;
     onClose: () => void;
+    onCreate: () => void | Promise<void>;
 };
 
 export default function EmployeeModal({
     employee,
-    onClose
+    onClose,
+    onCreate
 }: Props){
+    const [showConfirmation, setShowConfirmation] = useState(false)
+    const [creating, setCreating] = useState(false)
+    const [error, setError] = useState("")
+
+    const closeCreateModal = () => {
+        if(creating) return
+
+        setShowConfirmation(false)
+        setError("")
+    }
+
+    const handleCreate = async () => {
+        try{
+            setError("")
+            setCreating(true)
+
+            await createLogin(employee.id)
+            await onCreate()
+
+            setShowConfirmation(false)
+        }catch{
+            setError("Vytvareni loginu se nepodarilo")
+        } finally {
+            setCreating(false)
+        }
+    }
 
     return(
         <div
@@ -112,6 +143,17 @@ export default function EmployeeModal({
                         </table>
 
                         <h6 className="mt-4">Prihlasovaci udaje</h6>
+
+                        {!employee.loginUsername && (
+                            <button
+                                type="button"
+                                className="btn btn-success btn-sm mb-3"
+                                onClick={() => setShowConfirmation(true)}
+                            >
+                                Vytovrit login
+                            </button>
+                        )}
+
                         <table className="table table-sm">
                             <tbody>
                                 <tr>
@@ -123,6 +165,17 @@ export default function EmployeeModal({
                     </div>
                 </div>
             </div>
+
+            <ConfirmationModal
+                show={showConfirmation}
+                title="Vytvorit login"
+                loading={creating}
+                description="Chcete vytvorit login pro uzivatele?"
+                itemName={`${employee.name} (${employee.employeeNumber})`}
+                error={error}
+                onClose={closeCreateModal}
+                onConfirm={handleCreate}
+            />
         </div>
     )
 }

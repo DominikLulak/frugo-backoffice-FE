@@ -1,3 +1,7 @@
+export type EmployeeLogin = {
+    id: number;
+}
+
 export type Employee = {
     id: number;
     employeeNumber: string;
