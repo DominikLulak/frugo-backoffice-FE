@@ -68,3 +68,24 @@ export const createLogin = async (
         }
     )
 }
+
+export const deleteLogin = async (
+    employeeLogin: number
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/employees/${employeeLogin}`,
+        { method: "DELETE" }
+    )
+}
+
+export const setEmployeeActive = async (
+    employeeId: number,
+    active: boolean
+):Promise<Employee> => {
+    return apiRequest<Employee>(
+        `/api/admin/employees/${employeeId}/active?active=${active}`,
+        {
+            method: "PATCH",
+        }
+    )
+}

@@ -6,6 +6,7 @@ type Props = {
     onEdit: (employee: Employee) => void;
     loading?: boolean;
     error?: string;
+    onToggle: (employee: Employee) => void;
 }
 
 export default function EmployeeTable({
@@ -13,7 +14,8 @@ export default function EmployeeTable({
     onOpen,
     onEdit,
     loading,
-    error
+    error,
+    onToggle
 }:Props){
     return(
         <div className="table-responsive">
@@ -72,6 +74,16 @@ export default function EmployeeTable({
                                                 onClick={() => onEdit(employee)}
                                             >
                                                 ✏ Upravit
+                                            </button>
+
+                                            <button
+                                                className="btn btn-sm btn-outline-secondary"
+                                                onClick={() => onToggle(employee)}
+                                            >
+                                                {employee.active
+                                                    ? "✓ Deaktivovat"
+                                                    : "✓ Aktivovat"
+                                                }
                                             </button>
                                         </div>
                                     </td>

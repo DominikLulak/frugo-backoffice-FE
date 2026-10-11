@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import type {Employee} from "../../types/employee.ts";
-import {getEmployees} from "../../api/EmployeeApi.ts";
+import {getEmployees, setEmployeeActive} from "../../api/EmployeeApi.ts";
 
 export type EmployeeFiltersState = {
     employeeNumber: string;
@@ -26,6 +26,8 @@ export default function useEmployee(){
 
     const [loading, setLoading] = useState(false)
     const [loadError, setLoadError] = useState("")
+
+    const [toggleError, setToggleError] = useState("")
 
     const updateFilters = <K extends keyof EmployeeFiltersState>(
         key: K,
@@ -68,12 +70,29 @@ export default function useEmployee(){
         void fetchEmployees()
     }, [fetchEmployees]);
 
+    const handleToggleActive = async (employee: Employee) => {
+        try {
+            setToggleError("")
+
+            await setEmployeeActive(
+                employee.id,
+                !employee.active
+            )
+            await fetchEmployees(true, filters)
+        }catch{
+            setToggleError("Nepodarilo se zmanit stav zamestnance")
+        }
+    }
+
     return{
         employees,
         filters,
         updateFilters,
         fetchEmployees,
         loading,
-        loadError
+        loadError,
+        toggleError,
+        setToggleError,
+        handleToggleActive
     }
 }

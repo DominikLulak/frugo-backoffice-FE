@@ -15,7 +15,10 @@ export default function EmployeePage(){
         updateFilters,
         fetchEmployees,
         loading,
-        loadError
+        loadError,
+        toggleError,
+        setToggleError,
+        handleToggleActive
     } = useEmployee()
 
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetail | null>(null)
@@ -85,13 +88,33 @@ export default function EmployeePage(){
                 onEdit={openEditingModal}
                 loading={loading}
                 error={loadError}
+                onToggle={handleToggleActive}
             />
+
+            {toggleError && (
+                <div className="alert alert-danger mt-2">
+                    {toggleError}
+                    <button
+                        type="button"
+                        className="btn-close float-end"
+                        aria-label="Zavřít"
+                        onClick={() => setToggleError("")}
+                    />
+                </div>
+            )}
 
             {selectedEmployee && (
                 <EmployeeModal
                     employee={selectedEmployee}
                     onClose={() => setSelectedEmployee(null)}
                     onCreate={refreshSelectedEmployee}
+                    onSaved={async () => {
+                        const updateEmployee = await getEmployeeDetail(
+                            selectedEmployee.id
+                        )
+                        setSelectedEmployee(updateEmployee)
+                        await fetchEmployees(true, filters)
+                    }}
                 />
             )}
 
