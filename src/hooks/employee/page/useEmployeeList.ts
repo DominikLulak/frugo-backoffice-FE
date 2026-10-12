@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
-import type {Employee} from "../../types/employee.ts";
-import {getEmployees, setEmployeeActive} from "../../api/EmployeeApi.ts";
+import type {Employee} from "../../../types/employee.ts";
+import {getEmployees, setEmployeeActive} from "../../../api/EmployeeApi.ts";
 
 export type EmployeeFiltersState = {
     employeeNumber: string;
@@ -20,7 +20,7 @@ const initialFilters: EmployeeFiltersState = {
     active: null
 }
 
-export default function useEmployee(){
+export default function useEmployeeList(){
     const [employees, setEmployees] = useState<Employee[]>([])
     const [filters, setFilters] = useState<EmployeeFiltersState>(initialFilters)
 

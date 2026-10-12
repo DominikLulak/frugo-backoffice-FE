@@ -1,6 +1,6 @@
 import {useState} from "react";
-import type {EmployeeLogin} from "../../types/employee.ts";
-import {deleteLogin} from "../../api/EmployeeApi.ts";
+import type {EmployeeLogin} from "../../../types/employee.ts";
+import {deleteLogin} from "../../../api/EmployeeApi.ts";
 
 export default function useDeleteEmployeeLogin(
     employeeId: number,

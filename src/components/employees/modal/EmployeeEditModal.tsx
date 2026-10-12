@@ -1,5 +1,5 @@
 import type {EmployeeDetail} from "../../../types/employee.ts";
-import useEmployeeEditForm from "../../../hooks/employee/useEmployeeEditForm.ts";
+import useEmployeeEditForm from "../../../hooks/employee/edit/useEmployeeEditForm.ts";
 import BaseModal from "../../common/modal/BaseModal.tsx";
 import ModalActions from "../../common/modal/ModalActions.tsx";
 import FormField from "../../common/form/FormField.tsx";
