@@ -1,12 +1,11 @@
 import "../../modal.css";
 import type {EmployeeDetail} from "../../../types/employee.ts";
-import {useState} from "react";
 import ConfirmationModal from "./ConfirmationModal.tsx";
-import {createLogin} from "../../../api/EmployeeApi.ts";
 import BaseModal from "../../common/modal/BaseModal.tsx";
 import EmployeeModalTable from "./table/EmployeeModalTable.tsx";
-import useDeleteEmployeeLogin from "../../../hooks/employee/useDeleteEmployeeLogin.ts";
+import useDeleteEmployeeLogin from "../../../hooks/employee/edit/useDeleteEmployeeLogin.ts";
 import ConfirmDeleteModal from "../../common/modal/ConfirmDeleteModal.tsx";
+import useEmployeeCreateLogin from "../../../hooks/employee/edit/useEmployeeCreateLogin.ts";
 
 type Props = {
     employee: EmployeeDetail;
@@ -22,40 +21,14 @@ export default function EmployeeModal({
     onSaved
 }: Props){
     const{
-        employeeLoginToDelete,
-        deleting,
-        deleteError,
-        openDeleteModal,
-        closeDeleteModal,
-        handleDelete
+        employeeLoginToDelete, deleting, deleteError,
+        openDeleteModal, closeDeleteModal, handleDelete
     } = useDeleteEmployeeLogin(employee.id, onSaved)
 
-    const [showConfirmation, setShowConfirmation] = useState(false)
-    const [creating, setCreating] = useState(false)
-    const [error, setError] = useState("")
-
-    const closeCreateModal = () => {
-        if(creating) return
-
-        setShowConfirmation(false)
-        setError("")
-    }
-
-    const handleCreate = async () => {
-        try{
-            setError("")
-            setCreating(true)
-
-            await createLogin(employee.id)
-            await onCreate()
-
-            setShowConfirmation(false)
-        }catch{
-            setError("Vytvareni loginu se nepodarilo")
-        } finally {
-            setCreating(false)
-        }
-    }
+    const {
+        showConfirmation, creating, error,
+        openCreateModal, closeCreateModal, handleCreate
+    } = useEmployeeCreateLogin({employeeId: employee.id, onCreate})
 
     return(
         <>
@@ -65,7 +38,7 @@ export default function EmployeeModal({
             >
              <EmployeeModalTable
                  employee={employee}
-                 onCreate={() => setShowConfirmation(true)}
+                 onCreate={openCreateModal}
                  onDelete={openDeleteModal}
              />
             </BaseModal>

@@ -5,7 +5,9 @@ import DepartmentModal from "../../../components/employees/modal/department/Depa
 import PageHeader from "../../../components/common/PageHeader.tsx";
 import DepartmentEditModal from "../../../components/employees/modal/department/DepartmentEditModal.tsx";
 import useDepartment from "../../../hooks/department/useDepartment.ts";
-import DepartmentTable from "../../../components/employees/modal/department/DepartmentTable.tsx";
+import Table, {type TableColumn} from "../../../components/common/Table.tsx";
+import DetailButton from "../../../components/common/buttons/DetailButton.tsx";
+import EditButton from "../../../components/common/buttons/EditButton.tsx";
 
 export default function DepartmentPage(){
     const{
@@ -48,6 +50,38 @@ export default function DepartmentPage(){
         setSelectedDepartment(data)
     }
 
+    const columns: TableColumn<Department>[] = [
+        {
+            key: "code",
+            header: "Kod oddeleni",
+            render: (department) => department.code
+        },
+        {
+            key: "name",
+            header: "Nazev oddeleni",
+            render: (department) => department.name
+        },
+        {
+            key: "description",
+            header: "Popis oddeleni",
+            render: (department) => department.description
+        },
+        {
+            key: "actions",
+            header: "Akce",
+            render: (department) => (
+                <div className="d-flex gap-2">
+                    <DetailButton
+                        onClick={() => openDepartment(department)}
+                    />
+                    <EditButton
+                        onClick={() => openEditingModal(department)}
+                    />
+                </div>
+            )
+        }
+    ]
+
     return(
         <div className="container-fluid">
             <PageHeader
@@ -56,12 +90,14 @@ export default function DepartmentPage(){
                 onAction={openCreateModal}
             />
 
-            <DepartmentTable
-                departments={departments}
-                onOpen={openDepartment}
-                onEdit={openEditingModal}
+            <Table<Department>
+                columns={columns}
+                data={departments}
+                getRowKey={(department) => department.id}
                 loading={loading}
                 error={loadError}
+                loadingText="Nacitam oddeleni..."
+                emptyMessage="Nebyla nalezena zadna oddeleni"
             />
 
             {selectedDepartment && (

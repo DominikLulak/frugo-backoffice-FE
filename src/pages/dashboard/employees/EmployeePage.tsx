@@ -1,12 +1,13 @@
-import {useState} from "react";
-import {getEmployeeDetail} from "../../../api/EmployeeApi.ts";
-import type {Employee, EmployeeDetail} from "../../../types/employee.ts";
+import type {Employee} from "../../../types/employee.ts";
 import EmployeeModal from "../../../components/employees/modal/EmployeeModal.tsx";
-import useEmployee from "../../../hooks/employee/useEmployee.ts";
+import useEmployeeList from "../../../hooks/employee/page/useEmployeeList.ts";
 import PageHeader from "../../../components/common/PageHeader.tsx";
-import EmployeeFilters from "../../../components/employees/EmployeeFilters.tsx";
-import EmployeeTable from "../../../components/employees/EmployeeTable.tsx";
 import EmployeeEditModal from "../../../components/employees/modal/EmployeeEditModal.tsx";
+import Table from "../../../components/common/Table.tsx";
+import useEmployeeTableColumns from "../../../hooks/employee/page/useEmployeeTableColumns.tsx";
+import useEmployeeModals from "../../../hooks/employee/useEmployeeModals.ts";
+import Filters from "../../../components/common/filters/Filters.tsx";
+import useEmployeeFilters from "../../../hooks/employee/page/useEmployeeFilters.ts";
 
 export default function EmployeePage(){
     const{
@@ -19,76 +20,50 @@ export default function EmployeePage(){
         toggleError,
         setToggleError,
         handleToggleActive
-    } = useEmployee()
+    } = useEmployeeList()
 
-    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetail | null>(null)
+    const filterFields = useEmployeeFilters({
+        filters,
+        updateFilters
+    })
 
-    const [showModal, setShowModal] = useState(false)
-    const [editingEmployee, setEditingEmployee] = useState<EmployeeDetail | null>(null)
+    const employeeModals = useEmployeeModals({
+        onSaved: () => fetchEmployees(true, filters)
+    })
 
     const handleFilter = async () => {
         await fetchEmployees(true, filters)
     }
 
-    const openEmployee = async (employee: Employee) => {
-        const data = await getEmployeeDetail(employee.id)
-        setSelectedEmployee(data)
-    }
-
-    const openCreateModal = () => {
-        setEditingEmployee(null)
-        setShowModal(true)
-    }
-
-    const openEditingModal = async (employee: Employee) => {
-        const data = await getEmployeeDetail(employee.id)
-        setEditingEmployee(data)
-        setShowModal(true)
-    }
-
-    const closeModal = () => {
-        setShowModal(false)
-        setEditingEmployee(null)
-    }
-
-    const refreshSelectedEmployee = async () => {
-        if(!selectedEmployee) return;
-
-        const data = await getEmployeeDetail(selectedEmployee.id)
-        setSelectedEmployee(data)
-    }
+    const columns = useEmployeeTableColumns({
+        onDetail: employeeModals.openDetail,
+        onEdit: employeeModals.openEdit,
+        onToggleActive: handleToggleActive
+    })
 
     return(
         <div className="container-fluid">
             <PageHeader
                 title="Zamestnanci"
                 actionLabel="Pridat zamestnance"
-                onAction={openCreateModal}
+                onAction={employeeModals.openCreate}
             />
 
-            <EmployeeFilters
-                employeeNumber={filters.employeeNumber}
-                name={filters.name}
-                shiftCode={filters.shiftCode}
-                departmentName={filters.departmentName}
-                jobPositionCode={filters.jobPositionCode}
-                active={filters.active}
-                onEmployeeNumberChange={(value) => updateFilters("employeeNumber", value)}
-                onNameChange={(value) => updateFilters("name", value)}
-                onShiftCodeChange={(value) => updateFilters("shiftCode", value)}
-                onDepartmentNameChange={(value) => updateFilters("departmentName", value)}
-                onJobPositionCodeChange={(value) => updateFilters("jobPositionCode", value)}
-                onActiveChange={(value) => updateFilters("active", value)}
+
+            <Filters
+                fields={filterFields}
                 onSubmit={handleFilter}
             />
 
-            <EmployeeTable
-                employees={employees}
-                onOpen={openEmployee}
-                onEdit={openEditingModal}
+
+            <Table<Employee>
+                columns={columns}
+                data={employees}
+                getRowKey={(employee) => employee.id}
                 loading={loading}
                 error={loadError}
-                onToggle={handleToggleActive}
+                loadingText="Nacitam zamestnance..."
+                emptyMessage="Nebyli nalezeni zadni zamestnanci"
             />
 
             {toggleError && (
@@ -103,26 +78,20 @@ export default function EmployeePage(){
                 </div>
             )}
 
-            {selectedEmployee && (
+            {employeeModals.selectedEmployee && (
                 <EmployeeModal
-                    employee={selectedEmployee}
-                    onClose={() => setSelectedEmployee(null)}
-                    onCreate={refreshSelectedEmployee}
-                    onSaved={async () => {
-                        const updateEmployee = await getEmployeeDetail(
-                            selectedEmployee.id
-                        )
-                        setSelectedEmployee(updateEmployee)
-                        await fetchEmployees(true, filters)
-                    }}
+                    employee={employeeModals.selectedEmployee}
+                    onClose={employeeModals.closeDetail}
+                    onCreate={employeeModals.refreshSelectedEmployee}
+                    onSaved={employeeModals.handleEmployeeSaved}
                 />
             )}
 
             <EmployeeEditModal
-                key={`${showModal}-${editingEmployee?.id ?? "new"}`}
-                show={showModal}
-                employee={editingEmployee}
-                onClose={closeModal}
+                key={`${employeeModals.showEditModal}-${employeeModals.editingEmployee?.id ?? "new"}`}
+                show={employeeModals.showEditModal}
+                employee={employeeModals.editingEmployee}
+                onClose={employeeModals.closeEdit}
                 onSaved={() => fetchEmployees(true, filters)}
             />
         </div>

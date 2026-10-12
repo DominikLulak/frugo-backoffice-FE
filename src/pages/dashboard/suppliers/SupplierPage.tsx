@@ -3,6 +3,10 @@ import type {Supplier} from "../../../types/supplier.ts";
 import {deleteSupplier, getSuppliers, setSupplierActive} from "../../../api/SupplierApi.ts";
 import SupplierModal from "../../../components/purchaseOrders/SupplierModal.tsx";
 import ConfirmDeleteModal from "../../../components/common/modal/ConfirmDeleteModal.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Table, {type TableColumn} from "../../../components/common/Table.tsx";
+import EditButton from "../../../components/common/buttons/EditButton.tsx";
+import DeleteButton from "../../../components/common/buttons/DeleteButton.tsx";
 
 export default function SupplierPage(){
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
@@ -97,18 +101,54 @@ export default function SupplierPage(){
         }
     }
 
+    const columns: TableColumn<Supplier>[] = [
+        {
+            key: "name",
+            header: "Nazev",
+            render: (supplier) => supplier.name
+        },
+        {
+            key: "internalCode",
+            header: "Internal code",
+            render: (supplier) => supplier.internalCode
+        },
+        {
+            key: "active",
+            header: "Aktivni",
+            render: (supplier) => supplier.active ? "Ano" : "Ne"
+        },
+        {
+            key: "actions",
+            header: "Akce",
+            render: (supplier) => (
+                <div className="d-flex gap-2">
+                    <EditButton
+                        onClick={() => openEditModal(supplier)}
+                    />
+                    <button
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => handleToggleActive(supplier)}
+                    >
+                        {supplier.active
+                            ? "✓ Deaktivovat"
+                            : "✓ Aktivovat"
+                        }
+                    </button>
+                    <DeleteButton
+                        onClick={() => openDeleteModal(supplier)}
+                    />
+                </div>
+            )
+        }
+    ]
+
     return(
         <div className="container-fluid">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h1>Dodavatele</h1>
-
-                <button
-                    className="btn btn-success"
-                    onClick={openCreateModal}
-                >
-                    + Pridat dodavatele
-                </button>
-            </div>
+            <PageHeader
+                title="Seznam dodavatelu"
+                actionLabel="Pridat dodavatele"
+                onAction={openCreateModal}
+            />
 
             {error &&(
                 <div className="alert alert-danger">
@@ -161,51 +201,11 @@ export default function SupplierPage(){
                 </div>
             </div>
 
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Nazev</th>
-                    <th>Internal code</th>
-                    <th>Aktivni</th>
-                    <th>Akce</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {suppliers.map(supplier => (
-                    <tr key={supplier.id}>
-                        <td>{supplier.name}</td>
-                        <td>{supplier.internalCode}</td>
-                        <td>{supplier.active ? "Ano" : "Ne"}</td>
-                        <td>
-                            <div className="d-flex gap-2">
-                                <button
-                                    className="btn btn-sm btn-outline-primary"
-                                    onClick={() => openEditModal(supplier)}
-                                >
-                                    ✏ Upravit
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-outline-secondary"
-                                    onClick={() => handleToggleActive(supplier)}
-                                >
-                                    {supplier.active
-                                        ? "✓ Deaktivovat"
-                                        : "✓ Aktivovat"
-                                    }
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-outline-danger"
-                                    onClick={() => openDeleteModal(supplier)}
-                                >
-                                    🗑 Smazat
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <Table<Supplier>
+                columns={columns}
+                data={suppliers}
+                getRowKey={(supplier) => supplier.id}
+            />
 
             <SupplierModal
                 key={`${showModal}-${editingSupplier?.id ?? "new"}`}

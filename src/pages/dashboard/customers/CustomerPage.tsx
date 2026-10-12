@@ -6,9 +6,12 @@ import CustomerEditModal from "../../../components/customers/modal/CustomerEditM
 import ConfirmDeleteModal from "../../../components/common/modal/ConfirmDeleteModal.tsx";
 import CustomerFilters from "../../../components/customers/CustomerFilters.tsx";
 import PageHeader from "../../../components/common/PageHeader.tsx";
-import CustomerTable from "../../../components/customers/CustomerTable.tsx";
 import useCustomers from "../../../hooks/customers/useCustomers.ts";
 import useDeleteCustomer from "../../../hooks/customers/useDeleteCustomer.ts";
+import Table, {type TableColumn} from "../../../components/common/Table.tsx";
+import DetailButton from "../../../components/common/buttons/DetailButton.tsx";
+import EditButton from "../../../components/common/buttons/EditButton.tsx";
+import DeleteButton from "../../../components/common/buttons/DeleteButton.tsx";
 
 export default function CustomerPage(){
     const {
@@ -60,6 +63,55 @@ export default function CustomerPage(){
         setEditingCustomer(null)
     }
 
+    const columns: TableColumn<Customer>[] = [
+        {
+            key: "name",
+            header: "Nazev / Jmeno zakaznika",
+            render: (customer) => customer.name
+        },
+        {
+            key: "companyId",
+            header: "ICO",
+            render: (customer) => customer.companyId ?? "-"
+        },
+        {
+            key: "countryCode",
+            header: "Zeme",
+            render: (customer) => customer.countryCode
+        },
+        {
+            key: "city",
+            header: "Mesto",
+            render: (customer) => customer.city
+        },
+        {
+            key: "postalCode",
+            header: "PSC",
+            render: (customer) => customer.postalCode
+        },
+        {
+            key: "registered",
+            header: "Registrovany",
+            render: (customer) => customer.registered ? "Ano" : "Ne"
+        },{
+            key: "actions",
+            header: "Akce",
+            render: (customer) => (
+                <div className="d-flex gap-2">
+                    <DetailButton
+                        onClick={() => openCustomer(customer)}
+                    />
+                    <EditButton
+                        onClick={() => openEditingModal(customer)}
+                    />
+                    <DeleteButton
+                        onClick={() => openDeleteModal(customer)}
+                    />
+                </div>
+            )
+        },
+    ]
+
     return(
         <div className="container-fluid">
             <PageHeader
@@ -84,16 +136,15 @@ export default function CustomerPage(){
                 onSubmit={handleFilter}
             />
 
-            <CustomerTable
-                customers={customers}
-                onOpen={openCustomer}
-                onEdit={openEditingModal}
-                onDelete={openDeleteModal}
+            <Table<Customer>
+                columns={columns}
+                data={customers}
+                getRowKey={(customer) => customer.id}
                 loading={loading}
                 error={loadError}
+                loadingText="Nacitam zakazniky..."
+                emptyMessage="Nebyli nalezeni zadni zakaznici"
             />
-
-
 
             {selectedCustomer && (
                 <CustomerModal
