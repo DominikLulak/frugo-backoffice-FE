@@ -1,34 +1,41 @@
-import type {Role, RoleDetail} from "../types/role.ts";
-import {API_URL} from "./config.ts";
+import type {Role, RoleCreateDto, RoleDetail} from "../types/role.ts";
+import {apiRequest} from "./ApiClient.ts";
 
-export const getRoles = async (): Promise<Role[]> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/roles`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch roles!")
-    }
-    return await res.json() as Promise<Role[]>
+export const getRoles = async ():Promise<Role[]> => {
+    return apiRequest<Role[]>(
+        `/api/admin/roles`
+    )
 }
 
 export const getRoleDetail = async (
     roleId: number
 ):Promise<RoleDetail> => {
-    const token = localStorage.getItem("token")
+    return apiRequest<RoleDetail>(
+        `/api/admin/roles/${roleId}`
+    )
+}
 
-    const res = await fetch(`${API_URL}/api/admin/roles/${roleId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+export const createRole = async (
+    data: RoleCreateDto
+):Promise<Role> => {
+    return apiRequest<Role>(
+        `/api/admin/roles`,
+        {
+            method: "POST",
+            body: data
         }
-    })
+    )
+}
 
-    if(!res.ok){
-        throw new Error("Failed to fetch role detail!")
-    }
-    return await res.json()
+export const updateRole = async (
+    id: number,
+    data: RoleCreateDto
+):Promise<Role> => {
+    return apiRequest<Role>(
+        `/api/admin/roles/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }

@@ -1,60 +1,58 @@
-import {useEffect, useState} from "react";
-import type {Role, RoleDetail} from "../../../types/role.ts";
-import {getRoleDetail, getRoles} from "../../../api/RoleApi.ts";
+import type {Role} from "../../../types/role.ts";
 import RoleModal from "../../../components/rbac/RoleModal.tsx";
+import useRoleList from "../../../hooks/rbac/roles/page/useRoleList.ts";
+import useRoleModal from "../../../hooks/rbac/roles/page/useRoleModal.ts";
+import useRoleTableColumns from "../../../hooks/rbac/roles/page/useRoleTableColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Table from "../../../components/common/Table.tsx";
+import RoleEditModal from "../../../components/rbac/RoleEditModal.tsx";
 
 export default function RolePage(){
-    const [roles, setRoles] = useState<Role[]>([])
-    const [selectedRole, setSelectedRole] = useState<RoleDetail | null>(null)
+    const {
+        roles, fetchRoles, loading, loadError
+    } = useRoleList()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getRoles();
-            setRoles(data)
-        }
-        fetchData()
-    }, []);
+    const roleModals = useRoleModal({
+        onSaved: () => fetchRoles()
+    })
 
-    const openRole = async (role: Role) => {
-        const data = await getRoleDetail(role.id)
-        setSelectedRole(data)
-    }
+    const columns = useRoleTableColumns({
+        onDetail: roleModals.openDetail,
+        onEdit: roleModals.openEdit
+    })
 
     return(
         <div className="container-fluid">
-            <h1>Seznam roli</h1>
+            <PageHeader
+                title="Seznam roli"
+                actionLabel="Pridat roli"
+                onAction={roleModals.openCreate}
+            />
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Kod role</th>
-                        <th>Nazev role</th>
-                    </tr>
-                </thead>
+            <Table<Role>
+                columns={columns}
+                data={roles}
+                getRowKey={(role) => role.id}
+                loading={loading}
+                error={loadError}
+                loadingText="Nacitam role..."
+                emptyMessage="Nebyly nalezeny zadne role"
+            />
 
-                <tbody>
-                {roles.map(role => (
-                    <tr key={role.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openRole(role)}
-                            >
-                                {role.code}
-                            </button>
-                        </td>
-                        <td>{role.name}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-
-            {selectedRole && (
+            {roleModals.selectedRole && (
                 <RoleModal
-                    role={selectedRole}
-                    onClose={() => setSelectedRole(null)}
+                    role={roleModals.selectedRole}
+                    onClose={roleModals.closeDetail}
                 />
             )}
+
+            <RoleEditModal
+                key={`${roleModals.showEditModal}-${roleModals.editingRole?.id ?? "new"}`}
+                show={roleModals.showEditModal}
+                role={roleModals.editingRole}
+                onClose={roleModals.closeEdit}
+                onSaved={() => fetchRoles()}
+            />
         </div>
     )
 }
