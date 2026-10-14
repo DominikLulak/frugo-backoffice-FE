@@ -51,3 +51,8 @@ export type ModuleDetail = {
     moduleName: string;
     permissions: Permission[];
 }
+
+export type RoleCreateDto = {
+    code: string;
+    name: string;
+}

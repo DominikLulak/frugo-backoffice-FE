@@ -14,6 +14,7 @@ type Props<T> = {
     error?: string;
     loadingText?: string;
     emptyMessage?: string;
+    className?: string;
 }
 
 export default function Table<T>({
@@ -23,7 +24,8 @@ export default function Table<T>({
     loading,
     error,
     loadingText,
-    emptyMessage
+    emptyMessage,
+    className
 }:Props<T>){
     return(
         <div className="table-responsive">
@@ -36,7 +38,7 @@ export default function Table<T>({
             {loading ? (
                 <p>{loadingText}</p>
             ) : (
-                <table className="table">
+                <table className={`table ${className ?? ""}`.trim()}>
                     <thead>
                         <tr>
                             {columns.map((column) => (
