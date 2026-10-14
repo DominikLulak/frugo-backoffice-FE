@@ -1,9 +1,9 @@
-import type {RoleDetail} from "../../types/role.ts";
-import useRoleEditForm from "../../hooks/rbac/roles/edit/useRoleEditForm.ts";
-import BaseModal from "../common/modal/BaseModal.tsx";
-import ModalActions from "../common/modal/ModalActions.tsx";
-import FormSection from "../common/form/FormSection.tsx";
-import FormField from "../common/form/FormField.tsx";
+import type {RoleDetail} from "../../../types/role.ts";
+import useRoleEditForm from "../../../hooks/rbac/roles/edit/useRoleEditForm.ts";
+import BaseModal from "../../common/modal/BaseModal.tsx";
+import ModalActions from "../../common/modal/ModalActions.tsx";
+import FormSection from "../../common/form/FormSection.tsx";
+import FormField from "../../common/form/FormField.tsx";
 
 type Props = {
     show: boolean;

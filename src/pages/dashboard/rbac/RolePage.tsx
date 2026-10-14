@@ -1,11 +1,11 @@
 import type {Role} from "../../../types/role.ts";
-import RoleModal from "../../../components/rbac/RoleModal.tsx";
+import RoleModal from "../../../components/rbac/roles/RoleModal.tsx";
 import useRoleList from "../../../hooks/rbac/roles/page/useRoleList.ts";
 import useRoleModal from "../../../hooks/rbac/roles/page/useRoleModal.ts";
 import useRoleTableColumns from "../../../hooks/rbac/roles/page/useRoleTableColumns.tsx";
 import PageHeader from "../../../components/common/PageHeader.tsx";
 import Table from "../../../components/common/Table.tsx";
-import RoleEditModal from "../../../components/rbac/RoleEditModal.tsx";
+import RoleEditModal from "../../../components/rbac/roles/RoleEditModal.tsx";
 
 export default function RolePage(){
     const {
@@ -43,6 +43,7 @@ export default function RolePage(){
                 <RoleModal
                     role={roleModals.selectedRole}
                     onClose={roleModals.closeDetail}
+                    onRefresh={roleModals.refreshSelectedRole}
                 />
             )}
 

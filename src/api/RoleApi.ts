@@ -39,3 +39,27 @@ export const updateRole = async (
         }
     )
 }
+
+export const addPermissionToRole = async (
+    roleId: number,
+    permissionId: number
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/roles/${roleId}/permissions/${permissionId}`,
+        {
+            method: "POST"
+        }
+    )
+}
+
+export const removePermissionFromRole = async (
+    roleId: number,
+    permissionId: number
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/roles/${roleId}/permissions/${permissionId}`,
+        {
+            method: "DELETE"
+        }
+    )
+}
