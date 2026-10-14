@@ -1,34 +1,39 @@
 import type {User, UserDetail} from "../types/role.ts";
-import {API_URL} from "./config.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getUsers = async ():Promise<User[]> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/users`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch users!")
-    }
-    return await res.json() as Promise<User[]>
+    return apiRequest<User[]>(
+        `/api/admin/users`
+    )
 }
 
 export const getUserDetail = async (
     userId: number
 ):Promise<UserDetail> => {
-    const token = localStorage.getItem("token")
+    return apiRequest<UserDetail>(
+        `/api/admin/users/${userId}`
+    )
+}
 
-    const res = await fetch(`${API_URL}/api/admin/users/${userId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+export const addRoleToUser = async (
+    userId: number,
+    roleId: number
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/users/${userId}/roles/${roleId}`,
+        {
+            method: "POST"
         }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch user detail!")
-    }
-    return await res.json()
+    )
+}
+export const removeRoleFromUser = async (
+    userId: number,
+    roleId: number
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/users/${userId}/roles/${roleId}`,
+        {
+            method: "DELETE"
+        }
+    )
 }

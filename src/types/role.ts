@@ -15,6 +15,7 @@ export type Permission = {
 export type User = {
     id: number;
     employeeNumber: string;
+    loginName: string;
     fullName: string;
     departmentName: string;
     jobPositionName: string;
