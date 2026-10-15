@@ -1,319 +1,83 @@
+import {useLocation} from "react-router-dom";
+import {type SidebarGroup, sidebarGroups} from "../../config/sidebarConfig.ts";
+import {hasPermission} from "../../utils/permissions.ts";
 import {useState} from "react";
 import SidebarLink from "./SidebarLink.tsx";
-import {hasPermission} from "../../utils/permissions.ts";
 
 export default function Sidebar(){
+    const location = useLocation()
 
-    const [stockOpen, setStockOpen] = useState(false);
-    const [adminOpen, setAdminOpen] = useState(false);
-    const [purchaseOrderOpen, setPurchaseOrderOpen] = useState(false);
-    const [warehouseOpen, setWarehouseOpen] = useState(false);
-    const [referenceDataOpen, setReferenceDataOpen] = useState(false)
-    const [rbacOpen, setRbacOpen] = useState(false)
-    const [eventsOpen, setEventsOpen] = useState(false)
+    const visibleGroups: SidebarGroup[] = sidebarGroups.map((group) => ({
+        ...group,
+        items: group.items.filter((item) => hasPermission(item.permission)),
+    }))
+        .filter((group) => group.items.length > 0);
+
+    const [openGroups, setOpenGroups] = useState<string[]>(() =>
+        visibleGroups.filter((group) => group.items.some((item) =>
+            location.pathname === item.path
+        ))
+            .map((group) => group.id)
+    );
+
+    const toggleGroup = (groupId: string) => {
+        setOpenGroups((previous) =>
+            previous.includes(groupId)
+                ? previous.filter((id) => id !== groupId)
+                : [...previous, groupId]
+        )
+    }
 
     const menuButton = (active: boolean) =>
         `btn w-100 text-start d-flex justify-content-between align-items-center mb-2 ${
-        active ? "btn-outline-light" : "btn-dark"
-    }`;
+            active ? "btn-outline-light" : "btn-dark"
+        }`;
 
     return(
-        <div className="bg-dark text-white sidebar">
+            <div className="bg-dark text-white sidebar">
+                <div className="p-3 border-bottom">
+                    <h3 className="m-0">
+                        Fru<span className="text-success">go</span>
+                    </h3>
+                </div>
 
-            <div className="p-3 border-bottom">
-                <h3 className="m-0">
-                    Fru<span className="text-success">go</span>
-                </h3>
+                <div className="p-2">
+                    {visibleGroups.map((group) => {
+                        const isOpen = openGroups.includes(group.id)
+
+                        const hasActiveItem = group.items.some(
+                            (item) => item.path === location.pathname
+                        )
+
+                        return(
+                            <div key={group.id}>
+                                <button
+                                    type="button"
+                                    className={menuButton(
+                                        isOpen || hasActiveItem
+                                    )}
+                                    onClick={() => toggleGroup(group.id)}
+                                    aria-expanded={isOpen}
+                                >
+                                    <span>{group.label}</span>
+                                    <span>{isOpen ? "▲" : "▼"}</span>
+                                </button>
+
+                                {isOpen && (
+                                    <div className="ms-3 mb-2">
+                                        {group.items.map((item) => (
+                                            <SidebarLink
+                                                key={item.path}
+                                                to={item.path}
+                                                label={item.label}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
+                </div>
             </div>
-
-            <div className="p-2">
-
-                {/* Sklad */}
-
-                {hasPermission("WAREHOUSE_READ") && (
-                    <>
-                        <button
-                            className={menuButton(stockOpen)}
-                            onClick={() => setStockOpen(!stockOpen)}
-                        >
-                            <span>Sklad</span>
-                            <span>{stockOpen ? "▲" : "▼"}</span>
-                        </button>
-
-                        {stockOpen && (
-                            <div className="ms-3 mb-2">
-
-                                <SidebarLink
-                                    to="/dashboard/stock/items"
-                                    label="Položky na skladě"
-                                />
-
-                                <SidebarLink
-                                    to="/dashboard/pallets"
-                                    label="Pallety na skladě"
-                                />
-
-                                <SidebarLink
-                                    to="/dashboard"
-                                    label="Příjem položky"
-                                    disabled
-                                />
-
-                                <SidebarLink
-                                    to="/dashboard"
-                                    label="Výdej položky do objednávky"
-                                    disabled
-                                />
-
-                                <SidebarLink
-                                    to="/dashboard"
-                                    label="Výdej položky do zásilky"
-                                    disabled
-                                />
-
-                                <SidebarLink
-                                    to="/dashboard"
-                                    label="Založení nové položky"
-                                    disabled
-                                />
-
-                                <SidebarLink
-                                    to="/dashboard"
-                                    label="Vymazání položky ze skladu"
-                                    disabled
-                                />
-
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {/* Produkty */}
-
-                {hasPermission("PRODUCT_READ") && (
-                    <SidebarLink
-                        to="/dashboard/products"
-                        label="Produkty"
-                    />
-                )}
-
-                {/* Objednávky */}
-
-                {hasPermission("ORDER_READ") && (
-                    <SidebarLink
-                        to="/dashboard/orders"
-                        label="Objednávky"
-                    />
-                )}
-
-                {/* Zásilky */}
-
-                {hasPermission("SHIPMENT_READ") && (
-                    <SidebarLink
-                        to="/dashboard/shipments"
-                        label="Zásilky"
-                    />
-                )}
-
-                {/* Nakupni objednavky */}
-
-                {hasPermission("PRODUCT_READ") && (
-                    <>
-                        <button
-                            className={menuButton(purchaseOrderOpen)}
-                            onClick={() => setPurchaseOrderOpen(!purchaseOrderOpen)}
-                        >
-                            <span>Nakupni objednavky</span>
-                            <span>{purchaseOrderOpen ? "▲" : "▼"}</span>
-                        </button>
-
-                        {purchaseOrderOpen && (
-                            <div className="ms-3 mb-2">
-                                <SidebarLink
-                                    to="/dashboard/suppliers"
-                                    label="Dodavatele"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/purchaseOrders"
-                                    label="Nakupni objednavky"
-                                />
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {/* Administrace */}
-
-                {(hasPermission("EMPLOYEE_READ") ||
-                    hasPermission("CUSTOMER_READ")) && (
-
-                    <>
-                        <button
-                            className={menuButton(adminOpen)}
-                            onClick={() => setAdminOpen(!adminOpen)}
-                        >
-                            <span>Administrace</span>
-                            <span>{adminOpen ? "▲" : "▼"}</span>
-                        </button>
-
-                        {adminOpen && (
-                            <div className="ms-3 mb-2">
-
-                                {hasPermission("EMPLOYEE_READ") && (
-                                    <SidebarLink
-                                        to="/dashboard/employees"
-                                        label="Zaměstnanci"
-                                    />
-                                )}
-
-                                {hasPermission("EMPLOYEE_READ") && (
-                                    <SidebarLink
-                                        to="/dashboard/departments"
-                                        label="Departments"
-                                    />
-                                )}
-
-                                {hasPermission("CUSTOMER_READ") && (
-                                    <SidebarLink
-                                        to="/dashboard/customers"
-                                        label="Zákazníci"
-                                    />
-                                )}
-
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {/* Warehouse administrace */}
-
-                {hasPermission("WAREHOUSE_READ") && (
-                    <>
-                        <button
-                            className={menuButton(warehouseOpen)}
-                            onClick={() => setWarehouseOpen(!warehouseOpen)}
-                        >
-                            <span>Warehouse administrace</span>
-                            <span>{warehouseOpen ? "▲" : "▼"}</span>
-                        </button>
-
-                        {warehouseOpen && (
-                            <div className="ms-3 mb-2">
-                                <SidebarLink
-                                    to="/dashboard/warehouses/WarehousePage"
-                                    label="Warehouse"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/warehouses/SectorTypePage"
-                                    label="Sector Types"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/warehouses/Packaging"
-                                    label="Packaging"
-                                />
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {/* Movements and events */}
-
-                {hasPermission("WAREHOUSE_READ") && (
-                    <>
-                        <button
-                            className={menuButton(eventsOpen)}
-                            onClick={() => setEventsOpen(!eventsOpen)}
-                        >
-                            <span>Events</span>
-                            <span>{eventsOpen ? "▲" : "▼"}</span>
-                        </button>
-
-                        {eventsOpen && (
-                            <div className="ms-3 mb-2">
-                                <SidebarLink
-                                    to="/dashboard/stockMovements"
-                                    label="Skladove pohyby"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/eventLogs"
-                                    label="Event Log"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/purchaseOrderStatusHistories"
-                                    label="PO Status Histories"
-                                />
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {/* RBAC */}
-
-                {hasPermission("WAREHOUSE_READ") && (
-                    <>
-                        <button
-                            className={menuButton(rbacOpen)}
-                            onClick={() => setRbacOpen(!rbacOpen)}
-                        >
-                            <span>RBAC</span>
-                            <span>{rbacOpen ? "▲" : "▼"}</span>
-                        </button>
-
-                        {rbacOpen && (
-                            <div className="ms-3 mb-2">
-                                <SidebarLink
-                                    to="/dashboard/roles"
-                                    label="Roles"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/users"
-                                    label="Users"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/modules"
-                                    label="Modules"
-                                />
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {/* Reference data */}
-
-                {hasPermission("WAREHOUSE_READ") && (
-                    <>
-                        <button
-                            className={menuButton(referenceDataOpen)}
-                            onClick={() => setReferenceDataOpen(!referenceDataOpen)}
-                        >
-                            <span>Reference data</span>
-                            <span>{referenceDataOpen ? "▲" : "▼"}</span>
-                        </button>
-
-                        {referenceDataOpen && (
-                            <div className="ms-3 mb-2">
-                                <SidebarLink
-                                    to="/dashboard/shifts"
-                                    label="Shifts"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/statuses"
-                                    label="Statuses"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/countries"
-                                    label="Countries"
-                                />
-                                <SidebarLink
-                                    to="/dashboard/etiSeq"
-                                    label="Eti Sequence"
-                                />
-                            </div>
-                        )}
-                    </>
-                )}
-
-            </div>
-        </div>
-    );
+    )
 }
