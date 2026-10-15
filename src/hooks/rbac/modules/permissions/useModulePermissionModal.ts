@@ -16,8 +16,8 @@ export default function useModulePermissionModal(){
     }
 
     const closePermissionModal = () => {
-        setShowPermissionModal(false)
         setEditingPermission(null)
+        setShowPermissionModal(false)
     }
 
     return{

@@ -50,7 +50,7 @@ export default function ModuleModal({
             </BaseModal>
 
             <ModulePermissionEditModal
-                key={`${module.id}-${editingPermission?.id} ?? 'new'`}
+                key={`${module.id}-${editingPermission?.id ?? "new"}-${showPermissionModal}`}
                 show={showPermissionModal}
                 moduleId={module.id}
                 moduleCode={module.moduleCode}
@@ -58,6 +58,7 @@ export default function ModuleModal({
                 onClose={closePermissionModal}
                 onSaved={onRefresh}
             />
+
         </>
     )
 }
