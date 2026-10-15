@@ -57,3 +57,14 @@ export type RoleCreateDto = {
     code: string;
     name: string;
 }
+
+export type ModuleCreateDto = {
+    moduleCode: string;
+    moduleName: string;
+}
+
+export type PermissionCreateDto = {
+    permissionCode: string;
+    permissionName: string;
+    permissionDescription: string;
+}
