@@ -47,7 +47,7 @@ export default function StockItemsPage(){
                 loading={loading}
                 error={loadError}
                 loadingText="Nacitam skladove polozky..."
-                emptyMessage="Nebyli nalezeny zadne skladove polozky"
+                emptyMessage="Nebyly nalezeny zadne skladove polozky"
             />
 
             {stockItemModal.selectedStockItem && (
