@@ -1,224 +1,91 @@
-import {useEffect, useState} from "react";
-import type {PurchaseOrder, PurchaseOrderDetail} from "../../../types/purchaseOrder.ts";
-import {deletePurchaseOrder, getPurchaseOrderDetail, getPurchaseOrders} from "../../../api/PurchaseOrderApi.ts";
+import type {PurchaseOrder} from "../../../types/purchaseOrder.ts";
 import PurchaseOrderModal from "../../../components/purchaseOrders/PurchaseOrderModal.tsx";
-import PurchaseOrderCreateModal from "../../../components/purchaseOrders/PurchaseOrderCreateModal.tsx";
+import PurchaseOrderCreateModal from "../../../components/purchaseOrders/purchaseOrderEdit/PurchaseOrderCreateModal.tsx";
 import ConfirmDeleteModal from "../../../components/common/modal/ConfirmDeleteModal.tsx";
+import usePurchaseOrderList from "../../../hooks/purchaseOrder/page/usePurchaseOrderList.ts";
+import usePurchaseOrderFilters from "../../../hooks/purchaseOrder/page/usePurchaseOrderFilters.ts";
+import usePurchaseOrderModals from "../../../hooks/purchaseOrder/page/usePurchaseOrderModals.ts";
+import useDeletePurchaseOrder from "../../../hooks/purchaseOrder/page/useDeletePurchaseOrder.ts";
+import usePurchaseOrderTableColumns from "../../../hooks/purchaseOrder/page/usePurchaseOrderTableColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Filters from "../../../components/common/filters/Filters.tsx";
+import Table from "../../../components/common/Table.tsx";
 
 export default function PurchaseOrderPage(){
-    const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([])
-    const [selectedPurchaseOrder, setSelectedPurchaseOrder] = useState<PurchaseOrderDetail | null>(null)
-    const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState<number | null>(null)
-    const [showCreateModal, setShowCreateModal] = useState(false)
+    const {
+        purchaseOrders, filters, updateFilters, fetchPurchaseOrders,
+        loading, loadError
+    } = usePurchaseOrderList()
 
-    const [purchaseOrderNumber, setPurchaseOrderNumber] = useState("")
-    const [supplierName, setSupplierName] = useState("")
-    const [employeeName, setEmployeeName] = useState("")
-    const [statusCode, setStatusCode] = useState("")
+    const filterFields = usePurchaseOrderFilters({
+        filters, updateFilters
+    })
 
-    const [purchaseOrderToDelete, setPurchaseOrderToDelete] = useState<PurchaseOrder | null>(null)
-    const [deleting, setDeleting] = useState(false)
-    const [deleteError, setDeleteError] = useState("")
+    const purchaseOrderModal = usePurchaseOrderModals({
+        onSaved: () => fetchPurchaseOrders(true, filters)
+    })
 
-
-    const fetchPurchaseOrders = async () => {
-        const data = await getPurchaseOrders(
-            purchaseOrderNumber,
-            supplierName,
-            employeeName,
-            statusCode
-        )
-
-        setPurchaseOrders(data)
-    }
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getPurchaseOrders();
-            setPurchaseOrders(data)
-        }
-        fetchData()
-    }, []);
+    const {purchaseOrderToDelete, deleting, deleteError,
+        openDeleteModal, closeDeleteModal, handleDelete
+    } = useDeletePurchaseOrder(() => fetchPurchaseOrders(true, filters))
 
     const handleFilter = async () => {
-        await fetchPurchaseOrders()
+        await fetchPurchaseOrders(true, filters)
     }
 
-    const openPurchaseOrder = async (purchaseOrder: PurchaseOrder) => {
-        const data = await getPurchaseOrderDetail(purchaseOrder.id)
-        setSelectedPurchaseOrder(data)
-        setSelectedPurchaseOrderId(purchaseOrder.id)
-    }
-
-    const openDeleteModal = (purchaseOrder: PurchaseOrder) => {
-        setDeleteError("")
-        setPurchaseOrderToDelete(purchaseOrder)
-    }
-
-    const handleDelete = async() => {
-        if(!purchaseOrderToDelete){
-            return
-        }
-
-        try {
-            setDeleting(true)
-            setDeleteError("")
-
-            await deletePurchaseOrder(purchaseOrderToDelete.id)
-            setPurchaseOrderToDelete(null)
-
-            await fetchPurchaseOrders()
-        }catch {
-            setDeleteError("Nakupni objednavku se nepodarilo smazat")
-        }finally {
-            setDeleting(false)
-        }
-    }
+    const columns = usePurchaseOrderTableColumns({
+        onDetail: purchaseOrderModal.openDetail,
+        onDelete: openDeleteModal
+    })
 
     return(
         <div className="container-fluid">
-            <div className="d=flex justify-content-between align-items-center mb-4">
-                <h1>Nakupni objednavky</h1>
+            <PageHeader
+                title="Nakupni objednavky"
+                actionLabel="Pridat nakupni objednavku"
+                onAction={purchaseOrderModal.openCreate}
+            />
 
-                <button
-                    className="btn btn-success"
-                    onClick={() => setShowCreateModal(true)}
-                >
-                    Pridat nakupni objednavku
-                </button>
-            </div>
+            <Filters
+                fields={filterFields}
+                onSubmit={handleFilter}
+            />
 
-            <div className="row g-2 mb-4">
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Cislo nakupni objednavky"
-                        value={purchaseOrderNumber}
-                        onChange={(e) => setPurchaseOrderNumber(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Nazev dodavatele"
-                        value={supplierName}
-                        onChange={(e) => setSupplierName(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Jmeno zamestnance"
-                        value={employeeName}
-                        onChange={(e) => setEmployeeName(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <select
-                        className="form-control"
-                        value={statusCode}
-                        onChange={(e) => setStatusCode(e.target.value)}
-                    >
-                        <option value="">Vse</option>
-                        <option value="ENTERED">ENTERED</option>
-                        <option value="RELEASED">RELEASED</option>
-                        <option value="BLOCKED">BLOCKED</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                        <option value="FINISHED">FINISHED</option>
-                    </select>
-                </div>
+            <Table<PurchaseOrder>
+                columns={columns}
+                data={purchaseOrders}
+                getRowKey={(purchaseOrder) => purchaseOrder.id}
+                loading={loading}
+                error={loadError}
+                loadingText="Nacitam nakupni objednavky..."
+                emptyMessage="Nebyly nalezeny zadne nakupni objednavky"
+            />
 
-                <div className="col-md-3 d-grid">
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleFilter}
-                    >
-                        Filtrovat
-                    </button>
-                </div>
-            </div>
-
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Cislo nakupni objednavky</th>
-                    <th>Nazev dodavatele</th>
-                    <th>Datum vytvoreni</th>
-                    <th>Jmeno zamestnance</th>
-                    <th>Stav</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {purchaseOrders.map(purchaseOrder => (
-                    <tr key={purchaseOrder.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openPurchaseOrder(purchaseOrder)}
-                            >
-                                {purchaseOrder.purchaseOrderNumber}
-                            </button>
-
-                            {(purchaseOrder.statusCode === "ENTERED" || purchaseOrder.statusCode === "BLOCKED") && (
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-danger"
-                                    onClick={() => openDeleteModal(purchaseOrder)}
-                                >
-                                    🗑 Smazat
-                                </button>
-                            )}
-                        </td>
-                        <td>{purchaseOrder.supplierName}</td>
-                        <td>{purchaseOrder.createdAt.replace("T", " ").substring(0,19)}</td>
-                        <td>{purchaseOrder.employeeName}</td>
-                        <td>{purchaseOrder.statusCode}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-
-            {selectedPurchaseOrder && (
+            {purchaseOrderModal.selectedPurchaseOrder && (
                 <PurchaseOrderModal
-                    purchasedOrderId={selectedPurchaseOrderId!}
-                    purchaseOrder={selectedPurchaseOrder}
-                    onClose={() => {
-                        setSelectedPurchaseOrder(null);
-                        setSelectedPurchaseOrderId(null);
-                    }}
-                    onSaved={async () => {
-                        if(selectedPurchaseOrderId === null){
-                            return
-                        }
-                        const data = await getPurchaseOrderDetail(
-                            selectedPurchaseOrderId
-                        )
-                        setSelectedPurchaseOrder(data)
-
-                        await fetchPurchaseOrders()
-                    }}
+                    purchasedOrderId={purchaseOrderModal.selectedPurchaseOrder.id}
+                    purchaseOrder={purchaseOrderModal.selectedPurchaseOrder}
+                    onClose={purchaseOrderModal.closeDetail}
+                    onSaved={purchaseOrderModal.handlePurchaseOrderSaved}
                 />
             )}
 
-            {showCreateModal && (
-                <PurchaseOrderCreateModal
-                    show={showCreateModal}
-                    onClose={() => setShowCreateModal(false)}
-                    onSaved={fetchPurchaseOrders}
-                />
-            )}
+            <PurchaseOrderCreateModal
+                key={`${purchaseOrderModal.showCreateModal}`}
+                show={purchaseOrderModal.showCreateModal}
+                onClose={purchaseOrderModal.closeCreate}
+                onSaved={() => fetchPurchaseOrders(true, filters)}
+            />
 
             {purchaseOrderToDelete && (
                 <ConfirmDeleteModal
-                    show={purchaseOrderToDelete !== null}
+                    show={true}
                     title="Odstranit nakupni objednavku"
                     description="Opravdu chcete odstranit nakupni objednavku vcetne vsech jejich polozek?"
                     itemName={purchaseOrderToDelete?.purchaseOrderNumber ?? ""}
                     loading={deleting}
                     error={deleteError}
-                    onClose={() => setPurchaseOrderToDelete(null)}
+                    onClose={closeDeleteModal}
                     onConfirm={handleDelete}
                 />
             )}

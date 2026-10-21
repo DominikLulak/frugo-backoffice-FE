@@ -21,6 +21,7 @@ export type PurchaseOrderItem = {
 }
 
 export type PurchaseOrderDetail = {
+    id: number
     purchaseOrderNumber: string;
     supplierId: number;
     supplierName: string;

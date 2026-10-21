@@ -1,12 +1,17 @@
 import type {PurchaseOrderDetail, PurchaseOrderItem} from "../../types/purchaseOrder.ts";
 import "../modal.css"
 import {useState} from "react";
-import PurchaseOrderItemEditModal from "./PurchaseOrderItemEditModal.tsx";
-import PurchaseOrderItemAddModal from "./PurchaseOrderItemAddModal.tsx";
+import PurchaseOrderItemEditModal from "./purchaseOrderItemEdit/PurchaseOrderItemEditModal.tsx";
+import PurchaseOrderItemAddModal from "./purchaseOrderItemEdit/PurchaseOrderItemAddModal.tsx";
 import ConfirmDeleteModal from "../common/modal/ConfirmDeleteModal.tsx";
-import {deletePurchaseOrderItem} from "../../api/PurchaseOrderApi.ts";
-import PurchaseOrderEditModal from "./PurchaseOrderEditModal.tsx";
-import PurchaseOrderStatusModal from "./PurchaseOrderStatusModal.tsx";
+import PurchaseOrderEditModal from "./purchaseOrderEdit/PurchaseOrderEditModal.tsx";
+import PurchaseOrderStatusModal from "./purchaseOrderEdit/PurchaseOrderStatusModal.tsx";
+import usePurchaseOrderDeleteItem from "../../hooks/purchaseOrder/modal/items/usePurchaseOrderDeleteItem.ts";
+import usePurchaseOrderModalTableColumns from "../../hooks/purchaseOrder/modal/usePurchaseOrderModalTableColumns.tsx";
+import BaseModal from "../common/modal/BaseModal.tsx";
+import usePurchaseOrderDetailSection from "../../hooks/purchaseOrder/modal/usePurchaseOrderDetailSection.ts";
+import KeyValueTable from "../common/KeyValueTable.tsx";
+import Table from "../common/Table.tsx";
 
 type Props = {
     purchasedOrderId: number;
@@ -24,245 +29,152 @@ export default function PurchaseOrderModal({
     const [selectedItem, setSelectedItem] = useState<PurchaseOrderItem | null>(null)
     const [showAddItemModal, setShowAddItemModal] = useState(false)
 
-    const [itemToDelete, setItemToDelete] = useState<PurchaseOrderItem | null>(null)
-    const [deleting, setDeleting] = useState(false)
-    const [deleteError, setDeleteError] = useState("")
-
     const [showEditModal, setShowEditModal] = useState(false)
     const [showStatusModal, setShowStatusModal] = useState(false)
 
-    const handleDelete = async () => {
-        if(!itemToDelete){
-            return
-        }
+    const {
+        itemToDelete, deleting, deleteError,
+        openDeleteModal, closeDeleteModal, handleDelete
+    } = usePurchaseOrderDeleteItem(purchasedOrderId, onSaved)
 
-        try{
-            setDeleting(true)
-            setDeleteError("")
+    const sections = usePurchaseOrderDetailSection(purchaseOrder)
 
-            await deletePurchaseOrderItem(
-                purchasedOrderId,
-                itemToDelete.id
-            )
+    const itemColumns = usePurchaseOrderModalTableColumns({
+        purchaseOrderStatus: purchaseOrder.statusCode,
+        onEdit: setSelectedItem,
+        onDelete: openDeleteModal
+    })
 
-            setItemToDelete(null)
-            onSaved()
-        }catch {
-            setDeleteError("Nepodarilo se odstranit polozku")
-        } finally {
-            setDeleting(false)
-        }
-    }
+    const canEditOrder =
+        purchaseOrder.statusCode === "ENTERED" ||
+        purchaseOrder.statusCode === "BLOCKED"
+
+    const canChangeStatus =
+        purchaseOrder.statusCode === "ENTERED" ||
+        purchaseOrder.statusCode === "RELEASED" ||
+        purchaseOrder.statusCode === "BLOCKED"
 
     return(
-        <div
-            className="modal-backdrop-custom"
-            onClick={onClose}
-        >
-            <div
-                className="modal-custom"
-                onClick={(e) => e.stopPropagation()}
+
+        <>
+            <BaseModal
+                title={`Nakupni objednavka ${purchaseOrder.purchaseOrderNumber}`}
+                onClose={onClose}
             >
-                <div className="modal-content-custom">
+                {sections.map((section) => (
+                    <section key={section.title} className="mb-4">
+                        <h6>{section.title}</h6>
+                        <KeyValueTable rows={section.rows}/>
 
-                    <div className="modal-header">
-                        <h5>Nakupni objednavka {purchaseOrder.purchaseOrderNumber}</h5>
+                        {section.title === "Udaje nakupni objednavky" && (
+                            <div className="d-flex gap-2 mt-3">
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-primary"
+                                    onClick={() => setShowEditModal(true)}
+                                    disabled={!canEditOrder}
+                                >
+                                    Upravit dodavatele
+                                </button>
 
-                        <button
-                            className="btn-close"
-                            onClick={onClose}
-                        />
-                    </div>
+                                {canChangeStatus && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline-primary"
+                                        onClick={() => setShowStatusModal(true)}
+                                    >
+                                        Zmenit stav
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </section>
+                ))}
 
-                    <div className="modal-body">
-                        <h6>Udaje nakupni objednavky</h6>
+                <section>
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h6 className="mb-0">Polozky objednavky</h6>
 
-                        <table className="table table-sm">
-                            <tbody>
-                                <tr>
-                                    <th>Nazev dodavatele</th>
-                                    <td>{purchaseOrder.supplierName}</td>
-                                    <td>
-                                        <button
-                                            type="button"
-                                            className="btn btn-sm btn-warning"
-                                            onClick={() => setShowEditModal(true)}
-                                            disabled={
-                                                purchaseOrder.statusCode !== "ENTERED" &&
-                                                purchaseOrder.statusCode !== "BLOCKED"
-                                            }
-                                        >
-                                            Upravit
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Interni kod dodavatele</th>
-                                    <td>{purchaseOrder.supplierInternalCode}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th>Vytvoreno</th>
-                                    <td>{purchaseOrder.createdAt.replace("T", " ").substring(0,19)}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th>Jmeno zamestnance</th>
-                                    <td>{purchaseOrder.employeeName}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th>Stav</th>
-                                    <td>{purchaseOrder.statusCode}</td>
-                                    <td>
-                                        {(purchaseOrder.statusCode === "ENTERED" || purchaseOrder.statusCode === "BLOCKED") && (
-                                            <button
-                                                type="button"
-                                                className="btn btn-sm btn-warning"
-                                                onClick={() => setShowStatusModal(true)}
-                                            >
-                                                Zmenit stav
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <h6 className="mt-4">Polozky nakupni objednavky</h6>
                         <button
                             type="button"
-                            className="btn btn-success btn-sm mb-3"
+                            className="btn btn-success btn-sm"
                             onClick={() => setShowAddItemModal(true)}
-                            disabled={
-                            purchaseOrder.statusCode === "COMPLETED" ||
-                            purchaseOrder.statusCode === "CANCELED"
-                            }
+                            disabled={!canEditOrder}
                         >
                             Pridat polozku
                         </button>
-
-                        {purchaseOrder.items.length === 0 ? (
-                            <p>Zadne polozky</p>
-                        ) : (
-                            <table className="table table-sm">
-                                <thead>
-                                <tr>
-                                    <th>Kategorie</th>
-                                    <th>Typ</th>
-                                    <th>Nazev</th>
-                                    <th>Zeme puvodu</th>
-                                    <th>Mnozstvi</th>
-                                    <th>Prijate mnozstvi</th>
-                                    <th>Stav</th>
-                                    <th>Akce</th>
-                                </tr>
-                                </thead>
-
-                                <tbody>
-                                {purchaseOrder.items.map((item) => (
-                                    <tr key={item.id}>
-                                        <td>{item.categoryCode}</td>
-                                        <td>{item.productType}</td>
-                                        <td>{item.productName}</td>
-                                        <td>{item.countryCode}</td>
-                                        <td>{item.quantity}</td>
-                                        <td>{item.receivedQuantity}</td>
-                                        <td>{item.statusCode}</td>
-                                        <td>
-                                            <button
-                                                type="button"
-                                                className="btn btn-sm btn-outline-primary"
-                                                onClick={() => setSelectedItem(item)}
-                                                disabled={
-                                                    purchaseOrder.statusCode === "COMPLETED" ||
-                                                    purchaseOrder.statusCode === "CANCELED"
-                                                }
-                                            >
-                                                Upravit
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className="btn btn-sm btn-outline-danger ms-2"
-                                                onClick={() => {
-                                                    setDeleteError("")
-                                                    setItemToDelete(item)
-                                                }}
-                                                disabled={
-                                                    purchaseOrder.statusCode === "COMPLETED" ||
-                                                    purchaseOrder.statusCode === "CANCELED" ||
-                                                    item.receivedQuantity > 0
-                                                }
-                                            >
-                                                Odstranit
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        )}
                     </div>
-                </div>
-            </div>
 
-            {selectedItem && (
-                <PurchaseOrderItemEditModal
-                    show={true}
-                    purchasedOrderId={purchasedOrderId}
-                    item={selectedItem}
-                    onClose={() => setSelectedItem(null)}
-                    onSaved={() => {setSelectedItem(null); onSaved();}}
-                />
-            )}
+                    <Table<PurchaseOrderItem>
+                        columns={itemColumns}
+                        data={purchaseOrder.items}
+                        getRowKey={(item) => item.id}
+                    />
 
-            {showAddItemModal && (
-                <PurchaseOrderItemAddModal
-                    show={true}
-                    purchaseOrderId={purchasedOrderId}
-                    onClose={() => setShowAddItemModal(false)}
-                    onSaved={() => {
-                        setShowAddItemModal(false)
-                        onSaved()
-                    }}
-                />
-            )}
+                    {purchaseOrder.items.length === 0 && (
+                        <p className="text-muted mt-2">
+                            Objednavka zatim neobsahuje zadne polozky
+                        </p>
+                    )}
+                </section>
 
-            {itemToDelete && (
-                <ConfirmDeleteModal
-                    show={itemToDelete !== null}
-                    title="Odstranit polozku"
-                    description="Opravdu chcete odstranit polozku?"
-                    itemName={itemToDelete?.productName ?? ""}
-                    loading={deleting}
-                    error={deleteError}
-                    onClose={() => setItemToDelete(null)}
-                    onConfirm={handleDelete}
-                />
-            )}
+                {selectedItem && (
+                    <PurchaseOrderItemEditModal
+                        show={true}
+                        purchasedOrderId={purchasedOrderId}
+                        item={selectedItem}
+                        onClose={() => setSelectedItem(null)}
+                        onSaved={() => {setSelectedItem(null); onSaved();}}
+                    />
+                )}
 
-            {showEditModal && (
-                <PurchaseOrderEditModal
-                    show={true}
-                    purchaseOrderId={purchasedOrderId}
-                    purchaseOrder={purchaseOrder}
-                    onClose={() => setShowEditModal(false)}
-                    onSaved={() => {
-                        setShowEditModal(false);
-                        onSaved();
-                    }}
-                />
-            )}
+                {showAddItemModal && (
+                    <PurchaseOrderItemAddModal
+                        show={true}
+                        purchaseOrderId={purchasedOrderId}
+                        onClose={() => setShowAddItemModal(false)}
+                        onSaved={() => {
+                            setShowAddItemModal(false)
+                            onSaved()
+                        }}
+                    />
+                )}
 
-            {showStatusModal && (
-                <PurchaseOrderStatusModal
-                    purchaseOrderId={purchasedOrderId}
-                    purchaseOrder={purchaseOrder}
-                    onClose={() => setShowStatusModal(false)}
-                    onSaved={onSaved}
-                />
-            )}
-        </div>
+                {itemToDelete && (
+                    <ConfirmDeleteModal
+                        show={true}
+                        title="Odstranit polozku"
+                        description="Opravdu chcete odstranit polozku?"
+                        itemName={itemToDelete?.productName ?? ""}
+                        loading={deleting}
+                        error={deleteError}
+                        onClose={closeDeleteModal}
+                        onConfirm={handleDelete}
+                    />
+                )}
+
+                {showEditModal && (
+                    <PurchaseOrderEditModal
+                        show={true}
+                        purchaseOrderId={purchasedOrderId}
+                        purchaseOrder={purchaseOrder}
+                        onClose={() => setShowEditModal(false)}
+                        onSaved={() => {
+                            setShowEditModal(false);
+                            onSaved();
+                        }}
+                    />
+                )}
+
+                {showStatusModal && (
+                    <PurchaseOrderStatusModal
+                        purchaseOrderId={purchasedOrderId}
+                        purchaseOrder={purchaseOrder}
+                        onClose={() => setShowStatusModal(false)}
+                        onSaved={onSaved}
+                    />
+                )}
+            </BaseModal>
+        </>
     )
 }
