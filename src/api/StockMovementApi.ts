@@ -1,5 +1,5 @@
 import type {StockMovement, StockMovementDetail} from "../types/event.ts";
-import {API_URL} from "./config.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getStockMovements = async (
     eventCode: string = "",
@@ -8,8 +8,6 @@ export const getStockMovements = async (
     toLocation: string = "",
     employeeNumber: string = ""
 ):Promise<StockMovement[]> => {
-    const token = localStorage.getItem("token")
-
     const params = new URLSearchParams()
 
     if(eventCode) params.append("eventCode", eventCode)
@@ -18,31 +16,17 @@ export const getStockMovements = async (
     if(toLocation) params.append("toLocation", toLocation)
     if(employeeNumber) params.append("employeeNumber", employeeNumber)
 
-    const res = await fetch(`${API_URL}/api/admin/stockMovements?${params.toString()}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
+    const query = params.toString()
+    const endpoint = `/api/admin/stockMovements${query ? `?${query}` : ""}`
 
-    if(!res.ok){
-        throw new Error("Failed to fetch stock movements!")
-    }
-    return await res.json() as Promise<StockMovement[]>
+    return apiRequest<StockMovement[]>(endpoint)
 }
 
 export const getStockMovementDetail = async (
     stockMovementId: number
 ):Promise<StockMovementDetail> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/stockMovements/${stockMovementId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch stock movement detail!")
-    }
-    return await res.json()
+    return apiRequest<StockMovementDetail>(
+        `/api/admin/stockMovements/${stockMovementId}`
+    )
 }

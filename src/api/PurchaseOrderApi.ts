@@ -20,7 +20,7 @@ export const getPurchaseOrders = async (
     if(statusCode) params.append("statusCode", statusCode)
 
     const query = params.toString()
-    const endpoint = `/api/admin/purchaseOrder${query ? `?${query}` : ""}`
+    const endpoint = `/api/admin/purchaseOrders${query ? `?${query}` : ""}`
 
     return apiRequest<PurchaseOrder[]>(endpoint);
 }
@@ -30,7 +30,7 @@ export const getPurchaseOrderDetail = async (
 ):Promise<PurchaseOrderDetail> => {
 
     return apiRequest<PurchaseOrderDetail>(
-        `/api/admin/purchaseOrder/${purchaseOrderId}`
+        `/api/admin/purchaseOrders/${purchaseOrderId}`
     )
 }
 
@@ -39,7 +39,7 @@ export const createPurchaseOrder = async (
 ):Promise<PurchaseOrder> => {
 
     return apiRequest<PurchaseOrder>(
-        `/api/admin/purchaseOrder`,
+        `/api/admin/purchaseOrders`,
         {
             method: "POST",
             body: data
@@ -55,7 +55,7 @@ export const updatePurchaseOrderItem = async (
 ):Promise<void> => {
 
     return apiRequest<void>(
-        `/api/admin/purchaseOrder/${purchaseOrderId}/items/${itemId}`,
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,
         {
             method: "PUT",
             body: {
@@ -72,7 +72,7 @@ export const addPurchaseOrderItem = async (
 ):Promise<PurchaseOrderItem> => {
 
     return apiRequest<PurchaseOrderItem>(
-        `/api/admin/purchaseOrder/${purchaseOrderId}/items`,
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items`,
         {
             method: "POST",
             body: item
@@ -86,7 +86,7 @@ export const deletePurchaseOrderItem = async (
 ):Promise<void> => {
 
     return apiRequest<void>(
-        `/api/admin/purchaseOrder/${purchaseOrderId}/items/${itemId}`,
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,
         {
             method: "DELETE",
         }
@@ -98,7 +98,7 @@ export const deletePurchaseOrder = async (
 ):Promise<void> => {
 
     return apiRequest<void>(
-        `/api/admin/purchaseOrder/${purchaseOrderId}`,
+        `/api/admin/purchaseOrders/${purchaseOrderId}`,
         {
             method: "DELETE"
         }
@@ -111,7 +111,7 @@ export const updatePurchaseOrder = async (
 ):Promise<void> => {
 
     return apiRequest<void>(
-        `/api/admin/purchaseOrder/${purchaseOrderId}`,
+        `/api/admin/purchaseOrders/${purchaseOrderId}`,
         {
             method: "PUT",
             body: {supplierId}
@@ -125,7 +125,7 @@ export const changePurchaseOrderStatus = async (
 ):Promise<void> => {
 
     return apiRequest<void>(
-        `/api/admin/purchaseOrder/${purchaseOrderId}/status`,
+        `/api/admin/purchaseOrders/${purchaseOrderId}/status`,
         {
             method: "PATCH",
             body: data

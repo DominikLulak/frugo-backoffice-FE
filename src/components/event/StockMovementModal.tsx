@@ -1,4 +1,13 @@
 import type {StockMovementDetail} from "../../types/event.ts";
+import useStockMovementDateSection from "../../hooks/event/stockMovement/detail/useStockMovementDateSection.ts";
+import useStockMovementEventColumn from "../../hooks/event/stockMovement/detail/useStockMovementEventColumn.ts";
+import useStockMovementItemColumns from "../../hooks/event/stockMovement/detail/useStockMovementItemColumns.ts";
+import useStockMovementMovementColumns from "../../hooks/event/stockMovement/detail/useStockMovementMovementColumns.ts";
+import useStockMovementAdditionalLogsSection
+    from "../../hooks/event/stockMovement/detail/useStockMovementAdditionalLogsSection.ts";
+import BaseModal from "../common/modal/BaseModal.tsx";
+import KeyValueTable from "../common/KeyValueTable.tsx";
+import Table from "../common/Table.tsx";
 
 type Props = {
     stockMovement: StockMovementDetail;
@@ -9,123 +18,51 @@ export default function StockMovementModal({
     stockMovement,
     onClose
 }:Props){
+    const dateSections = useStockMovementDateSection(stockMovement);
+    const eventColumns = useStockMovementEventColumn();
+    const itemColumns = useStockMovementItemColumns();
+    const movementColumns = useStockMovementMovementColumns();
+    const additionalSections = useStockMovementAdditionalLogsSection(stockMovement);
+
     return(
-        <div
-            className="modal-backdrop-custom"
-            onClick={onClose}
-        >
-            <div
-                className="modal-custom"
-                onClick={(e) => e.stopPropagation()}
+        <>
+            <BaseModal
+                title={`Detail skladoveho pohyb`}
+                onClose={onClose}
             >
-                <div className="modal-content-custom">
+                {dateSections.map((section) => (
+                    <section key={section.title}>
+                        <KeyValueTable rows={section.rows}/>
+                    </section>
+                ))}
 
-                    <div className="modal-header">
-                        <h5>Detail skladového pohybu</h5>
+                <h6 className="mt-4">Udalost</h6>
+                <Table<StockMovementDetail>
+                    columns={eventColumns}
+                    data={[stockMovement]}
+                    getRowKey={(item) => item.eventCode}
+                />
 
-                        <button
-                            className="btn-close"
-                            onClick={onClose}
-                        />
-                    </div>
+                <h6 className="mt-4">Skladova polozka</h6>
+                <Table<StockMovementDetail>
+                    columns={itemColumns}
+                    data={[stockMovement]}
+                    getRowKey={(item) => item.etiNumber}
+                />
 
-                    <div className="modal-body">
-                        <table className="table table-sm mt-4">
-                            <tbody>
-                            <tr>
-                                <th>Datum vytvoreni</th>
-                                <td>{stockMovement.createdAt}</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <h6 className="mt-4">Pohyb</h6>
+                <Table<StockMovementDetail>
+                    columns={movementColumns}
+                    data={[stockMovement]}
+                    getRowKey={(item) => item.fromLocation}
+                />
 
-                        <h6 className="mt-4">Udalost</h6>
-                        <table className="table table-sm">
-                            <thead>
-                            <tr>
-                                <th>Kod udalost</th>
-                                <th>Nazev udalosti</th>
-                                <th>Popis udalosti</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr>
-                                <td>{stockMovement.eventCode}</td>
-                                <td>{stockMovement.eventName}</td>
-                                <td>{stockMovement.eventDescription}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <h6 className="mt-4">Skladova polozka</h6>
-                        <table className="table table-sm">
-                            <thead>
-                            <tr>
-                                <th>Cislo ETI</th>
-                                <th>Cislo noveho ETI</th>
-                                <th>Mnozstvi</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr>
-                                <td>{stockMovement.etiNumber}</td>
-                                <td>{stockMovement.newEtiNumber ?? "-"}</td>
-                                <td>{stockMovement.quantity}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <h6 className="mt-4">Pohyb</h6>
-                        <table className="table table-sm">
-                            <thead>
-                            <tr>
-                                <th>Z lokace</th>
-                                <th>Na lokaci</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr>
-                                <td>{stockMovement.fromLocation ?? "-"}</td>
-                                <td>{stockMovement.toLocation ?? "-"}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <h6 className="mt-4">Souvisejici zaznamy</h6>
-                        <table className="table table-sm">
-                            <tbody>
-                            <tr>
-                                <th>Cislo zamestnance</th>
-                                <td>{stockMovement.employeeNumber}</td>
-                            </tr>
-                            <tr>
-                                <th>Jmeno zamestnance</th>
-                                <td>{stockMovement.employeeName}</td>
-                            </tr>
-                            <tr>
-                                <th>Cislo palety</th>
-                                <td>{stockMovement.palletNumber ?? "-"}</td>
-                            </tr>
-                            <tr>
-                                <th>Cislo objednavky</th>
-                                <td>{stockMovement.orderNumber ?? "-"}</td>
-                            </tr>
-                            <tr>
-                                <th>Cislo zasilky</th>
-                                <td>{stockMovement.shipmentNumber ?? "-"}</td>
-                            </tr>
-                            <tr>
-                                <th>Cislo nakupni objednavky</th>
-                                <td>{stockMovement.purchaseOrderNumber ?? "-"}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                {additionalSections.map((section) => (
+                    <section key={section.title}>
+                        <KeyValueTable rows={section.rows}/>
+                    </section>
+                ))}
+            </BaseModal>
+        </>
     )
 }

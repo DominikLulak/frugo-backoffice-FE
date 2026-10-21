@@ -1,41 +1,29 @@
-import {useEffect, useState} from "react";
 import type {EtiSequence} from "../../../types/etiSequence.ts";
-import {getEtiSequences} from "../../../api/EtiSequenceApi.ts";
+import useEtiSeqList from "../../../hooks/referenceData/etiSeq/useEtiSeqList.ts";
+import useEtiSeqTableColumns from "../../../hooks/referenceData/etiSeq/useEtiSeqTableColumns.ts";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Table from "../../../components/common/Table.tsx";
 
 export default function EtiSequencePage(){
-    const [etiSequences, setEtiSequences] = useState<EtiSequence[]>([])
+    const {etiSequences, loading, error} = useEtiSeqList()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getEtiSequences()
-            setEtiSequences(data)
-        }
-        fetchData()
-    }, []);
+    const columns = useEtiSeqTableColumns()
 
     return(
         <div className="container-fluid">
-            <h1>Eti sequence</h1>
+            <PageHeader
+                title="Eti sequence"
+            />
 
-    <table className="table">
-        <thead>
-            <tr>
-                <th>Kod</th>
-                <th>Popis</th>
-                <th>Posledni cislo sekvence</th>
-            </tr>
-        </thead>
-
-        <tbody>
-        {etiSequences.map(etiSequence => (
-                <tr key={etiSequence.id}>
-                    <td>{etiSequence.code}</td>
-                    <td>{etiSequence.description}</td>
-                    <td>{etiSequence.lastNumber}</td>
-                    </tr>
-            ))}
-        </tbody>
-    </table>
-    </div>
-)
+            <Table<EtiSequence>
+                columns={columns}
+                data={etiSequences}
+                getRowKey={(sequence) => sequence.id}
+                loading={loading}
+                error={error}
+                loadingText="Nacitam sekvence"
+                emptyMessage="Nepodarilo se nacist eti sekvence"
+            />
+        </div>
+    )
 }
