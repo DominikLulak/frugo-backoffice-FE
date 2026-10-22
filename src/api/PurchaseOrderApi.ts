@@ -1,16 +1,10 @@
-import type {PurchaseOrder, PurchaseOrderDetail, PurchaseOrderStatusChange} from "../types/purchaseOrder.ts";
-import {API_URL} from "./config.ts";
-
-export interface PurchaseOrderItemCreateDto{
-    productId: number;
-    quantity: number;
-    countryId: number;
-}
-
-export interface PurchaseOrderCreateDto{
-    supplierId: number;
-    items: PurchaseOrderItemCreateDto[];
-}
+import type {
+    PurchaseOrder,
+    PurchaseOrderCreateDto,
+    PurchaseOrderDetail, PurchaseOrderItem, PurchaseOrderItemCreateDto,
+    PurchaseOrderStatusChange
+} from "../types/purchaseOrder.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getPurchaseOrders = async (
     purchaseOrderNumber: string = "",
@@ -18,8 +12,6 @@ export const getPurchaseOrders = async (
     employeeName: string = "",
     statusCode: string = ""
 ):Promise<PurchaseOrder[]> => {
-    const token = localStorage.getItem("token")
-
     const params = new URLSearchParams()
 
     if(purchaseOrderNumber) params.append("purchaseOrderNumber", purchaseOrderNumber)
@@ -27,52 +19,32 @@ export const getPurchaseOrders = async (
     if(employeeName) params.append("employeeName", employeeName)
     if(statusCode) params.append("statusCode", statusCode)
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders?${params.toString()}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch purchase orders!")
-    }
-    return await res.json() as Promise<PurchaseOrder[]>
+    const query = params.toString()
+    const endpoint = `/api/admin/purchaseOrders${query ? `?${query}` : ""}`
+
+    return apiRequest<PurchaseOrder[]>(endpoint);
 }
 
 export const getPurchaseOrderDetail = async (
     purchaseOrderId: number
 ):Promise<PurchaseOrderDetail> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch detail")
-    }
-    return await res.json()
+    return apiRequest<PurchaseOrderDetail>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}`
+    )
 }
 
 export const createPurchaseOrder = async (
     data: PurchaseOrderCreateDto
-):Promise<void> => {
-    const token = localStorage.getItem("token")
+):Promise<PurchaseOrder> => {
 
-    const res = await fetch(
-        `${API_URL}/api/admin/purchaseOrders`,
+    return apiRequest<PurchaseOrder>(
+        `/api/admin/purchaseOrders`,
         {
             method: "POST",
-            headers:{
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-
-    if(!res.ok){
-        throw new Error("Failed to create purchase order!")
-    }
+            body: data
+        }
+    )
 }
 
 export const updatePurchaseOrderItem = async (
@@ -81,116 +53,82 @@ export const updatePurchaseOrderItem = async (
     countryId: number,
     quantity: number
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,{
-        method: "PUT",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            countryId,
-            quantity
-        })
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to update purchase order item!")
-    }
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,
+        {
+            method: "PUT",
+            body: {
+                countryId,
+                quantity
+            }
+        }
+    )
 }
 
 export const addPurchaseOrderItem = async (
     purchaseOrderId: number,
     item: PurchaseOrderItemCreateDto
-):Promise<void> => {
-    const token = localStorage.getItem("token")
+):Promise<PurchaseOrderItem> => {
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/items`, {
-        method: "POST",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(item)
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to add purchase order item!")
-    }
+    return apiRequest<PurchaseOrderItem>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items`,
+        {
+            method: "POST",
+            body: item
+        }
+    )
 }
 
 export const deletePurchaseOrderItem = async (
     purchaseOrderId: number,
     itemId: number
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,{
-        method: "DELETE",
-        headers:{
-            Authorization: `Bearer ${token}`
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,
+        {
+            method: "DELETE",
         }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to delete purchase order item!")
-    }
+    )
 }
 
 export const deletePurchaseOrder = async (
     purchaseOrderId: number
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
 
-    const  res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}`, {
-        method: "DELETE",
-        headers:{
-            Authorization: `Bearer ${token}`
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}`,
+        {
+            method: "DELETE"
         }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to delete purchase order")
-    }
+    )
 }
 
 export const updatePurchaseOrder = async (
     purchaseOrderId: number,
     supplierId: number
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}`, {
-        method: "PUT",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({supplierId})
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to update purchase order!")
-    }
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}`,
+        {
+            method: "PUT",
+            body: {supplierId}
+        }
+    )
 }
 
 export const changePurchaseOrderStatus = async (
     purchaseOrderId: number,
     data: PurchaseOrderStatusChange
 ):Promise<void> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}/status`,{
-        method: "PATCH",
-        headers:{
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to change order status!")
-    }
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/status`,
+        {
+            method: "PATCH",
+            body: data
+        }
+    )
 }

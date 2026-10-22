@@ -1,8 +1,8 @@
-import type {PurchaseOrderItem} from "../../types/purchaseOrder.ts";
+import type {PurchaseOrderItem} from "../../../types/purchaseOrder.ts";
 import {useEffect, useState} from "react";
-import {updatePurchaseOrderItem} from "../../api/PurchaseOrderApi.ts";
-import type {Country} from "../../types/referenceData.ts";
-import {getCountries} from "../../api/CountryApi.ts";
+import {updatePurchaseOrderItem} from "../../../api/PurchaseOrderApi.ts";
+import type {Country} from "../../../types/referenceData.ts";
+import {getCountries} from "../../../api/CountryApi.ts";
 
 type Props = {
     show: boolean;

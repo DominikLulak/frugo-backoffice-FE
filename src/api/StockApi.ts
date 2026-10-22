@@ -1,5 +1,5 @@
-import {API_URL} from "./config.ts";
 import type {StockItem, StockItemDetail} from "../types/stock.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getStockItems = async (
     productCode: string = "",
@@ -8,10 +8,7 @@ export const getStockItems = async (
     productType: string = "",
     etiNumber: string = "",
     warehouseCode: string = "",
-):Promise<StockItem[]> =>{
-
-    const token = localStorage.getItem("token");
-
+):Promise<StockItem[]> => {
     const params = new URLSearchParams();
 
     if(productCode) params.append("productCode", productCode);
@@ -21,38 +18,16 @@ export const getStockItems = async (
     if(etiNumber) params.append("etiNumber", etiNumber);
     if(warehouseCode) params.append("warehouseCode", warehouseCode);
 
-    const response = await fetch(
-        `${API_URL}/api/admin/products/stock?${params.toString()}`,{
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
+    const query = params.toString()
+    const endpoint = `/api/admin/products/stock${query ? `?${query}` : ""}`
 
-    if(!response.ok){
-        throw new Error("Failed to fetch stock items")
-    }
-    return await response.json()
-};
+    return apiRequest<StockItem[]>(endpoint)
+}
 
 export const getStockItemDetail = async (
-    id: number
-): Promise<StockItemDetail> => {
-
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(
-        `${API_URL}/api/admin/products/stock/${id}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-
-    if(!response.ok){
-        throw new Error("Failed to fetch stock item detail");
-    }
-
-    return await response.json();
+    stockItemId: number
+):Promise<StockItemDetail> => {
+    return apiRequest<StockItemDetail>(
+        `/api/admin/products/stock/${stockItemId}`
+    )
 }
