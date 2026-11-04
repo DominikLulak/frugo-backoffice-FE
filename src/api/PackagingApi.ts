@@ -1,17 +1,34 @@
-import type {Packaging} from "../types/product.ts";
-import {API_URL} from "./config.ts";
+import type {Packaging, PackagingCreateDto} from "../types/product.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getPackaging = async ():Promise<Packaging[]> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/warehouses/packaging`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+    return apiRequest<Packaging[]>(
+        `/api/admin/warehouses/packaging`
+    )
+}
+
+export const createPackaging = async (
+    data: PackagingCreateDto
+):Promise<Packaging> => {
+    return apiRequest<Packaging>(
+        `/api/admin/warehouses/packaging`,
+        {
+            method: "POST",
+            body: data
         }
-    })
+    )
+}
 
-    if(!res.ok){
-        throw new Error("Failed to fetch packaging!")
-    }
-    return await res.json() as Promise<Packaging[]>
+export const updatePackaging = async (
+    id: number,
+    data: PackagingCreateDto
+):Promise<Packaging> => {
+    return apiRequest<Packaging>(
+        `/api/admin/warehouses/packaging/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }

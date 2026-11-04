@@ -1,17 +1,34 @@
-import {API_URL} from "./config.ts";
-import type {Shift} from "../types/referenceData.ts";
+import type {Shift, ShiftCreateDto} from "../types/referenceData.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getShifts = async (): Promise<Shift[]> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/shifts`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+    return apiRequest<Shift[]>(
+        `/api/admin/shifts`
+    )
+}
+
+export const createShift = async (
+    data: ShiftCreateDto
+):Promise<Shift> => {
+    return apiRequest<Shift>(
+        `/api/admin/shifts`,
+        {
+            method: "POST",
+            body: data
         }
-    })
+    )
+}
 
-    if(!res.ok){
-        throw new Error("Failed to fetch shifts!")
-    }
-    return await res.json() as Promise<Shift[]>
+export const updateShift = async (
+    id: number,
+    data: ShiftCreateDto
+):Promise<Shift> => {
+    return apiRequest<Shift>(
+        `/api/admin/shifts/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }

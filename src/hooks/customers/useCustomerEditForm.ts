@@ -1,6 +1,6 @@
 import type {CustomerDetail} from "../../types/customer.ts";
 import {useState} from "react";
-import useCountries from "../useCountries.ts";
+import useCountriesList from "../referenceData/countries/useCountriesList.ts";
 import {createCustomer, updateCustomer} from "../../api/CustomerApi.ts";
 
 type Props = {
@@ -20,7 +20,7 @@ export default function useCustomerEditForm({
         countries,
         loadingCountries,
         countriesError
-    } = useCountries()
+    } = useCountriesList()
 
     const [name, setName] = useState(customerDetail?.name ?? "")
     const [companyId, setCompanyId] = useState(customerDetail?.companyId ?? null)

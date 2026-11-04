@@ -1,6 +1,6 @@
 import useProducts from "../../products/useProducts.ts";
 import useSuppliers from "../supplier/useSuppliers.ts";
-import useCountries from "../../useCountries.ts";
+import useCountriesList from "../../referenceData/countries/useCountriesList.ts";
 import {useState} from "react";
 import type {PurchaseOrderCreateDto, PurchaseOrderItemCreateDto} from "../../../types/purchaseOrder.ts";
 import {createPurchaseOrder} from "../../../api/PurchaseOrderApi.ts";
@@ -32,7 +32,7 @@ export default function usePurchaseOrderCreateForm({
 }:UsePurchaseOrderCreateFormProps){
     const {products, loadingProducts, loadProductsError} = useProducts({enabled: show})
     const {suppliers, loadingSuppliers, suppliersError} = useSuppliers({active: true, enabled: show})
-    const {countries, loadingCountries, countriesError} = useCountries({enabled: show})
+    const {countries, loadingCountries, countriesError} = useCountriesList()
 
     const [supplierId, setSupplierId] = useState<number | null>(null)
     const [items, setItems] = useState<PurchaseOrderItemForm[]>([

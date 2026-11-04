@@ -1,17 +1,34 @@
-import {API_URL} from "./config.ts";
-import type {Country} from "../types/referenceData.ts";
+import type {Country, CountryCreateDto} from "../types/referenceData.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getCountries = async (): Promise<Country[]> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/countries`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+    return apiRequest<Country[]>(
+        `/api/admin/countries`
+    )
+}
+
+export const createCountry = async (
+    data: CountryCreateDto
+):Promise<Country> => {
+    return apiRequest<Country>(
+        `/api/admin/countries`,
+        {
+            method: "POST",
+            body: data
         }
-    })
+    )
+}
 
-    if(!res.ok){
-        throw new Error("Failed to fetch countries!")
-    }
-    return await res.json() as Promise<Country[]>
+export const updateCountry = async (
+    id: number,
+    data: CountryCreateDto
+):Promise<Country> => {
+    return apiRequest<Country>(
+        `/api/admin/countries/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }

@@ -1,39 +1,46 @@
-import {useEffect, useState} from "react";
 import type {Country} from "../../../types/referenceData.ts";
-import {getCountries} from "../../../api/CountryApi.ts";
+import useCountriesList from "../../../hooks/referenceData/countries/useCountriesList.ts";
+import useCountryModal from "../../../hooks/referenceData/countries/useCountryModal.ts";
+import useCountryTableColumns from "../../../hooks/referenceData/countries/useCountryTableColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Table from "../../../components/common/Table.tsx";
+import CountryEditModal from "../../../components/referenceData/countries/CountryEditModal.tsx";
 
 export default function CountryPage(){
-    const [countries, setCountries] = useState<Country[]>([])
+    const {countries, fetchCountries, loadingCountries, countriesError} = useCountriesList()
+    const {
+        editingCountry, showEditModal, openEdit, openCreate, closeEdit
+    } = useCountryModal()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getCountries()
-            setCountries(data)
-        }
-        fetchData()
-    }, []);
+    const columns = useCountryTableColumns({
+        onEdit: openEdit
+    })
 
     return(
         <div className="container-fluid">
-            <h1>Seznam zemi</h1>
+            <PageHeader
+                title="Seznam zemi"
+                actionLabel="Pridat novou zemi"
+                onAction={openCreate}
+            />
 
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Kod zeme</th>
-                    <th>Nazev zeme</th>
-                </tr>
-                </thead>
+            <Table<Country>
+                columns={columns}
+                data={countries}
+                getRowKey={(country) => country.id}
+                loading={loadingCountries}
+                error={countriesError}
+                loadingText="Nacitam zeme..."
+                emptyMessage="Nebyly nalezeny zadne zeme"
+            />
 
-                <tbody>
-                {countries.map(country => (
-                    <tr key={country.id}>
-                        <td>{country.code}</td>
-                        <td>{country.name}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <CountryEditModal
+                key={`${showEditModal}-${editingCountry?.id ?? "new"}`}
+                show={showEditModal}
+                country={editingCountry}
+                onClose={closeEdit}
+                onSaved={() => fetchCountries()}
+            />
         </div>
     )
 }
