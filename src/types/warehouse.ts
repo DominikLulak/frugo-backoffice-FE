@@ -49,3 +49,9 @@ export type SectorType = {
     name: string;
     description: string;
 }
+
+export type SectorTypeCreateDto = {
+    code: string;
+    name: string;
+    description: string;
+}

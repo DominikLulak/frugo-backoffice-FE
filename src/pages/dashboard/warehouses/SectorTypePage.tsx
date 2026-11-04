@@ -1,41 +1,45 @@
-import {useEffect, useState} from "react";
-import type {SectorType} from "../../../types/warehouse.ts";
-import {getSectorTypes} from "../../../api/SectorTypeApi.ts";
+import useSectorTypesList from "../../../hooks/warehouses/sectorType/useSectorTypesList.ts";
+import useSectorTypeModal from "../../../hooks/warehouses/sectorType/useSectorTypeModal.ts";
+import useSectorTypeTableColumns from "../../../hooks/warehouses/sectorType/useSectorTypeTableColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Table from "../../../components/common/Table.tsx";
+import SectorTypeEditModal from "../../../components/warehouses/sectorType/SectorTypeEditModal.tsx";
 
 export default function SectorTypePage(){
-    const [sectorTypes, setSectorTypes] = useState<SectorType[]>([])
+    const {sectorTypes, fetchSectorTypes, loadingSectorTypes, sectorTypesError} = useSectorTypesList()
+    const {
+        editingSectorType, showEditModal, openEdit, openCreate, closeEdit
+    } = useSectorTypeModal()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getSectorTypes();
-            setSectorTypes(data)
-        }
-        fetchData()
-    }, []);
+    const columns = useSectorTypeTableColumns({
+        onEdit: openEdit
+    })
 
     return(
         <div className="container-fluid">
-            <h1>Seznam typu sektoru</h1>
+            <PageHeader
+                title="Seznam typu sektoru"
+                actionLabel="Pridat novy typ sektoru"
+                onAction={openCreate}
+            />
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Kod typu sektoru</th>
-                        <th>Nazev typu sektoru</th>
-                        <th>Popis typu sektoru</th>
-                    </tr>
-                </thead>
+            <Table
+                columns={columns}
+                data={sectorTypes}
+                getRowKey={(sectorType) => sectorType.id}
+                loading={loadingSectorTypes}
+                error={sectorTypesError}
+                loadingText="Nacitam typy sektoru..."
+                emptyMessage="Nebyly nalezeny zadne typy sektoru"
+            />
 
-                <tbody>
-                {sectorTypes.map(sectorType => (
-                    <tr key={sectorType.id}>
-                        <td>{sectorType.code}</td>
-                        <td>{sectorType.name}</td>
-                        <td>{sectorType.description}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <SectorTypeEditModal
+                key={`${showEditModal}-${editingSectorType?.id ?? "new"}`}
+                show={showEditModal}
+                sectorType={editingSectorType}
+                onClose={closeEdit}
+                onSaved={() => fetchSectorTypes()}
+            />
         </div>
     )
 }
