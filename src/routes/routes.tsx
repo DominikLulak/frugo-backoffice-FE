@@ -14,7 +14,7 @@ import PurchaseOrderPage from "../pages/dashboard/purchaseOrders/PurchaseOrderPa
 import WarehousePage from "../pages/dashboard/warehouses/WarehousePage.tsx";
 import SectorTypePage from "../pages/dashboard/warehouses/SectorTypePage.tsx";
 import ShiftPage from "../pages/dashboard/referenceData/ShiftPage.tsx";
-import PackagingPage from "../pages/dashboard/warehouses/PackagingPage.tsx";
+import PackagingPage from "../pages/dashboard/referenceData/PackagingPage.tsx";
 import StatusPage from "../pages/dashboard/referenceData/StatusPage.tsx";
 import CountryPage from "../pages/dashboard/referenceData/CountryPage.tsx";
 import EtiSequencePage from "../pages/dashboard/referenceData/EtiSequencePage.tsx";

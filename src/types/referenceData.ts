@@ -16,3 +16,13 @@ export type Country = {
     code: string;
     name: string;
 }
+
+export type ShiftCreateDto = {
+    code: string;
+    description: string;
+}
+
+export type CountryCreateDto = {
+    code: string;
+    name: string;
+}

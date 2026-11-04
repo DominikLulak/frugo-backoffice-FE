@@ -1,10 +1,10 @@
 import type {EmployeeDetail} from "../../../types/employee.ts";
-import useShift from "../../useShift.ts";
 import useDepartments from "../../useDepartments.ts";
 import {useState} from "react";
 import useEmployeeFormValidation, {type EmployeeFormErrors} from "./useEmployeeFormValidation.ts";
 import useEmployeeJobPositions from "../useEmployeeJobPositions.ts";
 import useEmployeeFormSubmit from "./useEmployeeFormSubmit.ts";
+import useShiftList from "../../referenceData/shift/useShiftList.ts";
 
 type Props = {
     employeeId: number;
@@ -19,7 +19,7 @@ export default function useEmployeeEditForm({
     onClose,
     onSaved
 }:Props){
-    const {shifts, loadingShifts, shiftsError} = useShift()
+    const {shifts, loading, loadError} = useShiftList()
     const {departments, loadingDepartments, departmentsError} = useDepartments()
 
     const [firstName, setFirstName] = useState(employee?.firstName ?? "")
@@ -100,8 +100,8 @@ export default function useEmployeeEditForm({
         isEditing,
         handleSave,
         shifts,
-        loadingShifts,
-        shiftsError,
+        loading,
+        loadError,
         departments,
         loadingDepartments,
         departmentsError,

@@ -22,7 +22,7 @@ export default function EmployeeEditModal({
         firstName, setFirstName, lastName, setLastName, address, setAddress, city, setCity,
         postalCode, setPostalCode, birthDate, setBirthDate, shiftId, setShiftId, jobPositionId,
         setJobPositionId, systemUsername, setSystemUsername, phone, setPhone, email, setEmail,
-        saving, errors, saveError, isEditing, handleSave, shifts, loadingShifts, shiftsError,
+        saving, errors, saveError, isEditing, handleSave, shifts, loading, loadError,
         departments, loadingDepartments, departmentsError, jobPositions, loadingJobPositions,
         jobPositionsError, departmentId, handleDepartmentChange
     } = useEmployeeEditForm({employeeId: employee?.id ?? 0, employee: employee, onClose, onSaved})
@@ -47,9 +47,9 @@ export default function EmployeeEditModal({
                     />
                 }
             >
-                {(saveError || shiftsError || departmentsError || jobPositionsError) && (
+                {(saveError || loadError || departmentsError || jobPositionsError) && (
                     <div className="alert alert-danger">
-                        {saveError || shiftsError || departmentsError || jobPositionsError}
+                        {saveError || loadError || departmentsError || jobPositionsError}
                     </div>
                 )}
 
@@ -198,7 +198,7 @@ export default function EmployeeEditModal({
                                     e.target.value === "" ? "" : Number(e.target.value)
                                 )
                             }
-                            disabled={saving || loadingShifts}
+                            disabled={saving || loading}
                         >
                             <option value="">Vyberte smenu</option>
 

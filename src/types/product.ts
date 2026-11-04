@@ -18,3 +18,9 @@ export type Packaging = {
     name: string;
     description: string;
 }
+
+export type PackagingCreateDto = {
+    code: string;
+    name: string;
+    description: string;
+}

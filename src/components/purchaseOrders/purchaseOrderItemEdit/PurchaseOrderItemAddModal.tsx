@@ -1,4 +1,4 @@
-import useCountries from "../../../hooks/useCountries.ts";
+import useCountriesList from "../../../hooks/referenceData/countries/useCountriesList.ts";
 import useProducts from "../../../hooks/products/useProducts.ts";
 import usePurchaseOrderItemAddForm from "../../../hooks/purchaseOrder/modal/usePurchaseOrderItemAddForm.ts";
 import BaseModal from "../../common/modal/BaseModal.tsx";
@@ -19,7 +19,7 @@ export default function PurchaseOrderItemAddModal({
     onClose,
     onSaved
 }:Props){
-    const {countries, loadingCountries, countriesError} = useCountries()
+    const {countries, loadingCountries, countriesError} = useCountriesList()
     const {products, loadingProducts, loadProductsError} = useProducts()
 
     const form = usePurchaseOrderItemAddForm({
