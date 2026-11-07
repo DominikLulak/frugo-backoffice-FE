@@ -24,7 +24,7 @@ export default function RoleAddPermissionModal({ role, onClose, onSaved}:Props){
         <BaseModal
             title={`Pridat opravneni - ${role.name}`}
             onClose={onClose}
-            secondLevel
+            level={2}
             footer={
                 <ModalActions
                     onCancel={onClose}

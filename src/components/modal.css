@@ -13,6 +13,10 @@
     z-index: 1100;
 }
 
+.modal-backdrop-custom-third{
+    z-index: 1200;
+}
+
 .modal-backdrop-custom-delete{
     z-index: 99999;
 }
@@ -31,6 +35,10 @@
 
 .modal-custom-second{
     z-index: 1101;
+}
+
+.modal-custom-third{
+    z-index: 1201;
 }
 
 .modal-custom-delete{

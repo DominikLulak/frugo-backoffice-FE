@@ -3,7 +3,7 @@ type Props = {
     onClose: () => void;
     children: React.ReactNode;
     footer?: React.ReactNode;
-    secondLevel?: boolean;
+    level?: 1 | 2 | 3;
 }
 
 export default function BaseModal({
@@ -11,22 +11,21 @@ export default function BaseModal({
     onClose,
     children,
     footer,
-    secondLevel = false
+    level = 1
 }:Props) {
-    const levelClass = secondLevel
-        ? " modal-custom-second"
-        : ""
-    const backdropClass = secondLevel
-        ? " modal-backdrop-custom-second"
-        : ""
+    const levelClass = level === 3
+        ? "-third"
+        : level === 2
+            ? "-second"
+            : "";
 
     return(
         <div
-            className={`modal-backdrop-custom${backdropClass}`}
+            className={`modal-backdrop-custom${levelClass ? ` modal-backdrop-custom${levelClass}` : ""}`}
             onClick={onClose}
         >
             <div
-                className={`modal-custom${levelClass}`}
+                className={`modal-custom${levelClass ? ` modal-custom${levelClass}` : ""}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="modal-content-custom">

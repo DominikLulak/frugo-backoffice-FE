@@ -31,7 +31,7 @@ export default function CustomerContactModal({
             <BaseModal
                 title={isEditing ? "Upravit kontakt" : "Pridat kontakt"}
                 onClose={onClose}
-                secondLevel
+                level={2}
                 footer={
                     <ModalActions
                         onCancel={onClose}

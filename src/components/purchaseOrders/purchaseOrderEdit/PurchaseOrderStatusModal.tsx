@@ -28,7 +28,7 @@ export default function PurchaseOrderStatusModal({
             <BaseModal
                 title={`Zmenit stav obejdanvky ${purchaseOrder.purchaseOrderNumber}`}
                 onClose={onClose}
-                secondLevel
+                level={2}
                 footer={
                     transitions.length > 0 ? (
                         <ModalActions

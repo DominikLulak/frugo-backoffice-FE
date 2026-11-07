@@ -31,7 +31,7 @@ export default function ModulePermissionEditModal({
         <BaseModal
             title={isEditing ? "Upravit permission" : "Vytvorit permission"}
             onClose={onClose}
-            secondLevel
+            level={2}
             footer={
                 <ModalActions
                     onCancel={onClose}
