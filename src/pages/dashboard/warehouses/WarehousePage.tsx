@@ -1,60 +1,58 @@
-import {useEffect, useState} from "react";
-import type {Warehouse, WarehouseDetail} from "../../../types/warehouse.ts";
-import {getWarehouseDetail, getWarehouses} from "../../../api/WarehouseApi.ts";
-import WarehouseModal from "../../../components/warehouses/WarehouseModal.tsx";
+import type {Warehouse} from "../../../types/warehouse.ts";
+import WarehouseModal from "../../../components/warehouses/wh/WarehouseModal.tsx";
+import useWarehouseList from "../../../hooks/warehouses/wh/useWarehouseList.ts";
+import useWarehouseModal from "../../../hooks/warehouses/wh/useWarehouseModal.ts";
+import useWarehouseTableColumns from "../../../hooks/warehouses/wh/useWarehouseTableColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Table from "../../../components/common/Table.tsx";
+import WarehouseEditModal from "../../../components/warehouses/wh/WarehouseEditModal.tsx";
 
 export default function WarehousePage(){
-    const [warehouses, setWarehouses] = useState<Warehouse[]>([])
-    const [selectedWarehouse, setSelectedWarehouse] = useState<WarehouseDetail | null>(null)
+    const {warehouses, loading, loadError, fetchWarehouses} = useWarehouseList()
+    const {
+        selectedWarehouse, editingWarehouse, showEditModal,
+        openDetail, closeDetail, openCreate, openEdit, closeEdit,
+        handleWarehouseSave
+    } = useWarehouseModal({
+        onSaved: () => fetchWarehouses()
+    })
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getWarehouses();
-            setWarehouses(data)
-        }
-        fetchData()
-    }, []);
-
-    const openWarehouse = async (warehouse: Warehouse) => {
-        const data = await getWarehouseDetail(warehouse.id)
-        setSelectedWarehouse(data)
-    }
+    const columns = useWarehouseTableColumns({
+        onDetail: openDetail,
+        onEdit: openEdit
+    })
 
     return(
         <div className="container-fluid">
-            <h1>Seznam skladu</h1>
+            <PageHeader
+                title="Seznam skladu"
+                actionLabel="Pridat sklad"
+                onAction={openCreate}
+            />
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Kod skladu</th>
-                        <th>Nazev skladu</th>
-                        <th>Popis skladu</th>
-                    </tr>
-                </thead>
+            <Table<Warehouse>
+                columns={columns}
+                data={warehouses}
+                getRowKey={(warehouse) => warehouse.id}
+                loading={loading}
+                error={loadError}
+                loadingText="Nacitam sklady..."
+                emptyMessage="Nebyly nalezeny zadne sklady"
+            />
 
-                <tbody>
-                {warehouses.map(warehouse => (
-                    <tr key={warehouse.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openWarehouse(warehouse)}
-                            >
-                                {warehouse.code}
-                            </button>
-                        </td>
-                        <td>{warehouse.name}</td>
-                        <td>{warehouse.description}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <WarehouseEditModal
+                key={`${showEditModal}-${editingWarehouse?.id ?? "new"}`}
+                show={showEditModal}
+                warehouse={editingWarehouse}
+                onClose={closeEdit}
+                onSaved={() => fetchWarehouses()}
+            />
 
             {selectedWarehouse && (
                 <WarehouseModal
                     warehouse={selectedWarehouse}
-                    onClose={() => setSelectedWarehouse(null)}
+                    onClose={closeDetail}
+                    onSaved={handleWarehouseSave}
                 />
             )}
         </div>

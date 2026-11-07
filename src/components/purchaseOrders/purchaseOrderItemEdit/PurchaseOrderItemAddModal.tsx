@@ -38,7 +38,7 @@ export default function PurchaseOrderItemAddModal({
             <BaseModal
                 title={`Pridat polozku objednavky`}
                 onClose={onClose}
-                secondLevel
+                level={2}
                 footer={
                     <ModalActions
                         onCancel={onClose}

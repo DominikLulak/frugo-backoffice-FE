@@ -34,7 +34,7 @@ export default function PurchaseOrderEditModal({
             <BaseModal
                 title={`Upravit nakupni objednavku ${purchaseOrder.purchaseOrderNumber}`}
                 onClose={onClose}
-                secondLevel
+                level={2}
                 footer={
                     <ModalActions
                         onCancel={onClose}

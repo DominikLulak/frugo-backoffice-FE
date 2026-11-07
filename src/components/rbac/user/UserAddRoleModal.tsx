@@ -23,7 +23,7 @@ export default function UserAddRoleModal({ user, onClose, onSaved}:Props){
         <BaseModal
             title={`Pridat roli uzivateli ${user.fullName}`}
             onClose={onClose}
-            secondLevel
+            level={2}
             footer={
                 <ModalActions
                     onCancel={onClose}
