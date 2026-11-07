@@ -32,6 +32,6 @@ export default function useProducts({enabled = true}:UseProductsOptions = {}){
     }, [enabled, fetchProducts]);
 
     return{
-        products, loadingProducts, loadProductsError
+        products, setProducts, loadingProducts, loadProductsError, fetchProducts
     }
 }

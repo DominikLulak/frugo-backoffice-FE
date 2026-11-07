@@ -1,14 +1,11 @@
-import {API_URL} from "./config.ts";
-import type {Product} from "../types/product.ts";
+import type {Product, ProductCreateDto, ProductSaleStatusDto} from "../types/product.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getProducts = async (
     category: string = "",
     productType: string = "",
     productCode: string = ""
 ): Promise<Product[]> => {
-
-    const token = localStorage.getItem("token");
-
     const params = new URLSearchParams();
 
     if(category){
@@ -21,18 +18,46 @@ export const getProducts = async (
         params.append("productCode", productCode);
     }
 
-    const response = await fetch(
-        `${API_URL}/api/admin/products?${params.toString()}`,
+    const query = params.toString()
+    const endpoint = `/api/admin/products${query ? `?${query}` : ""}`
+
+    return apiRequest<Product[]>(endpoint)
+}
+
+export const createProduct = async (
+    data: ProductCreateDto
+):Promise<Product> => {
+    return apiRequest<Product>(
+        `/api/admin/products`,
         {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            method: "POST",
+            body: data
         }
-    );
+    )
+}
 
-    if(!response.ok){
-        throw new Error("Failed to fetch products!");
-    }
+export const updateProduct = async (
+    id: number,
+    data: ProductCreateDto
+):Promise<Product> => {
+    return apiRequest<Product>(
+        `/api/admin/products/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
+}
 
-    return await response.json();
+export const setProductForSale = async (
+    id: number,
+    forSale: boolean
+):Promise<Product> => {
+    return apiRequest<Product>(
+        `/api/admin/products/${id}/saleStatus`,
+        {
+            method: "PATCH",
+            body: {forSale} satisfies ProductSaleStatusDto
+        }
+    )
 }
