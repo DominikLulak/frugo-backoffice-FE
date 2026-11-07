@@ -15,6 +15,7 @@ type Props<T> = {
     loadingText?: string;
     emptyMessage?: string;
     className?: string;
+    getRowClassName?: (item: T) => string;
 }
 
 export default function Table<T>({
@@ -25,7 +26,8 @@ export default function Table<T>({
     error,
     loadingText,
     emptyMessage,
-    className
+    className,
+    getRowClassName
 }:Props<T>){
     return(
         <div className="table-responsive">
@@ -61,7 +63,10 @@ export default function Table<T>({
                             </tr>
                         ) : (
                             data.map((item) => (
-                                <tr key={getRowKey(item)}>
+                                <tr
+                                    key={getRowKey(item)}
+                                    className={getRowClassName?.(item) ?? ""}
+                                >
                                     {columns.map((column) => (
                                         <td key={column.key}>
                                             {column.render(item)}
