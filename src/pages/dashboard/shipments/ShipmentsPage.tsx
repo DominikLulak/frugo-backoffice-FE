@@ -1,118 +1,54 @@
-import {useEffect, useState} from "react";
-import {getShipmentDetail, getShipments} from "../../../api/ShipmentsApi.ts";
-import type {Shipment, ShipmentDetail} from "../../../types/shipment.ts";
+import type {Shipment} from "../../../types/shipment.ts";
 import ShipmentModal from "../../../components/shipments/ShipmentModal.tsx";
+import useShipmentList from "../../../hooks/shipments/useShipmentList.ts";
+import useShipmentFilters from "../../../hooks/shipments/useShipmentFilters.ts";
+import useShipmentModal from "../../../hooks/shipments/useShipmentModal.ts";
+import useShipmentColumns from "../../../hooks/shipments/useShipmentColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Filters from "../../../components/common/filters/Filters.tsx";
+import Table from "../../../components/common/Table.tsx";
 
 export default function ShipmentsPage(){
+    const {shipments, filters, updateFilters, fetchShipments,
+        loading, loadError} = useShipmentList()
 
-    const [shipments, setShipments] = useState<Shipment[]>([])
-    const [selectedShipment, setSelectedShipment] = useState<ShipmentDetail | null>(null)
+    const filterFields = useShipmentFilters({
+        filters, updateFilters
+    })
 
-    const [shipmentNumber, setShipmentNumber] = useState("")
-    const [orderNumber, setOrderNumber] = useState("")
-    const [statusCode, setStatusCode] = useState("")
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getShipments();
-            setShipments(data);
-        };
-        fetchData();
-    }, []);
+    const {selectedShipment, openDetail, closeDetail} = useShipmentModal()
 
     const handleFilter = async () => {
-        const data = await getShipments(
-            shipmentNumber,
-            orderNumber,
-            statusCode
-        );
-        setShipments(data);
+        await fetchShipments(true, filters)
     }
 
-    const openShipment = async (shipment: Shipment) => {
-        const data = await getShipmentDetail(shipment.id)
-
-        setSelectedShipment(data)
-    }
+    const columns = useShipmentColumns({
+        onDetail: openDetail
+    })
 
     return(
         <div className="container-fluid">
-            <h1>Zásilky</h1>
+            <PageHeader title="Zasilky"/>
 
-            <div className="row g-2 mb-4">
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Číslo zásilky"
-                        value={shipmentNumber}
-                        onChange={(e) => setShipmentNumber(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Číslo objednávky"
-                        value={orderNumber}
-                        onChange={(e) => setOrderNumber(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <select
-                        className="form-control"
-                        value={statusCode}
-                        onChange={(e) => setStatusCode(e.target.value)}
-                    >
-                        <option value="">Vse</option>
-                        <option value="ENTERED">ENTERED</option>
-                        <option value="RELEASED">RELEASED</option>
-                        <option value="BLOCKED">BLOCKED</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                        <option value="FINISHED">FINISHED</option>
-                    </select>
-                </div>
+            <Filters
+                fields={filterFields}
+                onSubmit={handleFilter}
+            />
 
-                <div className="col-md-3 d-grid">
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleFilter}
-                    >
-                        Filtrovat
-                    </button>
-                </div>
-            </div>
-
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Číslo zásilky</th>
-                    <th>Číslo objednávky</th>
-                    <th>Stav</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {shipments.map(shipment => (
-                    <tr key={shipment.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openShipment(shipment)}
-                            >
-                                {shipment.shipmentNumber}
-                            </button>
-                        </td>
-                        <td>{shipment.orderNumber}</td>
-                        <td>{shipment.statusCode}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <Table<Shipment>
+                columns={columns}
+                data={shipments}
+                getRowKey={(shipment) => shipment.id}
+                loading={loading}
+                error={loadError}
+                loadingText="Nacitam zasilky..."
+                emptyMessage="Nebbyly nalezeny zadne zasilky"
+            />
 
             {selectedShipment && (
                 <ShipmentModal
                     shipment={selectedShipment}
-                    onClose={() => setSelectedShipment(null)}
+                    onClose={closeDetail}
                 />
             )}
         </div>

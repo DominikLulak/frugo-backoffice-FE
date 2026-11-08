@@ -1,9 +1,12 @@
 import "../modal.css"
-import type {ShipmentDetail} from "../../types/shipment.ts";
-import {useState} from "react";
-import {getPalletItems} from "../../api/ShipmentsApi.ts";
+import type {ShipmentDetail, ShipmentPallet} from "../../types/shipment.ts";
 import PalletModal from "./PalletModal.tsx";
-import type {PalletWarehouseItem} from "../../types/pallet.ts";
+import useShipmentPalletModal from "../../hooks/shipments/modal/useShipmentPalletModal.ts";
+import useShipmentSection from "../../hooks/shipments/modal/useShipmentSection.ts";
+import useShipmentDetailColumns from "../../hooks/shipments/modal/useShipmentDetailColumns.tsx";
+import BaseModal from "../common/modal/BaseModal.tsx";
+import KeyValueTable from "../common/KeyValueTable.tsx";
+import Table from "../common/Table.tsx";
 
 type Props = {
     shipment: ShipmentDetail;
@@ -14,114 +17,44 @@ export default function ShipmentModal({
     shipment,
     onClose
 }: Props){
+    const {selectedPallet, palletItems, loading, error, openPallet, closePallet
+    } = useShipmentPalletModal()
 
-    const [palletItems, setPalletItems] = useState<PalletWarehouseItem[]>([]);
-
-    const [selectedPallet, setSelectedPallet] =
-        useState<{
-            id: number;
-            number: string;
-        } | null>(null);
-
-    const openPallet = async (
-        palletId: number,
-        palletNumber: string
-    ) => {
-
-        const data = await getPalletItems(palletId);
-
-        setPalletItems(data);
-
-        setSelectedPallet({
-            id: palletId,
-            number: palletNumber
-        });
-    }
+    const sections = useShipmentSection(shipment)
+    const columns = useShipmentDetailColumns({
+        onOpenPallet: openPallet
+    })
 
     return(
-        <div
-            className="modal-backdrop-custom"
-            onClick={onClose}
-        >
-            <div
-                className="modal-custom"
-                onClick={(e) => e.stopPropagation()}
+        <>
+            <BaseModal
+                title={`Detail zasilky ${shipment.shipmentNumber}`}
+                onClose={onClose}
             >
-                <div className="modal-content-custom">
+                {sections.map((section) => (
+                    <section key={section.title}>
+                        <KeyValueTable rows={section.rows}/>
+                    </section>
+                ))}
 
-                    <div className="modal-header">
-
-                        <h5>
-                            Zasilka {shipment.shipmentNumber}
-                        </h5>
-
-                        <button
-                            className="btn-close"
-                            onClick={onClose}
-                        />
-
-                    </div>
-
-                    <div className="modal-body">
-
-                        <div className="mb-3">
-                            <strong>Cislo objednavky:</strong>{" "}
-                            {shipment.orderNumber}
-                        </div>
-
-                        <div className="mb-3">
-                            <strong>Stav:</strong>{" "}
-                            {shipment.statusCode}
-                        </div>
-
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Paleta</th>
-                                    <th>Uzavrena</th>
-                                    <th>Stav</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                            {shipment.pallets.map((pallet) => (
-
-                                <tr key={pallet.palletId}>
-                                    <td>
-                                        <button
-                                            className="btn btn-link"
-                                            onClick={() =>
-                                                openPallet(
-                                                    pallet.palletId,
-                                                    pallet.palletNumber
-                                                )
-                                            }
-                                        >
-                                            {pallet.palletNumber}
-                                        </button>
-                                    </td>
-                                    <td>
-                                        {pallet.palletClosed
-                                            ? "Ano"
-                                            : "Ne"
-                                        }
-                                    </td>
-                                    <td>{pallet.statusCode}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            {selectedPallet && (
-                <PalletModal
-                    palletNumber={selectedPallet.number}
-                    items={palletItems}
-                    onClose={() => setSelectedPallet(null)}
+                <Table<ShipmentPallet>
+                    columns={columns}
+                    data={shipment.pallets}
+                    getRowKey={(item) => item.palletId}
+                    loading={loading}
+                    error={error}
+                    loadingText="Nacitam polozky palety..."
+                    emptyMessage="Nebyly nalezeny zadne polozky palety"
                 />
-            )}
-        </div>
+
+                {selectedPallet && (
+                    <PalletModal
+                        palletNumber={selectedPallet.number}
+                        items={palletItems}
+                        onClose={closePallet}
+                    />
+                )}
+            </BaseModal>
+        </>
     )
 }
