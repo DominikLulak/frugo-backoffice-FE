@@ -53,7 +53,7 @@ export default function usePOStatusHistoryList(){
     }, [])
 
     useEffect(() => {
-        void fetchStatusHistories
+        void fetchStatusHistories()
     }, [fetchStatusHistories]);
 
     return{
