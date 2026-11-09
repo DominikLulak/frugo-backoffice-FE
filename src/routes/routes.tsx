@@ -24,6 +24,7 @@ import ModulePage from "../pages/dashboard/rbac/ModulePage.tsx";
 import StockMovementPage from "../pages/dashboard/event/StockMovementPage.tsx";
 import EventLogPage from "../pages/dashboard/event/EventLogPage.tsx";
 import PurchaseOrderStatusHistoryPage from "../pages/dashboard/event/PurchaseOrderStatusHistoryPage.tsx";
+import OrderStatusHistoryPage from "../pages/dashboard/event/OrderStatusHistoryPage.tsx";
 
 type AppRoute = {
     path: string;
@@ -145,6 +146,11 @@ export const appRoutes: AppRoute[] = [
     {
         path: "purchaseOrderStatusHistories",
         element: <PurchaseOrderStatusHistoryPage/>,
+        permission: "EVENTS_READ"
+    },
+    {
+        path: "orderStatusHistories",
+        element: <OrderStatusHistoryPage/>,
         permission: "EVENTS_READ"
     },
 ];
