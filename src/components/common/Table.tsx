@@ -1,4 +1,5 @@
 import type {ReactNode} from "react";
+import "./table.css"
 
 export type TableColumn<T> = {
     key: string;
@@ -30,7 +31,7 @@ export default function Table<T>({
     getRowClassName
 }:Props<T>){
     return(
-        <div className="table-responsive">
+        <div className="table-scroll-container">
             {error && (
                 <div className="alert alert-danger">
                     {error}
