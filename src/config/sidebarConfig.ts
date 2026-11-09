@@ -140,6 +140,11 @@ export const sidebarGroups: SidebarGroup[] = [
                 label: "Historie stavů nákupních objednávek",
                 path: "/dashboard/purchaseOrderStatusHistories",
                 permission: "EVENTS_READ"
+            },
+            {
+                label: "Historie stavů objednávek",
+                path: "/dashboard/orderStatusHistories",
+                permission: "EVENTS_READ"
             }
         ]
     },
