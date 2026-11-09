@@ -1,0 +1,18 @@
+
+.table-scroll-container {
+    width: 100%;
+    max-height: calc(100dvh - 300px);
+    overflow: auto;
+    position: relative;
+}
+
+.table-scroll-container table {
+    margin-bottom: 0;
+}
+
+.table-scroll-container thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #fff;
+}
