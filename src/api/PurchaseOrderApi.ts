@@ -1,5 +1,10 @@
-import type {PurchaseOrder, PurchaseOrderDetail} from "../types/purchaseOrder.ts";
-import {API_URL} from "./config.ts";
+import type {
+    PurchaseOrder,
+    PurchaseOrderCreateDto,
+    PurchaseOrderDetail, PurchaseOrderItem, PurchaseOrderItemCreateDto,
+    PurchaseOrderStatusChange
+} from "../types/purchaseOrder.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getPurchaseOrders = async (
     purchaseOrderNumber: string = "",
@@ -7,8 +12,6 @@ export const getPurchaseOrders = async (
     employeeName: string = "",
     statusCode: string = ""
 ):Promise<PurchaseOrder[]> => {
-    const token = localStorage.getItem("token")
-
     const params = new URLSearchParams()
 
     if(purchaseOrderNumber) params.append("purchaseOrderNumber", purchaseOrderNumber)
@@ -16,29 +19,116 @@ export const getPurchaseOrders = async (
     if(employeeName) params.append("employeeName", employeeName)
     if(statusCode) params.append("statusCode", statusCode)
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders?${params.toString()}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch purchase orders!")
-    }
-    return await res.json() as Promise<PurchaseOrder[]>
+    const query = params.toString()
+    const endpoint = `/api/admin/purchaseOrders${query ? `?${query}` : ""}`
+
+    return apiRequest<PurchaseOrder[]>(endpoint);
 }
 
 export const getPurchaseOrderDetail = async (
     purchaseOrderId: number
 ):Promise<PurchaseOrderDetail> => {
-    const token = localStorage.getItem("token")
 
-    const res = await fetch(`${API_URL}/api/admin/purchaseOrders/${purchaseOrderId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+    return apiRequest<PurchaseOrderDetail>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}`
+    )
+}
+
+export const createPurchaseOrder = async (
+    data: PurchaseOrderCreateDto
+):Promise<PurchaseOrder> => {
+
+    return apiRequest<PurchaseOrder>(
+        `/api/admin/purchaseOrders`,
+        {
+            method: "POST",
+            body: data
         }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch detail")
-    }
-    return await res.json()
+    )
+}
+
+export const updatePurchaseOrderItem = async (
+    purchaseOrderId: number,
+    itemId: number,
+    countryId: number,
+    quantity: number
+):Promise<void> => {
+
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,
+        {
+            method: "PUT",
+            body: {
+                countryId,
+                quantity
+            }
+        }
+    )
+}
+
+export const addPurchaseOrderItem = async (
+    purchaseOrderId: number,
+    item: PurchaseOrderItemCreateDto
+):Promise<PurchaseOrderItem> => {
+
+    return apiRequest<PurchaseOrderItem>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items`,
+        {
+            method: "POST",
+            body: item
+        }
+    )
+}
+
+export const deletePurchaseOrderItem = async (
+    purchaseOrderId: number,
+    itemId: number
+):Promise<void> => {
+
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/items/${itemId}`,
+        {
+            method: "DELETE",
+        }
+    )
+}
+
+export const deletePurchaseOrder = async (
+    purchaseOrderId: number
+):Promise<void> => {
+
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}`,
+        {
+            method: "DELETE"
+        }
+    )
+}
+
+export const updatePurchaseOrder = async (
+    purchaseOrderId: number,
+    supplierId: number
+):Promise<void> => {
+
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}`,
+        {
+            method: "PUT",
+            body: {supplierId}
+        }
+    )
+}
+
+export const changePurchaseOrderStatus = async (
+    purchaseOrderId: number,
+    data: PurchaseOrderStatusChange
+):Promise<void> => {
+
+    return apiRequest<void>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/status`,
+        {
+            method: "PATCH",
+            body: data
+        }
+    )
 }

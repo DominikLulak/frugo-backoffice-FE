@@ -1,82 +1,42 @@
-import type {Pallet, PalletWarehouseItem} from "../../types/pallet.ts";
+import type {PalletDetail, PalletWarehouseItem} from "../../types/pallet.ts";
+import BaseModal from "../common/modal/BaseModal.tsx";
+import usePalletDetailColumns from "../../hooks/pallets/modal/usePalletDetailColumns.ts";
+import usePalletSection from "../../hooks/pallets/modal/usePalletSection.ts";
+import KeyValueTable from "../common/KeyValueTable.tsx";
+import Table from "../common/Table.tsx";
 
 type Props = {
-    pallet: Pallet;
-    items: PalletWarehouseItem[];
+    pallet: PalletDetail;
     onClose: () => void;
 }
 
 export default function PalletModal({
     pallet,
-    items,
     onClose
 }:Props){
+
+    const sections = usePalletSection(pallet)
+    const columns = usePalletDetailColumns()
+
     return(
-        <div
-            className="modal-backdrop-custom"
-            onClick={onClose}
-        >
-            <div
-                className="modal-custom"
-                onClick={(e) => e.stopPropagation()}
+        <>
+            <BaseModal
+                title={`Detail palety ${pallet.palletNumber}`}
+                onClose={onClose}
             >
-                <div className="modal-content-custom">
 
-                    <div className="modal-header">
-                        <h5>Paleta {pallet.palletNumber}</h5>
+                {sections.map((section) => (
+                    <section key={section.title}>
+                        <KeyValueTable rows={section.rows}/>
+                    </section>
+                ))}
 
-                        <button
-                            className="btn-close"
-                            onClick={onClose}
-                        />
-                    </div>
-
-                    <div className="modal-body">
-                        <h6>Udaje palety</h6>
-                        <table className="table table-sm">
-                            <tbody>
-                                <tr>
-                                    <th>ETI cislo</th>
-                                    <td>{pallet.palletNumber}</td>
-                                </tr>
-                                <tr>
-                                    <th>Lokace</th>
-                                    <td>{pallet.locationCode}</td>
-                                </tr>
-                                <tr>
-                                    <th>Uzavrena</th>
-                                    <td>{pallet.closed ? "Ano" : "Ne"}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <h6 className="mt-4">Obsah palety</h6>
-                        <table className="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Produkt</th>
-                                    <th>Kategorie</th>
-                                    <th>Typ produktu</th>
-                                    <th>Nazev</th>
-                                    <th>ETI Cislo</th>
-                                    <th>Mnozstvi</th>
-                                </tr>
-                            </thead>
-
-                            {items.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.productCode}</td>
-                                    <td>{item.categoryCode}</td>
-                                    <td>{item.productType}</td>
-                                    <td>{item.productName}</td>
-                                    <td>{item.etiNumber}</td>
-                                    <td>{item.quantity}</td>
-                                </tr>
-                            ))}
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <Table<PalletWarehouseItem>
+                    columns={columns}
+                    data={pallet.items}
+                    getRowKey={(item) => item.etiNumber}
+                />
+            </BaseModal>
+        </>
     )
 }

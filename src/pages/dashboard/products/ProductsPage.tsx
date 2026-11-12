@@ -1,179 +1,87 @@
-import {useEffect, useState} from "react";
-import {getProducts} from "../../../api/ProductApi.ts";
 import type {Product} from "../../../types/product.ts";
-
-type StockStatus = "ALL" | "OK" | "LOW" | "ORDER";
+import useProductsList from "../../../hooks/products/productsPage/useProductsList.ts";
+import useProductsFilters from "../../../hooks/products/productsPage/useProductsFilters.ts";
+import useProductTableColumns from "../../../hooks/products/productsPage/useProductTableColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Filters from "../../../components/common/filters/Filters.tsx";
+import Table from "../../../components/common/Table.tsx";
+import ProductEditModal from "../../../components/products/ProductEditModal.tsx";
+import useProductsTable from "../../../hooks/products/productsPage/useProductsTable.ts";
 
 export default function ProductsPage(){
 
-    const [products, setProducts] = useState<Product[]>([]);
+    const {
+        products, filters, updateFilters,
+        fetchProducts, loading, loadError,
+        selectedProduct, showEditModal,
+        actionError, setActionError,
+        openCreate, openEdit, closeEdit, handleToggleSale
+    } = useProductsList()
 
-    const [category, setCategory] = useState("");
-    const [productType, setProductType] = useState("");
-    const [productCode, setProductCode] = useState("");
+    const {stockStatus, setStockStatus, filteredProducts,
+        getRowClass, getStockStatusLabel} = useProductsTable(products)
 
-    const [stockStatus, setStockStatus] = useState<StockStatus>("ALL");
+    const filterFields = useProductsFilters({
+        filters, updateFilters, setStockStatus, stockStatus
+    })
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getProducts();
-            setProducts(data);
-        };
-
-        fetchData();
-    }, []);
+    const columns = useProductTableColumns({
+        onEdit: openEdit,
+        onToggleSale: handleToggleSale,
+        getStockStatusLabel
+    })
 
     const handleFilter = async () => {
-        const data = await getProducts(
-            category,
-            productType,
-            productCode
-        );
-
-        setProducts(data);
-    };
-
-    const getStockStatus = (product: Product): StockStatus => {
-
-        if(product.availableStock <= product.minimumStock){
-            return "ORDER";
-        }
-        if(product.availableStock <= product.reorderPoint){
-            return "LOW";
-        }
-
-        return "OK";
+        await fetchProducts(true, filters)
     }
 
-    const getRowClass = (product: Product) => {
-
-        const status = getStockStatus(product);
-
-        if(status === "ORDER"){
-            return "table-danger";
-        }
-        if(status === "LOW"){
-            return "table-warning";
-        }
-
-        return "";
-    };
-
-    const getStockStatusLabel = (product: Product) => {
-
-        const status = getStockStatus(product);
-
-        if (status === "ORDER") {
-            return "🔴 Objednat";
-        }
-
-        if (status === "LOW") {
-            return "🟠 Dochází";
-        }
-
-        return "🟢 Dostatek";
-    };
-
-    const filteredProducts = products.filter((product) => {
-        if(stockStatus === "ALL"){
-            return true;
-        }
-
-        return getStockStatus(product) === stockStatus;
-    })
+    const handleSave = async () => {
+        await fetchProducts(true, filters)
+    }
 
     return(
         <div className="container-fluid">
+            <PageHeader
+                title="Produkty"
+                actionLabel="Pridat produkty"
+                onAction={openCreate}
+            />
 
-            <h1>Produkty</h1>
+            <Filters
+                fields={filterFields}
+                onSubmit={handleFilter}
+            />
 
-            <div className="row g-2 mb-4">
+            <Table<Product>
+                columns={columns}
+                data={filteredProducts}
+                getRowKey={(product) => product.id}
+                loading={loading}
+                error={loadError}
+                loadingText="Nacitam produkty..."
+                emptyMessage="Nebyly nalezeny zadne produkty"
+                getRowClassName={getRowClass}
+            />
 
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Kategorie"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Typ produktu"
-                        value={productType}
-                        onChange={(e) => setProductType(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Kod produktu"
-                        value={productCode}
-                        onChange={(e) => setProductCode(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <select
-                        className="form-control"
-                        value={stockStatus}
-                        onChange={(e) =>
-                            setStockStatus(e.target.value as StockStatus)
-                        }
-                    >
-                        <option value="ALL">Vsechny stavy</option>
-                        <option value="OK">Dostatek</option>
-                        <option value="LOW">Dochazi</option>
-                        <option value="ORDER">Objednat</option>
-                    </select>
-                </div>
+            {actionError && (
+                <div className="alert alert-danger alert-dismissible mt-3">
+                    {actionError}
 
-                <div className="col-md-3 d-grid">
                     <button
-                        className="btn btn-primary"
-                        onClick={handleFilter}
-                    >
-                        Filtrovat
-                    </button>
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setActionError("")}
+                    />
                 </div>
+            )}
 
-            </div>
-
-            <table className="table table-striped table-hover">
-
-                <thead>
-                    <tr>
-                        <th>Kod produktu</th>
-                        <th>Kategorie</th>
-                        <th>Typ produktu</th>
-                        <th>Nazev</th>
-                        <th>Cena / kg</th>
-                        <th>Trvanlivost</th>
-                        <th>V prodeji</th>
-                        <th>Na sklade</th>
-                        <th>Stav skladu</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {filteredProducts.map((product) => (
-                        <tr
-                            key={product.id}
-                            className={getRowClass(product)}
-                        >
-                            <td>{product.productCode}</td>
-                            <td>{product.categoryCode}</td>
-                            <td>{product.productType}</td>
-                            <td>{product.productName}</td>
-                            <td>{product.pricePerUnit} Kc</td>
-                            <td>{product.shelfLifeDays}</td>
-                            <td>{product.forSale ? "Ano" : "Ne"}</td>
-                            <td>{product.availableStock}</td>
-                            <td>{getStockStatusLabel(product)}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <ProductEditModal
+                key={`${showEditModal}-${selectedProduct?.id ?? "new"}`}
+                show={showEditModal}
+                product={selectedProduct}
+                onClose={closeEdit}
+                onSaved={handleSave}
+            />
         </div>
     );
 }

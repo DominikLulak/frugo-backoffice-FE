@@ -53,3 +53,23 @@ export type EventLogDetail = {
     data: Record<string, unknown>;
     entities: EventLogEntity[];
 }
+
+export type PurchaseOrderStatusHistory = {
+    id: number;
+    purchaseOrderNumber: string;
+    oldStatusCode: string;
+    newStatusCode: string;
+    changedAt: string;
+    employeeName: string;
+    note: string;
+}
+
+export type OrderStatusHistory = {
+    id: number;
+    orderNumber: string;
+    oldStatusCode: string;
+    newStatusCode: string;
+    changedAt: string;
+    employeeName: string;
+    note: string;
+}

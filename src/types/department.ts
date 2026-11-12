@@ -9,6 +9,7 @@ export type Department = {
 
 export type JobPosition = {
     id: number;
+    departmentId: number;
     departmentName: string;
     code: string;
     name: string;
@@ -30,4 +31,16 @@ export type JobPositionDetail = {
     name: string;
     description: string;
     employees: Employee[];
+}
+
+export type DepartmentCreateDto = {
+    name: string;
+    code: string;
+    description: string;
+}
+
+export type JobPositionCreateDto = {
+    name: string;
+    code: string;
+    description: string;
 }

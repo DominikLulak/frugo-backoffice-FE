@@ -1,51 +1,81 @@
-import type {Department, DepartmentDetail, JobPositionDetail} from "../types/department.ts";
-import {API_URL} from "./config.ts";
+import type {
+    DepartmentCreateDto,
+    Department,
+    DepartmentDetail,
+    JobPositionDetail, JobPositionCreateDto
+} from "../types/department.ts";
+import {apiRequest} from "./ApiClient.ts";
 
-export const getDepartments = async (): Promise<Department[]> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/departments`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch departments!")
-    }
-    return await res.json() as Promise<Department[]>
+export const getDepartments = async ():Promise<Department[]> => {
+    return apiRequest<Department[]>(
+        `/api/admin/departments`
+    )
 }
 
 export const getDepartmentDetail = async (
     departmentId: number
 ):Promise<DepartmentDetail> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/departments/${departmentId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch department detail!")
-    }
-    return await res.json()
+    return apiRequest<DepartmentDetail>(
+        `/api/admin/departments/${departmentId}`
+    )
 }
 
 export const getJobPositionDetail = async (
     jobPositionId: number
 ):Promise<JobPositionDetail> => {
-    const token = localStorage.getItem("token")
+    return apiRequest<JobPositionDetail>(
+        `/api/admin/departments/jobPosition/${jobPositionId}`
+    )
+}
 
-    const res = await fetch(`${API_URL}/api/admin/departments/jobPosition/${jobPositionId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+export const createDepartment = async (
+    data: DepartmentCreateDto
+):Promise<Department> => {
+    return apiRequest<Department>(
+        `/api/admin/departments`,
+        {
+            method: "POST",
+            body: data
         }
-    })
+    )
+}
 
-    if(!res.ok){
-        throw new Error("Failed to fetch job position detail!")
-    }
-    return await res.json()
+export const updateDepartment = async (
+    id: number,
+    data: DepartmentCreateDto
+):Promise<Department> => {
+    return apiRequest<Department>(
+        `/api/admin/departments/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
+}
+
+export const addJobPosition = async (
+    departmentId: number,
+    data: JobPositionCreateDto
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/departments/${departmentId}/jobPosition`,
+        {
+            method: "POST",
+            body: data
+        }
+    )
+}
+
+export const updateJobPosition = async (
+    departmentId: number,
+    jobPositionId: number,
+    data: JobPositionCreateDto
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/departments/${departmentId}/jobPosition/${jobPositionId}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }

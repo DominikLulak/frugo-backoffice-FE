@@ -1,5 +1,5 @@
-import {API_URL} from "./config.ts";
-import type {Employee, EmployeeDetail} from "../types/employee.ts";
+import type {Employee, EmployeeCreateDto, EmployeeDetail, EmployeeLogin} from "../types/employee.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getEmployees = async (
     employeeNumber: string = "",
@@ -9,8 +9,6 @@ export const getEmployees = async (
     jobPositionName: string = "",
     active: boolean | null = null
 ):Promise<Employee[]> => {
-    const token = localStorage.getItem("token")
-
     const params = new URLSearchParams()
 
     if(employeeNumber) params.append("employeeNumber", employeeNumber)
@@ -20,32 +18,74 @@ export const getEmployees = async (
     if(jobPositionName) params.append("jobPositionName", jobPositionName)
     if(active !== null ) params.append("isActive", String(active))
 
-    const res = await fetch(`${API_URL}/api/admin/employees?${params.toString()}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch employees!")
-    }
-    return await res.json() as Promise<Employee[]>
+    const query = params.toString()
+    const endpoint = `/api/admin/employees${query ? `?${query}` : ""}`
+
+    return apiRequest<Employee[]>(endpoint)
 }
 
 export const getEmployeeDetail = async (
     employeeId: number
 ):Promise<EmployeeDetail> => {
 
-    const token = localStorage.getItem("token");
+    return apiRequest<EmployeeDetail>(
+        `/api/admin/employees/${employeeId}`
+    )
+}
 
-    const res = await fetch(`${API_URL}/api/admin/employees/${employeeId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+export const createEmployee = async (
+    data: EmployeeCreateDto
+):Promise<Employee> => {
+    return apiRequest<Employee>(
+        "/api/admin/employees",
+        {
+            method: "POST",
+            body: data
         }
-    })
+    )
+}
 
-    if(!res.ok){
-        throw new Error("Failed to fetch employee detail!")
-    }
+export const updateEmployee = async (
+    id: number,
+    data: EmployeeCreateDto
+):Promise<Employee> => {
+    return apiRequest<Employee>(
+        `/api/admin/employees/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
+}
 
-    return await res.json()
+export const createLogin = async (
+    employeeId: number
+):Promise<EmployeeLogin> => {
+    return apiRequest<EmployeeLogin>(
+        `/api/admin/employees/${employeeId}`,
+        {
+            method: "POST"
+        }
+    )
+}
+
+export const deleteLogin = async (
+    employeeLogin: number
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/employees/${employeeLogin}`,
+        { method: "DELETE" }
+    )
+}
+
+export const setEmployeeActive = async (
+    employeeId: number,
+    active: boolean
+):Promise<Employee> => {
+    return apiRequest<Employee>(
+        `/api/admin/employees/${employeeId}/active?active=${active}`,
+        {
+            method: "PATCH",
+        }
+    )
 }

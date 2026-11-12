@@ -15,6 +15,7 @@ export type Permission = {
 export type User = {
     id: number;
     employeeNumber: string;
+    loginName: string;
     fullName: string;
     departmentName: string;
     jobPositionName: string;
@@ -50,4 +51,20 @@ export type ModuleDetail = {
     moduleCode: string;
     moduleName: string;
     permissions: Permission[];
+}
+
+export type RoleCreateDto = {
+    code: string;
+    name: string;
+}
+
+export type ModuleCreateDto = {
+    moduleCode: string;
+    moduleName: string;
+}
+
+export type PermissionCreateDto = {
+    permissionCode: string;
+    permissionName: string;
+    permissionDescription: string;
 }

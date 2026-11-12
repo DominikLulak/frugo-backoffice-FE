@@ -1,49 +1,109 @@
-import type {SectorDetail, Warehouse, WarehouseDetail} from "../types/warehouse.ts";
-import {API_URL} from "./config.ts";
+import type {
+    LocationCreateDto,
+    SectorDetail,
+    Warehouse,
+    WarehouseCreateDto,
+    WarehouseDetail, WarehouseSector,
+    WarehouseSectorCreateDto
+} from "../types/warehouse.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getWarehouses = async (): Promise<Warehouse[]> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/warehouses`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-
-    if(!res.ok){
-        throw new Error("Failed to fetch warehouses!")
-    }
-    return await res.json() as Promise<Warehouse[]>
+    return apiRequest<Warehouse[]>(
+        `/api/admin/warehouses`
+    )
 }
 
 export const getWarehouseDetail = async (
     warehouseId: number
 ):Promise<WarehouseDetail> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/warehouses/${warehouseId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch warehouse detail!")
-    }
-    return await res.json()
+    return apiRequest<WarehouseDetail>(
+        `/api/admin/warehouses/${warehouseId}`
+    )
 }
 
 export const getSectorLocations = async (
     sectorId: number
 ):Promise<SectorDetail> => {
-    const token = localStorage.getItem("token")
+    return apiRequest<SectorDetail>(
+        `/api/admin/warehouses/sectors/${sectorId}`
+    )
+}
 
-    const res = await fetch(`${API_URL}/api/admin/warehouses/sectors/${sectorId}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+export const createWarehouse = async (
+    data: WarehouseCreateDto
+):Promise<Warehouse> => {
+    return apiRequest<Warehouse>(
+        `/api/admin/warehouses`,
+        {
+            method: "POST",
+            body: data
         }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch sectors!")
-    }
-    return await res.json()
+    )
+}
+
+export const updateWarehouse = async (
+    id: number,
+    data: WarehouseCreateDto
+):Promise<Warehouse> => {
+    return apiRequest<Warehouse>(
+        `/api/admin/warehouses/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
+}
+
+export const createWarehouseSector = async (
+    warehouseId: number,
+    data: WarehouseSectorCreateDto
+):Promise<WarehouseSector> => {
+    return apiRequest<WarehouseSector>(
+        `/api/admin/warehouses/${warehouseId}/sectors`,
+        {
+            method: "POST",
+            body: data
+        }
+    )
+}
+
+export const updateWarehouseSector = async (
+    warehouseId: number,
+    sectorId: number,
+    data: WarehouseSectorCreateDto
+):Promise<WarehouseSector> => {
+    return apiRequest<WarehouseSector>(
+        `/api/admin/warehouses/${warehouseId}/sectors/${sectorId}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
+}
+
+export const createLocation = async (
+    sectorId: number,
+    data: LocationCreateDto
+):Promise<Location> => {
+    return apiRequest<Location>(
+        `/api/admin/warehouses/${sectorId}/locations`,
+        {
+            method: "POST",
+            body: data
+        }
+    )
+}
+
+export const updateLocation = async (
+    locationId: number,
+    data: LocationCreateDto
+):Promise<Location> => {
+    return apiRequest<Location>(
+        `/api/admin/warehouses/locations/${locationId}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }

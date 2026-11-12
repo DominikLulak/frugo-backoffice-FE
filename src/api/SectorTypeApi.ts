@@ -1,17 +1,33 @@
-import type {SectorType} from "../types/warehouse.ts";
-import {API_URL} from "./config.ts";
+import type {SectorType, SectorTypeCreateDto} from "../types/warehouse.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getSectorTypes = async (): Promise<SectorType[]> => {
-    const token = localStorage.getItem("token")
+    return apiRequest<SectorType[]>(
+        `/api/admin/warehouses/sectorTypes`
+    )
+}
 
-    const res = await fetch(`${API_URL}/api/admin/warehouses/sectorTypes`, {
-        headers:{
-            Authorization: `Bearer ${token}`
+export const createSectorType = async (
+    data: SectorTypeCreateDto
+):Promise<SectorType> => {
+    return apiRequest<SectorType>(
+        `/api/admin/warehouses/sectorTypes`,
+        {
+            method: "POST",
+            body: data
         }
-    })
+    )
+}
 
-    if(!res.ok){
-        throw new Error("Failed to fetch sector types!")
-    }
-    return await res.json() as Promise<SectorType[]>
+export const updateSectorType = async (
+    id: number,
+    data: SectorTypeCreateDto
+):Promise<SectorType> => {
+    return apiRequest<SectorType>(
+        `/api/admin/warehouses/sectorTypes/${id}`,
+        {
+            method: "PUT",
+            body: data
+        }
+    )
 }

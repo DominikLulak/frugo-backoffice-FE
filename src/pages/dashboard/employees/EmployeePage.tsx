@@ -1,156 +1,99 @@
-import {useEffect, useState} from "react";
-import {getEmployeeDetail, getEmployees} from "../../../api/EmployeeApi.ts";
-import type {Employee, EmployeeDetail} from "../../../types/employee.ts";
-import EmployeeModal from "../../../components/employees/EmployeeModal.tsx";
+import type {Employee} from "../../../types/employee.ts";
+import EmployeeModal from "../../../components/employees/modal/EmployeeModal.tsx";
+import useEmployeeList from "../../../hooks/employee/page/useEmployeeList.ts";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import EmployeeEditModal from "../../../components/employees/modal/EmployeeEditModal.tsx";
+import Table from "../../../components/common/Table.tsx";
+import useEmployeeTableColumns from "../../../hooks/employee/page/useEmployeeTableColumns.tsx";
+import useEmployeeModals from "../../../hooks/employee/useEmployeeModals.ts";
+import Filters from "../../../components/common/filters/Filters.tsx";
+import useEmployeeFilters from "../../../hooks/employee/page/useEmployeeFilters.ts";
 
 export default function EmployeePage(){
-    const [employees, setEmployees] = useState<Employee[]>([])
-    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDetail | null>(null)
+    const{
+        employees,
+        filters,
+        updateFilters,
+        fetchEmployees,
+        loading,
+        loadError,
+        toggleError,
+        setToggleError,
+        handleToggleActive
+    } = useEmployeeList()
 
-    const [employeeNumber, setEmployeeNumber] = useState("")
-    const [name, setName] = useState("")
-    const [shiftCode, setShiftCode] = useState("")
-    const [departmentName, setDepartmentName] = useState("")
-    const [jobPositionCode, setJobPositionCode] = useState("")
-    const [active, setActive] = useState<boolean | null>(null)
+    const filterFields = useEmployeeFilters({
+        filters,
+        updateFilters
+    })
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getEmployees();
-            setEmployees(data)
-        }
-        fetchData()
-    }, []);
+    const employeeModals = useEmployeeModals({
+        onSaved: () => fetchEmployees(true, filters)
+    })
 
-    const handleFilter = async () =>{
-        const data = await getEmployees(
-            employeeNumber,
-            name,
-            shiftCode,
-            departmentName,
-            jobPositionCode,
-            active
-        )
-        setEmployees(data)
+    const handleFilter = async () => {
+        await fetchEmployees(true, filters)
     }
 
-    const openEmployee = async (employee: Employee) => {
-        const data = await getEmployeeDetail(employee.id)
-        setSelectedEmployee(data)
-    }
+    const columns = useEmployeeTableColumns({
+        onDetail: employeeModals.openDetail,
+        onEdit: employeeModals.openEdit,
+        onToggleActive: handleToggleActive
+    })
 
     return(
         <div className="container-fluid">
-            <h1>Zaměstnanci</h1>
+            <PageHeader
+                title="Zamestnanci"
+                actionLabel="Pridat zamestnance"
+                onAction={employeeModals.openCreate}
+            />
 
-            <div className="row g-2 mb-4">
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Osobní číslo"
-                        value={employeeNumber}
-                        onChange={(e)=> setEmployeeNumber(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <input
-                        className="form-control"
-                        placeholder="Jméno"
-                        value={name}
-                        onChange={(e)=> setName(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Smena"
-                        value={shiftCode}
-                        onChange={(e)=> setShiftCode(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Oddeleni"
-                        value={departmentName}
-                        onChange={(e)=> setDepartmentName(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-2">
-                    <input
-                        className="form-control"
-                        placeholder="Pracovni pozice"
-                        value={jobPositionCode}
-                        onChange={(e)=> setJobPositionCode(e.target.value)}
-                    />
-                </div>
-                <div className="col-md-3">
-                    <select
-                        className="form-control"
-                        value={active === null ?"" : String(active)}
-                        onChange={(e) => {
-                            if(e.target.value === ""){
-                                setActive(null)
-                            }else{
-                                setActive(e.target.value === "true")
-                            }
-                        }}
-                    >
-                        <option value="">Vse</option>
-                        <option value="true">Ano</option>
-                        <option value="false">Ne</option>
-                    </select>
-                </div>
 
-                <div className="col-md-1 d-grid">
+            <Filters
+                fields={filterFields}
+                onSubmit={handleFilter}
+            />
+
+
+            <Table<Employee>
+                columns={columns}
+                data={employees}
+                getRowKey={(employee) => employee.id}
+                loading={loading}
+                error={loadError}
+                loadingText="Nacitam zamestnance..."
+                emptyMessage="Nebyli nalezeni zadni zamestnanci"
+            />
+
+            {toggleError && (
+                <div className="alert alert-danger mt-2">
+                    {toggleError}
                     <button
-                        className="btn btn-primary"
-                        onClick={handleFilter}
-                    >
-                        Filtrovat
-                    </button>
+                        type="button"
+                        className="btn-close float-end"
+                        aria-label="Zavřít"
+                        onClick={() => setToggleError("")}
+                    />
                 </div>
-            </div>
+            )}
 
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Osobní číslo</th>
-                    <th>Jméno</th>
-                    <th>Smena</th>
-                    <th>Oddeleni</th>
-                    <th>Praovni pozice</th>
-                    <th>Aktivni</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {employees.map(employee => (
-                    <tr key={employee.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openEmployee(employee)}
-                            >
-                                {employee.employeeNumber}
-                            </button>
-                        </td>
-                        <td>{employee.name}</td>
-                        <td>{employee.shiftCode}</td>
-                        <td>{employee.departmentName}</td>
-                        <td>{employee.jobPositionName}</td>
-                        <td>{employee.active ? "Ano" : "Ne"}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-
-            {selectedEmployee && (
+            {employeeModals.selectedEmployee && (
                 <EmployeeModal
-                    employee={selectedEmployee}
-                    onClose={() => setSelectedEmployee(null)}
+                    employee={employeeModals.selectedEmployee}
+                    onClose={employeeModals.closeDetail}
+                    onCreate={employeeModals.refreshSelectedEmployee}
+                    onSaved={employeeModals.handleEmployeeSaved}
                 />
             )}
+
+            <EmployeeEditModal
+                key={`${employeeModals.showEditModal}-${employeeModals.editingEmployee?.id ?? "new"}`}
+                show={employeeModals.showEditModal}
+                employee={employeeModals.editingEmployee}
+                onClose={employeeModals.closeEdit}
+                onSaved={() => fetchEmployees(true, filters)}
+            />
         </div>
     )
 

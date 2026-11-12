@@ -7,15 +7,15 @@ export default function DashboardLayout(){
     const [sidebarOpen, setSidebarOpen] = useState(true)
 
     return(
-        <div className="d-flex vh-100">
+        <div className="dashboard-layout">
 
             {sidebarOpen && <Sidebar/>}
 
-            <div className="flex-grow-1 d-flex flex-column">
+            <div className="dashboard-main">
                 
                 <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)}/>
 
-                <main className="bg-light flex-grow-1 p-4">
+                <main className="dashboard-content">
                     <Outlet/>
                 </main>
                 

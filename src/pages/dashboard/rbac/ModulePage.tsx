@@ -1,60 +1,57 @@
-import {useEffect, useState} from "react";
-import type {Module, ModuleDetail} from "../../../types/role.ts";
-import {getModuleDetail, getModules} from "../../../api/ModuleApi.ts";
-import ModuleModal from "../../../components/rbac/ModuleModal.tsx";
+import ModuleModal from "../../../components/rbac/modules/ModuleModal.tsx";
+import useModuleList from "../../../hooks/rbac/modules/page/useModuleList.ts";
+import useModuleTableColumns from "../../../hooks/rbac/modules/page/useModuleTableColumns.tsx";
+import PageHeader from "../../../components/common/PageHeader.tsx";
+import Table from "../../../components/common/Table.tsx";
+import useModuleModal from "../../../hooks/rbac/modules/page/useModuleModal.ts";
+import ModuleEditModal from "../../../components/rbac/modules/ModuleEditModal.tsx";
+import type {Module} from "../../../types/role.ts";
 
 export default function ModulePage(){
-    const [modules, setModules] = useState<Module[]>([])
-    const [selectedModule, setSelectedModule] = useState<ModuleDetail | null>(null)
+    const { modules, fetchModules, loading, loadError} = useModuleList()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await getModules()
-            setModules(data)
-        }
-        fetchData()
-    }, []);
+    const moduleModals = useModuleModal({
+        onSaved: () => fetchModules()
+    })
 
-    const openModule = async (module: Module) => {
-        const data = await getModuleDetail(module.id)
-        setSelectedModule(data)
-    }
+    const columns = useModuleTableColumns({
+        onDetail: moduleModals.openDetail,
+        onEdit: moduleModals.openEdit
+    })
 
     return(
         <div className="container-fluid">
-            <h1>Seznam modulu</h1>
+            <PageHeader
+                title="Seznam modulu"
+                actionLabel="Pridat modul"
+                onAction={moduleModals.openCreate}
+            />
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Kod modulu</th>
-                        <th>Jmeno modulu</th>
-                    </tr>
-                </thead>
+            <Table<Module>
+                columns={columns}
+                data={modules}
+                getRowKey={(module) => module.id}
+                loading={loading}
+                error={loadError}
+                loadingText="Nacitam moduly..."
+                emptyMessage="Nebyly nalezeny zadne moduly"
+            />
 
-                <tbody>
-                {modules.map(module => (
-                    <tr key={module.id}>
-                        <td>
-                            <button
-                                className="btn btn-link p-0"
-                                onClick={() => openModule(module)}
-                            >
-                                {module.moduleCode}
-                            </button>
-                        </td>
-                        <td>{module.moduleName}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-
-            {selectedModule && (
+            {moduleModals.selectedModule && (
                 <ModuleModal
-                    module={selectedModule}
-                    onClose={() => setSelectedModule(null)}
+                    module={moduleModals.selectedModule}
+                    onClose={moduleModals.closeDetail}
+                    onRefresh={moduleModals.refreshSelectedModule}
                 />
             )}
+
+            <ModuleEditModal
+                key={`${moduleModals.showEditModal}-${moduleModals.editingModule?.id ?? "new"}`}
+                show={moduleModals.showEditModal}
+                module={moduleModals.editingModule}
+                onClose={moduleModals.closeEdit}
+                onSaved={fetchModules}
+            />
         </div>
     )
 }

@@ -1,63 +1,35 @@
-import {API_URL} from "./config.ts";
 import type {Shipment, ShipmentDetail} from "../types/shipment.ts";
-import type {PalletWarehouseItem} from "../types/pallet.ts";
+import type {PalletDetail} from "../types/pallet.ts";
+import {apiRequest} from "./ApiClient.ts";
 
 export const getShipments = async (
     shipmentNumber: string = "",
     orderNumber: string = "",
     statusCode: string = "",
 ):Promise<Shipment[]> => {
-    const token = localStorage.getItem("token")
-
     const params = new URLSearchParams()
 
     if(shipmentNumber) params.append("shipmentNumber", shipmentNumber)
     if(orderNumber) params.append("orderNumber", orderNumber)
     if(statusCode) params.append("statusCode", statusCode)
 
-    const res = await fetch(`${API_URL}/api/admin/shipments?${params.toString()}`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch shipments")
-    }
-    return await res.json() as Promise<Shipment[]>
+    const query = params.toString()
+    const endpoint = `/api/admin/shipments${query ? `?${query}` : ""}`
+
+    return apiRequest<Shipment[]>(endpoint)
 }
 
 export const getShipmentDetail = async (shipmentId: number):Promise<ShipmentDetail> => {
-    const token = localStorage.getItem("token")
-
-    const res = await fetch(`${API_URL}/api/admin/shipments/${shipmentId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-    if(!res.ok){
-        throw new Error("Failed to fetch detail")
-    }
-    return await res.json();
+    return apiRequest<ShipmentDetail>(
+        `/api/admin/shipments/${shipmentId}`
+    )
 }
 
 export const getPalletItems = async (
     palletId: number
-): Promise<PalletWarehouseItem[]> => {
+): Promise<PalletDetail> => {
 
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(
-        `${API_URL}/api/admin/pallets/${palletId}/items`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-
-    if(!res.ok){
-        throw new Error("Failed to fetch pallet items!");
-    }
-
-    return await res.json();
+    return apiRequest<PalletDetail>(
+        `/api/admin/pallets/${palletId}/items`
+    )
 }

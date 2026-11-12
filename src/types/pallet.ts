@@ -13,3 +13,11 @@ export type PalletWarehouseItem = {
     etiNumber: string;
     quantity: number;
 }
+
+export type PalletDetail = {
+    id: number;
+    palletNumber: string;
+    locationCode: string;
+    closed: boolean;
+    items: PalletWarehouseItem[]
+}
