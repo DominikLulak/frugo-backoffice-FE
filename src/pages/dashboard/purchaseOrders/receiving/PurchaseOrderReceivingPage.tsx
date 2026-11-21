@@ -6,8 +6,12 @@ import PageHeader from "../../../../components/common/PageHeader.tsx";
 import usePurchaseOrderReceiving from "../../../../hooks/purchaseOrder/receiving/usePurchaseOrderReceiving.ts";
 import PurchaseOrderReceivingTable
     from "../../../../components/purchaseOrders/receiving/PurchaseOrderReceivingTable.tsx";
+import {useState} from "react";
+import QrScannerModal from "../../../../components/common/scanner/QrScannerModal.tsx";
 
 export default function PurchaseOrderReceivingPage() {
+    const [showQrScanner, setShowQrScanner] = useState(false)
+
 
     const {
         purchaseOrderNumber,
@@ -61,9 +65,9 @@ export default function PurchaseOrderReceivingPage() {
                 <div className="card-body">
 
                     <form onSubmit={handleSearch}>
-                        <div className="row align-items-end">
+                        <div className="row align-items-end g-2">
 
-                            <div className="col-md-6">
+                            <div className="col-md-8">
                                 <label
                                     htmlFor="purchaseOrderNumber"
                                     className="form-label"
@@ -71,19 +75,30 @@ export default function PurchaseOrderReceivingPage() {
                                     Číslo nákupní objednávky
                                 </label>
 
-                                <input
-                                    id="purchaseOrderNumber"
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Zadejte číslo objednávky"
-                                    value={purchaseOrderNumber}
-                                    onChange={event =>
-                                        setPurchaseOrderNumber(event.target.value)
-                                    }
-                                />
+                                <div className="input-group">
+                                    <input
+                                        id="purchaseOrderNumber"
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Zadejte číslo objednávky"
+                                        value={purchaseOrderNumber}
+                                        onChange={event =>
+                                            setPurchaseOrderNumber(event.target.value)
+                                        }
+                                    />
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-primary"
+                                        onClick={() => setShowQrScanner(true)}
+                                        title="Naskenovat QR kod"
+                                    >
+                                        <i className="bi bi-camera" />
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="col-md-auto">
+                            <div className="col-md-auto ms-auto px-3">
                                 <button
                                     type="submit"
                                     className="btn btn-primary"
@@ -336,6 +351,14 @@ export default function PurchaseOrderReceivingPage() {
                 </>
             )}
 
+            <QrScannerModal
+                show={showQrScanner}
+                onClose={() => setShowQrScanner(false)}
+                onScan={(value) => {
+                    setPurchaseOrderNumber(value)
+                    setShowQrScanner(false)
+                }}
+            />
         </div>
     );
 }
