@@ -34,6 +34,29 @@ export const getPurchaseOrderDetail = async (
     )
 }
 
+export const downloadPurchaseOrderPdf = async (
+    purchaseOrderId: number
+):Promise<void> => {
+    const blob = await apiRequest<Blob>(
+        `/api/admin/purchaseOrders/${purchaseOrderId}/pdf`,
+        {
+            responseType: "blob"
+        }
+    );
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a")
+    link.href = url;
+    link.download = `purchase-order-${purchaseOrderId}.pdf`
+
+    document.body.appendChild(link);
+    link.click()
+    link.remove()
+
+    window.URL.revokeObjectURL(url)
+}
+
 export const createPurchaseOrder = async (
     data: PurchaseOrderCreateDto
 ):Promise<PurchaseOrder> => {

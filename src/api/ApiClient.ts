@@ -3,6 +3,7 @@ import {API_URL} from "./config.ts";
 type ApiRequestOptions = {
     method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
     body?: unknown;
+    responseType?: "json" | "blob";
 }
 
 export async function apiRequest<T>(
@@ -41,6 +42,10 @@ export async function apiRequest<T>(
         response.headers.get("content-length") === "0"
     ) {
         return undefined as T;
+    }
+
+    if(options.responseType === "blob"){
+        return await response.blob() as T;
     }
 
     const contentType = response.headers.get("content-type");

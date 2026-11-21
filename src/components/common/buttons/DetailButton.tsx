@@ -9,7 +9,8 @@ export default function DetailButton({onClick}: Props){
             className="btn btn-sm btn-outline-primary"
             onClick={onClick}
         >
-            Detail
+            <i className="bi bi-eye me-1"/>
+            PDF
         </button>
     )
 }

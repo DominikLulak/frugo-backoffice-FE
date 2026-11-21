@@ -9,7 +9,8 @@ export default function DeleteButton({onClick}:Props){
             className="btn btn-sm btn-outline-danger"
             onClick={onClick}
         >
-            🗑 Delete
+            <i className="bi bi-trash me-1"/>
+            Smazat
         </button>
     )
 }

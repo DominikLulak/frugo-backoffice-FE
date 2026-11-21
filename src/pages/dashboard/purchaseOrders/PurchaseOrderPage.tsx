@@ -10,6 +10,7 @@ import usePurchaseOrderTableColumns from "../../../hooks/purchaseOrder/page/useP
 import PageHeader from "../../../components/common/PageHeader.tsx";
 import Filters from "../../../components/common/filters/Filters.tsx";
 import Table from "../../../components/common/Table.tsx";
+import {downloadPurchaseOrderPdf} from "../../../api/PurchaseOrderApi.ts";
 
 export default function PurchaseOrderPage(){
     const {
@@ -33,9 +34,19 @@ export default function PurchaseOrderPage(){
         await fetchPurchaseOrders(true, filters)
     }
 
+    const handleDownloadPdf = async (purchaseOrder: PurchaseOrder) => {
+        try {
+            await downloadPurchaseOrderPdf(purchaseOrder.id)
+        }catch (error){
+            console.error("PDF download failed:", error)
+            window.alert("Nepodarilo se stahnout PDF dokument")
+        }
+    }
+
     const columns = usePurchaseOrderTableColumns({
         onDetail: purchaseOrderModal.openDetail,
-        onDelete: openDeleteModal
+        onDelete: openDeleteModal,
+        onDownloadPdf: handleDownloadPdf
     })
 
     return(
