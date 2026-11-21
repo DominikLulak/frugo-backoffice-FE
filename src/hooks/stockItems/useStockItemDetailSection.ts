@@ -25,9 +25,9 @@ export default function useStockItemDetailSection(
             title: "Skladova polozka",
             rows: [
                 {label: "Typ baleni", value: stockItem.packagingType},
-                {label: "Mnozstvi v baleni", value: stockItem.quantityPerPackage + " kg"},
+                {label: "Mnozstvi v baleni", value: stockItem.quantityPerPackage + " g"},
                 {label: "Typ podbaleni", value: stockItem.subpackageType ?? "-"},
-                {label: "Mnozstvi v podbaleni", value: stockItem.quantityPerSubpackage ?? "-"  + " kg"},
+                {label: "Mnozstvi v podbaleni", value: stockItem.quantityPerSubpackage + " g"},
                 {label: "Celkove mnozstvi", value: stockItem.quantity + " kg"},
                 {label: "Rezervovane mnozstvi", value: stockItem.allocatedQuantity + " kg"},
                 {label: "Volne mnozstvi", value: stockItem.availableQuantity + " kg"},

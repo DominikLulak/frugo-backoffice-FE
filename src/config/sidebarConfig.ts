@@ -58,6 +58,11 @@ export const sidebarGroups: SidebarGroup[] = [
                 permission: "PURCHASE_ORDERS_READ"
             },
             {
+                label: "Prijem nakupni objednavky",
+                path: "/dashboard/purchaseOrders/receiving",
+                permission: "PURCHASE_ORDERS_MANAGE"
+            },
+            {
                 label: "Dodavatele",
                 path: "/dashboard/suppliers",
                 permission: "SUPPLIERS_READ"
