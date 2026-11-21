@@ -8,10 +8,11 @@ export default function StatusButton({active, onClick}: Props){
         <div className="d-flex gap-2">
             <button
                 type="button"
-                className="btn btn-sm btn-outline-secondary"
+                className="btn btn-sm btn-outline-success"
                 onClick={onClick}
             >
-                {active ? "✓ Deaktivovat" : "✓ Aktivovat"}
+                <i className="bi bi-arrow-clockwise me-1"/>
+                {active ? "Deaktivovat" : "Aktivovat"}
             </button>
         </div>
     )

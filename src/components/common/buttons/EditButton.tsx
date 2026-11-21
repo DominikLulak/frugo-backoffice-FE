@@ -9,7 +9,8 @@ export default function EditButton({onClick}:Props){
             className="btn btn-sm btn-outline-warning"
             onClick={onClick}
         >
-            ✏ Edit
+            <i className="bi bi-pencil me-1"/>
+            Upravit
         </button>
     )
 }
