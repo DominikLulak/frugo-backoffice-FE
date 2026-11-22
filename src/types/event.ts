@@ -41,9 +41,24 @@ export type EventLogEntity = {
     entityId: number;
 }
 
+export type EventLogStep = {
+    id: number;
+    stepNumber: number;
+    createdAt: string;
+    finishedAt: string;
+    name: string;
+    description: string;
+    status: string;
+    errorCode: string | null;
+    errorMessage: string | null;
+    data: Record<string, unknown> | null;
+}
+
 export type EventLogDetail = {
     id: number;
     createdAt: string;
+    finishedAt: string | null;
+    status: string;
     eventCode: string;
     eventName: string;
     eventDescription: string;
@@ -52,6 +67,7 @@ export type EventLogDetail = {
     description: string;
     data: Record<string, unknown>;
     entities: EventLogEntity[];
+    steps: EventLogStep[];
 }
 
 export type PurchaseOrderStatusHistory = {

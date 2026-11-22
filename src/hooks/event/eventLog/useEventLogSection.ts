@@ -15,6 +15,8 @@ export default function useEventLogSection(
             rows: [
                 {label: "ID", value: eventLog.id},
                 {label: "Datum a cas", value: eventLog.createdAt},
+                {label: "Datum dokonceni", value: eventLog.finishedAt ?? "-"},
+                {label: "Stav", value: eventLog.status},
                 {label: "Kod udalosti", value: eventLog.eventCode},
                 {label: "Nazev udalosti", value: eventLog.eventName}
             ]
