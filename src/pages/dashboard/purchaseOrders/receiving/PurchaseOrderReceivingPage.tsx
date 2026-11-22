@@ -358,6 +358,7 @@ export default function PurchaseOrderReceivingPage() {
                     setPurchaseOrderNumber(value)
                     setShowQrScanner(false)
                 }}
+                description="Po rozpoznání QR kódu se číslo vloží do pole pro vyhledání objednávky."
             />
         </div>
     );

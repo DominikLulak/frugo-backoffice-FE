@@ -5,10 +5,11 @@ type QrScannerModalProps = {
     show: boolean;
     onClose: () => void;
     onScan: (value: string) => void;
+    description: string;
 }
 
 export default function QrScannerModal({
-    show, onScan, onClose
+    show, onScan, onClose, description
 }:QrScannerModalProps){
     const {
         readerId, loading, error
@@ -63,8 +64,7 @@ export default function QrScannerModal({
 
             <div className="aler alert-info mt-3 mb-0">
                 <i className="bi bi-info-circle me-2" />
-                Po rozpoznani QR kodu se jeho vislo vlozi do
-                pole pro vyhledavani objednavky
+                {description}
             </div>
         </BaseModal>
     )
