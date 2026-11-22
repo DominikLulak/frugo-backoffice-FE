@@ -1,4 +1,4 @@
-import type {MoveStockItemDto, StockItem, StockItemDetail} from "../types/stock.ts";
+import type {MoveStockItemDto, SplitStockItemDto, StockItem, StockItemDetail} from "../types/stock.ts";
 import {apiRequest} from "./ApiClient.ts";
 
 export const getStockItems = async (
@@ -37,6 +37,18 @@ export const moveWarehouseItem = async (
 ):Promise<void> => {
     return apiRequest<void>(
         `/api/admin/products/stock/move`,
+        {
+            method: "POST",
+            body: data
+        }
+    )
+}
+
+export const splitWarehouseItem = async (
+    data: SplitStockItemDto
+):Promise<StockItem> => {
+    return apiRequest<StockItem>(
+        `/api/admin/products/stock/split`,
         {
             method: "POST",
             body: data

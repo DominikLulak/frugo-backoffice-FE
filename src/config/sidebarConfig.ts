@@ -31,6 +31,11 @@ export const sidebarGroups: SidebarGroup[] = [
                 permission: "STOCKS_MOVE"
             },
             {
+                label: "Rozdeleni polozky",
+                path: "/dashboard/stock/items/split",
+                permission: "STOCKS_SPLIT"
+            },
+            {
                 label: "Palety",
                 path: "/dashboard/pallets",
                 permission: "STOCKS_READ"
