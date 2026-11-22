@@ -43,3 +43,8 @@ export type StockItemDetail = {
     warehouseCode: string;
     locationCode: string;
 };
+
+export type MoveStockItemDto = {
+    eti: string;
+    targetLocationCode: string;
+}

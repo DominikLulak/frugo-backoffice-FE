@@ -26,6 +26,7 @@ import EventLogPage from "../pages/dashboard/event/EventLogPage.tsx";
 import PurchaseOrderStatusHistoryPage from "../pages/dashboard/event/PurchaseOrderStatusHistoryPage.tsx";
 import OrderStatusHistoryPage from "../pages/dashboard/event/OrderStatusHistoryPage.tsx";
 import PurchaseOrderReceivingPage from "../pages/dashboard/purchaseOrders/receiving/PurchaseOrderReceivingPage.tsx";
+import WarehouseItemMovementPage from "../pages/dashboard/stock/transactions/WarehouseItemMovementPage.tsx";
 
 type AppRoute = {
     path: string;
@@ -38,6 +39,11 @@ export const appRoutes: AppRoute[] = [
         path: "stock/items",
         element: <StockItemsPage/>,
         permission: "STOCKS_READ"
+    },
+    {
+        path: "stock/items/move",
+        element: <WarehouseItemMovementPage/>,
+        permission: "STOCKS_MOVE"
     },
     {
         path: "pallets",
