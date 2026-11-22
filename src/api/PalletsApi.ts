@@ -1,4 +1,4 @@
-import type {Pallet, PalletDetail} from "../types/pallet.ts";
+import type {MovePalletDto, Pallet, PalletDetail} from "../types/pallet.ts";
 import {apiRequest} from "./ApiClient.ts";
 
 export const getPallets = async (
@@ -23,5 +23,17 @@ export const getPalletDetail = async (
 ):Promise<PalletDetail> => {
     return apiRequest<PalletDetail>(
         `/api/admin/pallets/${palletId}/items`
+    )
+}
+
+export const movePallet = async (
+    data: MovePalletDto
+):Promise<void> => {
+    return apiRequest<void>(
+        `/api/admin/pallets/move`,
+        {
+            method: "POST",
+            body: data
+        }
     )
 }

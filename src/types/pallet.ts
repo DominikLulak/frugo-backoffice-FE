@@ -21,3 +21,8 @@ export type PalletDetail = {
     closed: boolean;
     items: PalletWarehouseItem[]
 }
+
+export type MovePalletDto = {
+    palletEti: string;
+    targetLocationCode: string;
+}

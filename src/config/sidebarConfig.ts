@@ -35,6 +35,11 @@ export const sidebarGroups: SidebarGroup[] = [
                 path: "/dashboard/pallets",
                 permission: "STOCKS_READ"
             },
+            {
+                label: "Presun palety",
+                path: "/dashboard/pallets/move",
+                permission: "STOCKS_MOVE"
+            },
         ]
     },
     {
