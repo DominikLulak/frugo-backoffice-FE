@@ -48,3 +48,8 @@ export type MoveStockItemDto = {
     eti: string;
     targetLocationCode: string;
 }
+
+export type SplitStockItemDto = {
+    eti: string;
+    quantity: number;
+}

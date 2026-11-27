@@ -28,6 +28,7 @@ import OrderStatusHistoryPage from "../pages/dashboard/event/OrderStatusHistoryP
 import PurchaseOrderReceivingPage from "../pages/dashboard/purchaseOrders/receiving/PurchaseOrderReceivingPage.tsx";
 import WarehouseItemMovementPage from "../pages/dashboard/stock/transactions/WarehouseItemMovementPage.tsx";
 import PalletMovementPage from "../pages/dashboard/pallets/transactions/PalletMovementPage.tsx";
+import StockItemSplitPage from "../pages/dashboard/stock/transactions/StockItemSplitPage.tsx";
 
 type AppRoute = {
     path: string;
@@ -45,6 +46,11 @@ export const appRoutes: AppRoute[] = [
         path: "stock/items/move",
         element: <WarehouseItemMovementPage/>,
         permission: "STOCKS_MOVE"
+    },
+    {
+        path: "stock/items/split",
+        element: <StockItemSplitPage/>,
+        permission: "STOCKS_SPLIT"
     },
     {
         path: "pallets",
